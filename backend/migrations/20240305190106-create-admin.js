@@ -9,10 +9,16 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      EmailAdmin: {
+        type: Sequelize.STRING
+      },
       NomAdmin: {
         type: Sequelize.STRING
       },
       PrenomAdmin: {
+        type: Sequelize.STRING
+      },
+      MotdepasseAdmin: {
         type: Sequelize.STRING
       },
       createdAt: {
