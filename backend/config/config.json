@@ -1,7 +1,6 @@
 {
   "development": {
     "username": "root",
-    "password": "adem0910",
     "database": "projet2cp",
     "host": "127.0.0.1",
     "dialect": "mysql"
