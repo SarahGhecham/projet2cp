@@ -1,9 +1,12 @@
 const Validator=require('fastest-validator');
 const models=require('../models');
+const bcryptjs=require('bcryptjs');
 function save(req,res){
      const admin={
         NomAdmin:req.body.NomAdmin,
-        PrenomAdmin:req.body.PrenomAdmin
+        PrenomAdmin:req.body.PrenomAdmin,
+        EmailAdmin:req.body.EmailAdmin,
+        MotdepasseAdmin:req.body.MotdepasseAdmin
      }
      models.Admin.create(admin).then(result=>{
          res.status(201).json({
@@ -16,6 +19,46 @@ function save(req,res){
             error:error
          })
      })
+}
+function CreerArtisan(req,res){
+    models.Artisan.findOne({
+        where: { EmailArtisan: req.body.EmailArtisan }
+    }).then(result => {
+        if (result) {
+            res.status(409).json({
+                message: "Compte email existant"
+            });
+        } else {
+            bcryptjs.genSalt(10, function (err, salt) {
+                bcryptjs.hash(req.body.MotdepasseArtisan, salt, function (err, hash) {
+                    const artisan = {
+                        NomArtisan: req.body.NomArtisan,
+                        PrenomArtisan: req.body.PrenomArtisan,
+                        MotdepasseArtisan: hash,
+                        EmailArtisan: req.body.EmailArtisan,
+                        AdresseArtisan: req.body.AdresseArtisan,
+                        NumeroTelArtisan: req.body.NumeroTelArtisan
+                    }
+                    models.Artisan.create(artisan).then(result => {
+                        res.status(201).json({
+                            message: "Compte artisan cree",
+                            artisan: result
+                        });
+                    }).catch(error => {
+                        res.status(500).json({
+                            message: "Something went wrong",
+                            error: error
+                        });
+                    });
+                });
+            });
+        }
+    }).catch(error => {
+        res.status(500).json({
+            message: "Something went wrong",
+            error: error
+        });
+    });
 }
 
 function show(req,res){
@@ -50,6 +93,7 @@ function destroy(req,res){
 
 module.exports={
     save:save,
+    CreerArtisan:CreerArtisan,
     show:show,
     destroy:destroy
 }
