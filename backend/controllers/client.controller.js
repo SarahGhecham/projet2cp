@@ -45,47 +45,7 @@ function signUp(req, res) {
     });
 }
 
-//Se connecter
-function login(req,res){
-    models.Client.findOne({
-        where: { EmailClient: req.body.EmailClient }
-    }).then(client=>{
-        if(client === null){
-            res.status(401).json({
-                message: "Informations d'identification invalides",
-                error: error
-            });
-
-        }else{
-            bcryptjs.compare(req.body.MotdepasseClient,client.MotdepasseClient,function(err,result){
-                if(result){
-                    const token = jwt.sign({
-                        EmailClient : client.EmailClient,
-                        IdClient : client.IdClient
-                    },'secret',function(err,token){
-                        res.status(200).json({
-                            message: "Authentification réussite",
-                            token: token
-                        });
-                    });
-                }else{
-                    res.status(401).json({
-                        message: "Informations d'identification invalides",
-                        
-                    });
-                }
-            })
-        }
-
-    }).catch(error=>{
-        res.status(500).json({
-            message: "Something went wrong",
-            error: error
-        });
-    })
-
-}
 module.exports = {
     signUp: signUp,
-    login: login
+    //login: login
 }
