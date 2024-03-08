@@ -76,6 +76,36 @@ function show(req,res){
         })
     })
 }
+function AfficherArtisans(req,res){
+    models.Artisan.findAll().then(result=>{
+        if(result)
+          res.status(201).json(result)
+        else
+        res.status(404).json({
+            message:"pas d'artisans"
+          })
+      }).catch(error=>{
+          res.status(500).json({
+              message:"something went wrong"
+          })
+      })
+}
+
+function AfficherClients(req,res){
+    models.Client.findAll().then(result=>{
+        if(result)
+          res.status(201).json(result)
+        else
+        res.status(404).json({
+            message:"pas de clients"
+          })
+      }).catch(error=>{
+          res.status(500).json({
+              message:"something went wrong",
+              error : error
+          })
+      })
+}
 
 function destroy(req,res){
     const id=req.params.id;
@@ -95,5 +125,8 @@ module.exports={
     save:save,
     CreerArtisan:CreerArtisan,
     show:show,
-    destroy:destroy
+    destroy:destroy,
+    AfficherArtisans:AfficherArtisans,
+    AfficherClients:AfficherClients
+
 }

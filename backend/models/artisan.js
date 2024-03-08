@@ -19,7 +19,11 @@ module.exports = (sequelize, DataTypes) => {
     MotdepasseArtisan: DataTypes.STRING,
     EmailArtisan: DataTypes.STRING,
     AdresseArtisan: DataTypes.STRING,
-    NumeroTelArtisan: DataTypes.STRING
+    NumeroTelArtisan: DataTypes.STRING,
+    ActifArtisan: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true 
+      }
   }, {
     sequelize,
     modelName: 'Artisan',
