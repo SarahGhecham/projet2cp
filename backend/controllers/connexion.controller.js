@@ -16,7 +16,8 @@ function login(req, res) {
             if (client === null) {
                 artisanLogin(); // Si le client n'est pas trouvé, essayer artisan login
             } else {
-                comparePasswordAndRespond(client.MotdepasseClient, client.IdClient);
+
+                comparePasswordAndRespond(client.MotdepasseClient, client.IdClient,client.ActifClient);
             }
         }).catch(error => {
             respondWithError(error);
@@ -31,7 +32,7 @@ function login(req, res) {
             if (artisan === null) {
                 adminLogin(); // Si artisan n'est pas trouvé, essayer admin login
             } else {
-                comparePasswordAndRespond(artisan.MotdepasseArtisan, artisan.IArtisan);
+                comparePasswordAndRespond(artisan.MotdepasseArtisan, artisan.IArtisan,artisan.ActifArtisan);
             }
         }).catch(error => {
             respondWithError(error);
@@ -46,20 +47,22 @@ function login(req, res) {
             if (admin === null) {
                 respondWithInvalidCredentials();
             } else {
-                comparePasswordAndRespond(admin.MotdepasseAdmin, admin.IdAdmin);
+                comparePasswordAndRespond(admin.MotdepasseAdmin, admin.IdAdmin, 1);
             }
         }).catch(error => {
             respondWithError(error);
         });
     }
 
-    // Fonction comparaison mot de passe et réponse
-    function comparePasswordAndRespond(storedPassword, userId) {
-        bcryptjs.compare(password, storedPassword, function (err, result) {
-            if (err) {
-                respondWithError(err);
-            } else {
-                if (result) {
+
+    // Function to compare password and respond accordingly
+function comparePasswordAndRespond(storedPassword, userId, isActive) {
+    bcryptjs.compare(password, storedPassword, function (err, result) {
+        if (err) {
+            respondWithError(err);
+        } else {
+            if (result) {
+                if (isActive) {
                     const token = jwt.sign({
                         Email: email,
                         UserId: userId
@@ -74,11 +77,17 @@ function login(req, res) {
                         }
                     });
                 } else {
-                    respondWithInvalidCredentials();
+                    res.status(401).json({
+                        message: "Compte désactivé"
+                    });
                 }
+            } else {
+                respondWithInvalidCredentials();
             }
-        });
-    }
+        }
+    });
+}
+
 
     // Fonction réponse avec des informations d'identification invalides
     function respondWithInvalidCredentials() {
