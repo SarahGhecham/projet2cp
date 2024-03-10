@@ -72,12 +72,7 @@ function CreerArtisan(req, res) {
          
         }
     }).catch(error => {
-        res.status(500).json({
-            message: "Something went wrong",
-            error: error
-        });
-    });
-}
+
 
 
 function show(req,res){
@@ -141,7 +136,6 @@ function destroy(req,res){
 }
 
 module.exports={
-    save:save,
     CreerArtisan:CreerArtisan,
     Creeradmin:Creeradmin,
     show:show,
