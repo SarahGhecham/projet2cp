@@ -4,6 +4,7 @@ const adminControllers=require('../controllers/admin.controller');
 const router=express.Router();
 
 router.post("/",adminControllers.save);
+router.post("/creeradmin",adminControllers.Creeradmin);
 router.post("/creerartisan",adminControllers.CreerArtisan);
 router.get("/:id",adminControllers.show);
 router.get("/Afficher/Artisans",adminControllers.AfficherArtisans);
