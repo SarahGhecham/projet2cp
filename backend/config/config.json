@@ -1,11 +1,12 @@
 {
   "development": {
     "username": "root",
-    "database": "aya",
-    "password":"A7319@miasm#PURPUL",
+    "database": "projet2cp",
+    "password": "",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
+  
   "test": {
     "username": "root",
     "password": null,
@@ -21,3 +22,6 @@
     "dialect": "mysql"
   }
 }
+
+
+
