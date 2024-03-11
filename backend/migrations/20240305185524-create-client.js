@@ -9,6 +9,9 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      PrenomClient: {
+        type: Sequelize.STRING
+      },
       NomClient: {
         type: Sequelize.STRING
       },
