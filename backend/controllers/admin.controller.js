@@ -78,23 +78,6 @@ function CreerArtisan(req, res) {
 });
 }
 
-
-
-function show(req,res){
-    const id=req.params.id;
-    models.Admin.findByPk(id).then(result=>{
-        if(result)
-           res.status(201).json(result)
-        else
-            res.status(404).json({
-          message:"admin not found"
-        })
-    }).catch(error=>{
-        res.status(500).json({
-            message:"something went wrong"
-        })
-    })
-}
 function AfficherArtisans(req,res){
     models.Artisan.findAll().then(result=>{
         if(result)
@@ -126,6 +109,35 @@ function AfficherClients(req,res){
       })
 }
 
+function DesactiverClient(req,res){
+    const comptedesactive={
+       EmailClient: req.body.EmailClient,
+       ActifClient: false
+    }
+    models.Client.update(comptedesactive, { where: { EmailClient: req.body.EmailClient } })
+    .then(result => {
+        res.status(200).json({ message: "Client désactivé avec succès" });
+    })
+    .catch(error => {
+        res.status(500).json({ message: "Erreur lors de la désactivation du client", error: error });
+    });
+}
+
+function DesactiverArtisan(req,res){
+    const comptedesactive={
+       EmailArtisan: req.body.EmailArtisan,
+       ActifArtisan: false
+    }
+    models.Artisan.update(comptedesactive, { where: { EmailArtisan: req.body.EmailArtisan } })
+    .then(result => {
+        res.status(200).json({ message: "Artisan désactivé avec succès" });
+        
+    })
+    .catch(error => {
+        res.status(500).json({ message: "Erreur lors de la désactivation de l'Artisan", error: error });
+    });
+}
+
 function destroy(req,res){
     const id=req.params.id;
     models.Admin.destroy({where:{id:id}}).then(result=>{
@@ -139,6 +151,21 @@ function destroy(req,res){
         
     })
 }
+function show(req,res){
+    const id=req.params.id;
+    models.Admin.findByPk(id).then(result=>{
+        if(result)
+           res.status(201).json(result)
+        else
+            res.status(404).json({
+          message:"admin not found"
+        })
+    }).catch(error=>{
+        res.status(500).json({
+            message:"something went wrong"
+        })
+    })
+}
 
 module.exports={
     CreerArtisan:CreerArtisan,
@@ -146,6 +173,8 @@ module.exports={
     show:show,
     destroy:destroy,
     AfficherArtisans:AfficherArtisans,
-    AfficherClients:AfficherClients
+    AfficherClients:AfficherClients,
+    DesactiverClient:DesactiverClient,
+    DesactiverArtisan:DesactiverArtisan,
 
 }

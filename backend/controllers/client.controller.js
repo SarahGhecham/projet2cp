@@ -59,7 +59,38 @@ function signUp(req, res) {
     });
 }
 
+function updateclient(req, res) {
+    const id = req.params.id;
+    const updatedClient = {
+        NomClient: req.body.NomClient,
+        PrenomClient:req.body.PrenomClient,
+        MotdepasseClient: req.body.MotdepasseClient,
+        EmailClient: req.body.EmailClient,
+        AdresseClient: req.body.AdresseClient,
+        NumeroTelClient: req.body.NumeroTelClient
+    };
+
+    models.Client.update(updatedClient, { where: { id: id } })
+        .then(result => {
+            if (result[0] === 1) {
+                res.status(201).json({
+                    message: "Client updated successfully",
+                    client: updatedClient
+                });
+            } else {
+                res.status(404).json({ message: "Client not found" });
+            }
+        })
+        .catch(error => {
+            res.status(500).json({
+                message: "Something went wrong",
+                error: error
+            });
+        });
+}
+
 module.exports = {
     signUp: signUp,
+    updateclient:updateclient,
     //login: login
 }
