@@ -1,8 +1,8 @@
 {
   "development": {
     "username": "root",
-    "database": "projet2cp",
-    "password": "adem0910",
+    "database": "datab",
+    "password": "root",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },

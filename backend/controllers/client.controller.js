@@ -10,7 +10,7 @@ function signUp(req, res) {
     }).then(result => {
         if (result) {
             res.status(409).json({
-                message: "Compte email existant"
+                message: "Compte email deja éxistant"
             });
         } else {
             models.Artisan.findOne({
