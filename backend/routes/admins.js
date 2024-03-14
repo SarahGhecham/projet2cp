@@ -11,4 +11,6 @@ router.get("/Afficher/Clients",adminControllers.AfficherClients);
 router.patch("/Desactiver/Client",adminControllers.DesactiverClient);
 router.patch("/Desactiver/Artisan",adminControllers.DesactiverArtisan);
 router.delete("/:id",adminControllers.destroy);
+router.post("/AjouterDomaine",adminControllers.AjouterDomaine);
+
 module.exports=router;

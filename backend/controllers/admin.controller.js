@@ -167,6 +167,20 @@ function show(req,res){
     })
 }
 
+function AjouterDomaine(req, res) {
+    const { NomDomaine } = req.body; // Supposant que les données sont envoyées via le corps de la requête
+    
+    models.Domaine.create({  // Utilisation du modèle Domaine à partir du module models
+        NomDomaine
+    }).then(nouveauDomaine => {
+        // Répondre avec le nouveau domaine créé
+        res.status(201).json({ success: true, domaine: nouveauDomaine });
+    }).catch(error => {
+        // En cas d'erreur, répondre avec un message d'erreur
+        res.status(500).json({ success: false, message: "Une erreur s'est produite lors de l'ajout du domaine." });
+    });
+}
+
 module.exports={
     CreerArtisan:CreerArtisan,
     Creeradmin:Creeradmin,
@@ -176,5 +190,6 @@ module.exports={
     AfficherClients:AfficherClients,
     DesactiverClient:DesactiverClient,
     DesactiverArtisan:DesactiverArtisan,
+    AjouterDomaine:AjouterDomaine,
 
 }
