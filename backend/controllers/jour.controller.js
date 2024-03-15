@@ -22,9 +22,9 @@ function createJour(req, res) {
         });
 }
 
-/*
+
 function getAllJours(req, res) {
-    Jour.findAll()
+    models.Jour.findAll()
         .then(jours => {
             res.json(jours);
         })
@@ -42,7 +42,7 @@ function updateJour(req, res) {
         HeureFin: req.body.HeureFin
     };
 
-    Jour.update(updatedJour, { where: { id } })
+    models.Jour.update(updatedJour, { where: { id } })
         .then(([updatedRows]) => {
             if (updatedRows === 1) {
                 res.status(201).json({
@@ -61,7 +61,7 @@ function updateJour(req, res) {
 
 function deleteJour(req, res) {
     const id = req.params.id;
-    Jour.destroy({ where: { id } })
+    models.Jour.destroy({ where: { id } })
         .then(deletedRows => {
             if (deletedRows === 1) {
                 res.json({ message: 'Jour deleted successfully' });
@@ -74,10 +74,11 @@ function deleteJour(req, res) {
             res.status(500).json({ error: 'Failed to delete jour' });
         });
 }
-*/
+
 module.exports = {
     createJour:createJour,
-    /*getAllJours,
-    updateJour,
-    deleteJour*/
+    getAllJours:getAllJours,
+    
+    updateJour: updateJour,
+    deleteJour: deleteJour,
 };

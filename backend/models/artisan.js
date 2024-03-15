@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Artisan.belongsToMany(models.Jour, { through: 'ArtisanJour' });
+
     }
   }
   Artisan.init({
