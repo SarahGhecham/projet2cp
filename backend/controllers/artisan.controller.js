@@ -1,6 +1,7 @@
 const Validator=require('fastest-validator');
 const models=require('../models');
 
+
 function updateartisan(req, res) {
     const id = req.params.id;
     const updatedArtisan = {

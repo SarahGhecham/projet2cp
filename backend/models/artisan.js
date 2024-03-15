@@ -2,6 +2,11 @@
 const {
   Model
 } = require('sequelize');
+
+const sequelize = require('../config/sequelize');
+
+
+
 module.exports = (sequelize, DataTypes) => {
   class Artisan extends Model {
     /**
@@ -11,8 +16,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Artisan.belongsToMany(models.Jour, { through: 'ArtisanJour' });
-
+      this.belongsToMany(models.Jour, {
+        through: models['artisan.jour'],
+        foreignKey: 'artisanId'
+      });
     }
   }
   Artisan.init({
