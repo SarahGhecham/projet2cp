@@ -1,7 +1,8 @@
 const models=require('../models');
 
 async function lancerdemande(req, res) {
-    const { demandeId, clientId } = req.body;
+    const demandeId = req.params.demandeId;
+    const clientId = req.params.clientId;
 
     try {
         // Vérifier si la demande et le client existent

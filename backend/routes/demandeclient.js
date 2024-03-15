@@ -3,6 +3,6 @@ const demandeclientController = require('../controllers/demandeclient.controller
 
 const router = express.Router();
 
-router.post('/lancerdemande',demandeclientController.lancerdemande);
+router.post('/lancerdemande/:demandeId/:clientId',demandeclientController.lancerdemande);
 
 module.exports = router;
