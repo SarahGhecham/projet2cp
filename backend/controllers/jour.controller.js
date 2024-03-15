@@ -3,15 +3,25 @@
 const models=require('../models');
 
 function createJour(req, res) {
-    models.Jour.create(req.body)
+    const jourData = {
+        Jour: req.body.Jour,
+        HeureDebut: req.body.HeureDebut,
+        HeureFin: req.body.HeureFin
+    };
+
+    models.Jour.create(jourData)
         .then(jour => {
-            res.status(201).json(jour);
+            res.status(201).json({
+                message: "Jour created successfully",
+                jour: jour
+            });
         })
         .catch(error => {
             console.error('Error creating jour:', error);
             res.status(500).json({ error: 'Failed to create jour' });
         });
 }
+
 /*
 function getAllJours(req, res) {
     Jour.findAll()
