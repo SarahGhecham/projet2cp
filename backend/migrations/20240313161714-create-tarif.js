@@ -18,10 +18,10 @@ module.exports = {
       PourcentageNuit: {
         type: Sequelize.INTEGER
       },
-      PourcentageJourFéié: {
+      PourcentageJourFérié: {
         type: Sequelize.INTEGER
       },
-      PourcentageWeeken: {
+      PourcentageWeekend: {
         type: Sequelize.INTEGER
       },
       Unité: {

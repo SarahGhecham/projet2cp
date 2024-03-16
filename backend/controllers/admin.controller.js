@@ -168,18 +168,72 @@ function show(req,res){
 }
 
 function AjouterDomaine(req, res) {
-    const { NomDomaine } = req.body; // Supposant que les données sont envoyées via le corps de la requête
+    const { NomDomaine } = req.body; 
     
-    models.Domaine.create({  // Utilisation du modèle Domaine à partir du module models
+    models.Domaine.create({ 
         NomDomaine
     }).then(nouveauDomaine => {
-        // Répondre avec le nouveau domaine créé
         res.status(201).json({ success: true, domaine: nouveauDomaine });
     }).catch(error => {
-        // En cas d'erreur, répondre avec un message d'erreur
         res.status(500).json({ success: false, message: "Une erreur s'est produite lors de l'ajout du domaine." });
     });
 }
+
+function CreerTarif(req, res) {
+    
+
+    const {
+        TarifJourMin,
+        TarifJourMax,
+        PourcentageNuit,
+        PourcentageJourFérié,
+        PourcentageWeekend,
+        Unité
+    } = req.body;
+
+
+    models.Tarif.create({
+        TarifJourMin,
+        TarifJourMax,
+        PourcentageNuit,
+        PourcentageJourFérié,
+        PourcentageWeekend,
+        Unité
+    }).then(() => {
+        return res.status(200).json({ message: "Tarif créé avec succès." });
+    }).catch(error => {
+        console.error("Une erreur s'est produite lors de la création du tarif:", error);
+        return res.status(500).json({ message: "Une erreur s'est produite lors de la création du tarif." });
+    });
+}
+function CreerPrestation(req, res) {
+   
+    const {
+        NomPrestation,
+        Matériel,
+        DuréeMax,
+        DuréeMin,
+        TarifId,
+        DomaineId
+    } = req.body;
+
+    // Création de la prestation dans la base de données
+     models.Prestation.create({
+        NomPrestation,
+        Matériel,
+        DuréeMax,
+        DuréeMin,
+        TarifId,
+        DomaineId
+    }).then(() => {
+        return res.status(200).json({ message: "Prestation créée avec succès." });
+    }).catch(error => {
+        console.error("Une erreur s'est produite lors de la création de la prestation:", error);
+        return res.status(500).json({ message: "Une erreur s'est produite lors de la création de la prestation." });
+    });
+}
+
+
 
 module.exports={
     CreerArtisan:CreerArtisan,
@@ -191,5 +245,7 @@ module.exports={
     DesactiverClient:DesactiverClient,
     DesactiverArtisan:DesactiverArtisan,
     AjouterDomaine:AjouterDomaine,
+    CreerTarif:CreerTarif,
+    CreerPrestation:CreerPrestation,
 
 }

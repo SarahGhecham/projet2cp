@@ -13,6 +13,8 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Prestation.belongsTo(models.Tarif, { foreignKey: 'TarifId' });
       Prestation.belongsTo(models.Domaine, { foreignKey: 'DomaineId' });
+      Prestation.belongsToMany(models.Artisan, { through: 'ArtisanPrestation' });
+
     }
   }
   Prestation.init({

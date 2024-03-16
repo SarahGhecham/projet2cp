@@ -66,7 +66,7 @@ function comparePasswordAndRespond(storedPassword, userId, isActive) {
                     const token = jwt.sign({
                         Email: email,
                         UserId: userId
-                    }, 'secret', function (err, token) {
+                    }, process.env.JWT_key, function (err, token) {
                         if (err) {
                             respondWithError(err);
                         } else {

@@ -11,14 +11,16 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Tarif.hasOne(models.Prestation, { foreignKey: 'TarifId' });
+
     }
   }
   Tarif.init({
     TarifJourMin: DataTypes.DECIMAL,
     TarifJourMax: DataTypes.DECIMAL,
     PourcentageNuit: DataTypes.INTEGER,
-    PourcentageJourFéié: DataTypes.INTEGER,
-    PourcentageWeeken: DataTypes.INTEGER,
+    PourcentageJourFérié: DataTypes.INTEGER,
+    PourcentageWeekend: DataTypes.INTEGER,
     Unité: DataTypes.STRING
   }, {
     sequelize,
