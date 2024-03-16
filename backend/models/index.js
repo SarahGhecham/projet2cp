@@ -41,5 +41,3 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 module.exports = db;
-
-const ArtisanJour = require('./artisan_jour')(sequelize);
