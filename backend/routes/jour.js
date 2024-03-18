@@ -6,6 +6,9 @@ const jourController = require('../controllers/jour.controller');
 
 // Route to create a Jour record
 router.get('/', jourController.getAllJours);
+router.delete('/:id', jourController.deleteJour);
+router.patch('/:id', jourController.updateJour);
+router.delete('/:id', jourController.deleteJour);
 
 
 
