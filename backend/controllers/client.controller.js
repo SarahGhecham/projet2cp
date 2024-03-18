@@ -58,16 +58,16 @@ function signUp(req, res) {
         });
     });
 }
-
 function updateclient(req, res) {
     const id = req.params.id;
     const updatedClient = {
         NomClient: req.body.NomClient,
-        PrenomClient:req.body.PrenomClient,
+        PrenomClient: req.body.PrenomClient,
         MotdepasseClient: req.body.MotdepasseClient,
         EmailClient: req.body.EmailClient,
         AdresseClient: req.body.AdresseClient,
-        NumeroTelClient: req.body.NumeroTelClient
+        NumeroTelClient: req.body.NumeroTelClient,
+        photo: req.body.photo // the 'photo' attribute to the updatedClient object
     };
 
     models.Client.update(updatedClient, { where: { id: id } })
@@ -88,6 +88,7 @@ function updateclient(req, res) {
             });
         });
 }
+
 
 module.exports = {
     signUp: signUp,

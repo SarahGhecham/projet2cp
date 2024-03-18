@@ -2,15 +2,17 @@ const Validator=require('fastest-validator');
 const models=require('../models');
 
 
+
 function updateartisan(req, res) {
     const id = req.params.id;
     const updatedArtisan = {
         NomArtisan: req.body.NomArtisan,
-        PrenomArtisan:req.body.PrenomArtisan,
+        PrenomArtisan: req.body.PrenomArtisan,
         MotdepasseArtisan: req.body.MotdepasseArtisan,
         EmailArtisan: req.body.EmailArtisan,
         AdresseArtisan: req.body.AdresseArtisan,
-        NumeroTelArtisan: req.body.NumeroTelArtisan
+        NumeroTelArtisan: req.body.NumeroTelArtisan,
+        disponibilite: req.body.disponibilite // the 'disponibilite' attribute to the updatedArtisan object
     };
 
     models.Artisan.update(updatedArtisan, { where: { id: id } })
@@ -31,6 +33,7 @@ function updateartisan(req, res) {
             });
         });
 }
+
 
 module.exports = {
     updateartisan:updateartisan,
