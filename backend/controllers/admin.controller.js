@@ -1,7 +1,6 @@
 const Validator=require('fastest-validator');
 const models=require('../models');
 const bcryptjs=require('bcryptjs');
-const authent = require('../middleware/check-auth');
 
 
 function Creeradmin(req,res){
@@ -240,7 +239,6 @@ async function AjouterPrestation(req, res) {
                 
                 
 
-        //const artisanId = await authent.auth()(req, res, next); // Appeler la fonction auth ici
         artisanId = req.userId;
         const { prestationName } = req.body;
 
