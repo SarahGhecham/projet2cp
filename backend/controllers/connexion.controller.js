@@ -3,10 +3,10 @@ const models = require('../models');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-
 function login(req, res) {
     const email = req.body.Email;
     const password = req.body.Motdepasse;
+
 
     // Fonction connexion client
     function clientLogin() {
@@ -24,7 +24,8 @@ function login(req, res) {
         });
     }
 
-    // Fonction connexion artisan 
+
+    // Fonction connexion artisan
     function artisanLogin() {
         models.Artisan.findOne({
             where: { EmailArtisan: email }
@@ -39,7 +40,8 @@ function login(req, res) {
         });
     }
 
-    // Fonction connexion admin 
+
+    // Fonction connexion admin
     function adminLogin() {
         models.Admin.findOne({
             where: { EmailAdmin: email }
@@ -53,6 +55,8 @@ function login(req, res) {
             respondWithError(error);
         });
     }
+
+
 
 
     // Function to compare password and respond accordingly
@@ -73,8 +77,10 @@ function comparePasswordAndRespond(storedPassword, userId, isActive,role) {
                         } else {
                             res.status(200).json({
                                 message: "Authentification réussie",
-                                UserId: userId,
-                                role : role
+                                role : role,
+                                expiresIn: '10d',
+                                token: token
+                    
                             });
                         }
                     });
@@ -91,12 +97,15 @@ function comparePasswordAndRespond(storedPassword, userId, isActive,role) {
 }
 
 
+
+
     // Fonction réponse avec des informations d'identification invalides
     function respondWithInvalidCredentials() {
         res.status(401).json({
             message: "Informations d'identification invalides"
         });
     }
+
 
     // Function réponse avec erruer
     function respondWithError(error) {
@@ -106,10 +115,13 @@ function comparePasswordAndRespond(storedPassword, userId, isActive,role) {
         });
     }
 
+
     // Démarrez le processus de connexion en vérifiant la table client
     clientLogin();
    
 }
+
+
 
 module.exports = {
     login: login

@@ -31,6 +31,10 @@ function updateartisan(req, res) {
         });
 }
 
+
+
+
 module.exports = {
     updateartisan:updateartisan,
+   
 }
