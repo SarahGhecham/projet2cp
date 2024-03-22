@@ -3,10 +3,10 @@ const models = require('../models');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-
 function login(req, res) {
     const email = req.body.Email;
     const password = req.body.Motdepasse;
+
 
     // Fonction connexion client
     function clientLogin() {
@@ -17,14 +17,16 @@ function login(req, res) {
                 artisanLogin(); // Si le client n'est pas trouvé, essayer artisan login
             } else {
 
-                comparePasswordAndRespond(client.MotdepasseClient, client.IdClient,client.ActifClient);
+
+                comparePasswordAndRespond(client.MotdepasseClient, client.id,client.ActifClient,"Client");
             }
         }).catch(error => {
             respondWithError(error);
         });
     }
 
-    // Fonction connexion artisan 
+
+    // Fonction connexion artisan
     function artisanLogin() {
         models.Artisan.findOne({
             where: { EmailArtisan: email }
@@ -32,14 +34,15 @@ function login(req, res) {
             if (artisan === null) {
                 adminLogin(); // Si artisan n'est pas trouvé, essayer admin login
             } else {
-                comparePasswordAndRespond(artisan.MotdepasseArtisan, artisan.IArtisan,artisan.ActifArtisan);
+                comparePasswordAndRespond(artisan.MotdepasseArtisan,artisan.id,artisan.ActifArtisan,"Artisan");
             }
         }).catch(error => {
             respondWithError(error);
         });
     }
 
-    // Fonction connexion admin 
+
+    // Fonction connexion admin
     function adminLogin() {
         models.Admin.findOne({
             where: { EmailAdmin: email }
@@ -47,7 +50,7 @@ function login(req, res) {
             if (admin === null) {
                 respondWithInvalidCredentials();
             } else {
-                comparePasswordAndRespond(admin.MotdepasseAdmin, admin.IdAdmin, 1);
+                comparePasswordAndRespond(admin.MotdepasseAdmin, admin.id,1,"Admin");
             }
         }).catch(error => {
             respondWithError(error);
@@ -55,23 +58,27 @@ function login(req, res) {
     }
 
 
+
+
     // Function to compare password and respond accordingly
-function comparePasswordAndRespond(storedPassword, userId, isActive) {
+function comparePasswordAndRespond(storedPassword, userId, isActive,role) {
     bcryptjs.compare(password, storedPassword, function (err, result) {
         if (err) {
             respondWithError(err);
         } else {
+            console.log("userId après la comparaison de mot de passe :", userId);
             if (result) {
                 if (isActive) {
                     const token = jwt.sign({
-                        Email: email,
-                        UserId: userId
-                    }, process.env.JWT_key, function (err, token) {
+                        UserId: userId,
+                        Email: email
+                    }, 'secret', function (err, token) {
                         if (err) {
                             respondWithError(err);
                         } else {
                             res.status(200).json({
                                 message: "Authentification réussie",
+                                role : role,
                                 token: token
                             });
                         }
@@ -89,12 +96,15 @@ function comparePasswordAndRespond(storedPassword, userId, isActive) {
 }
 
 
+
+
     // Fonction réponse avec des informations d'identification invalides
     function respondWithInvalidCredentials() {
         res.status(401).json({
             message: "Informations d'identification invalides"
         });
     }
+
 
     // Function réponse avec erruer
     function respondWithError(error) {
@@ -104,10 +114,13 @@ function comparePasswordAndRespond(storedPassword, userId, isActive) {
         });
     }
 
+
     // Démarrez le processus de connexion en vérifiant la table client
     clientLogin();
    
 }
+
+
 
 module.exports = {
     login: login

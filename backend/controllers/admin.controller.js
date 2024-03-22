@@ -1,6 +1,9 @@
 const Validator=require('fastest-validator');
 const models=require('../models');
 const bcryptjs=require('bcryptjs');
+const authent = require('../middleware/check-auth');
+
+
 function Creeradmin(req,res){
  bcryptjs.genSalt(10, function (err, salt) {
         bcryptjs.hash(req.body.MotdepasseAdmin, salt, function (err, hash) {
@@ -232,6 +235,37 @@ function CreerPrestation(req, res) {
         return res.status(500).json({ message: "Une erreur s'est produite lors de la création de la prestation." });
     });
 }
+async function AjouterPrestation(req, res) {
+    try {
+                
+                
+
+        //const artisanId = await authent.auth()(req, res, next); // Appeler la fonction auth ici
+        artisanId = req.userId;
+        const { prestationName } = req.body;
+
+        const prestation = await models.Prestation.findOne({ where: { NomPrestation: prestationName } });
+
+        if (!prestation) {
+            return res.status(404).json({ message: "La prestation spécifiée n'existe pas." });
+        }
+
+        if (!prestation.id) {
+            return res.status(404).json({ message: "La prestation spécifiée n'a pas d'identifiant valide." });
+        }
+
+        await models.ArtisanPrestation.create({
+            ArtisanId: artisanId,
+            PrestationId: prestation.id
+        });
+
+        return res.status(200).json({ message: "Prestation ajoutée avec succès à l'artisan." });
+    } catch (error) {
+        console.error("Une erreur s'est produite lors de l'ajout de la prestation à l'artisan:", error);
+        return res.status(500).json({ message: "Une erreur s'est produite lors de l'ajout de la prestation à l'artisan." });
+    }
+}
+
 
 
 
@@ -247,5 +281,6 @@ module.exports={
     AjouterDomaine:AjouterDomaine,
     CreerTarif:CreerTarif,
     CreerPrestation:CreerPrestation,
+    AjouterPrestation:AjouterPrestation,
 
 }

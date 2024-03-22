@@ -1,7 +1,8 @@
 const express=require('express');
 const adminControllers=require('../controllers/admin.controller');
-const CheckAuthMiddleWare = require('../middleware/check-auth');
-
+//const CheckAuthMiddleWare = require('../middleware/check-auth');
+const { auth } = require('../middleware/check-auth');
+;
 const router=express.Router();
 
 router.post("/creeradmin",adminControllers.Creeradmin);
@@ -14,7 +15,8 @@ router.patch("/Desactiver/Artisan",adminControllers.DesactiverArtisan);
 router.delete("/:id",adminControllers.destroy);
 router.post("/AjouterDomaine",adminControllers.AjouterDomaine);
 router.post("/CreerTarif",adminControllers.CreerTarif);
-router.post("/CreerPrestation",CheckAuthMiddleWare.CheckAuth,adminControllers.CreerPrestation);
+router.post("/CreerPrestation",adminControllers.CreerPrestation);
+router.post("/AjouterPrestation",auth(), adminControllers.AjouterPrestation);
 
 
 module.exports=router;
