@@ -17,7 +17,6 @@ function login(req, res) {
                 artisanLogin(); // Si le client n'est pas trouvé, essayer artisan login
             } else {
 
-
                 comparePasswordAndRespond(client.MotdepasseClient, client.id,client.ActifClient,"Client");
             }
         }).catch(error => {
@@ -81,6 +80,7 @@ function comparePasswordAndRespond(storedPassword, userId, isActive,role) {
                                 role : role,
                                 expiresIn: '10d',
                                 token: token
+                    
                             });
                         }
                     });

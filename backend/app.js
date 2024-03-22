@@ -6,11 +6,13 @@ const adminRoute=require('./routes/admins');
 const clientRoute=require('./routes/client');
 const connexionRoute=require('./routes/connexion');
 const artisanRoute=require('./routes/artisan');
+const demandeclientRoute=require('./routes/demandeclient')
 
 app.use(bodyParser.json());
 app.use("/admins",adminRoute);
 app.use("/client",clientRoute);
 app.use('/connexion', connexionRoute);
 app.use('/artisan',artisanRoute);
+app.use('/demandeclient',demandeclientRoute);
 
 module.exports=app;
