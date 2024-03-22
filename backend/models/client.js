@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+const demande = require('./demande');
 module.exports = (sequelize, DataTypes) => {
   class Client extends Model {
     /**
@@ -11,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Client.belongsToMany(models.Demande,{through: 'demandeclient'});
     }
   }
   Client.init({
