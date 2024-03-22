@@ -79,6 +79,7 @@ function comparePasswordAndRespond(storedPassword, userId, isActive,role) {
                             res.status(200).json({
                                 message: "Authentification réussie",
                                 role : role,
+                                expiresIn: '10d',
                                 token: token
                             });
                         }
