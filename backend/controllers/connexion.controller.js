@@ -17,7 +17,7 @@ function login(req, res) {
                 artisanLogin(); // Si le client n'est pas trouvé, essayer artisan login
             } else {
 
-                comparePasswordAndRespond(client.MotdepasseClient, client.IdClient,client.ActifClient);
+                comparePasswordAndRespond(client.MotdepasseClient, client.id,client.ActifClient,"Client");
             }
         }).catch(error => {
             respondWithError(error);
@@ -32,7 +32,7 @@ function login(req, res) {
             if (artisan === null) {
                 adminLogin(); // Si artisan n'est pas trouvé, essayer admin login
             } else {
-                comparePasswordAndRespond(artisan.MotdepasseArtisan, artisan.IArtisan,artisan.ActifArtisan);
+                comparePasswordAndRespond(artisan.MotdepasseArtisan,artisan.id,artisan.ActifArtisan,"Artisan");
             }
         }).catch(error => {
             respondWithError(error);
@@ -47,7 +47,7 @@ function login(req, res) {
             if (admin === null) {
                 respondWithInvalidCredentials();
             } else {
-                comparePasswordAndRespond(admin.MotdepasseAdmin, admin.IdAdmin, 1);
+                comparePasswordAndRespond(admin.MotdepasseAdmin, admin.id,1,"Admin");
             }
         }).catch(error => {
             respondWithError(error);
@@ -56,23 +56,25 @@ function login(req, res) {
 
 
     // Function to compare password and respond accordingly
-function comparePasswordAndRespond(storedPassword, userId, isActive) {
+function comparePasswordAndRespond(storedPassword, userId, isActive,role) {
     bcryptjs.compare(password, storedPassword, function (err, result) {
         if (err) {
             respondWithError(err);
         } else {
+            console.log("userId après la comparaison de mot de passe :", userId);
             if (result) {
                 if (isActive) {
                     const token = jwt.sign({
-                        Email: email,
-                        UserId: userId
+                        UserId: userId,
+                        Email: email
                     }, 'secret', function (err, token) {
                         if (err) {
                             respondWithError(err);
                         } else {
                             res.status(200).json({
                                 message: "Authentification réussie",
-                                token: token
+                                UserId: userId,
+                                role : role
                             });
                         }
                     });
