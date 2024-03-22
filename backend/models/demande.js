@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Demande.belongsToMany(models.Client,{through: 'demandeclient'});
+      Demande.belongsTo(models.Client, { foreignKey: 'Id' });
       
     }
   }
