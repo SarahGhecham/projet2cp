@@ -236,9 +236,6 @@ function CreerPrestation(req, res) {
 }
 async function AjouterPrestation(req, res) {
     try {
-                
-                
-
         artisanId = req.userId;
         const { prestationName } = req.body;
 

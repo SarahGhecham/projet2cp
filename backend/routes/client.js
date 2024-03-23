@@ -1,10 +1,10 @@
 const express = require('express');
 const clientController = require('../controllers/client.controller');
-const CheckAuthMiddleWare = require('../middleware/check-auth');
+const { auth } = require('../middleware/check-auth');
 
 const router = express.Router();
 router.post('/sign-up',clientController.signUp);
 router.patch('/:id',clientController.updateclient);
-router.post('/lancerdemande/:demandeId/:clientId',clientController.lancerdemande);
+router.post('/lancerdemande/:demandeId',auth(),clientController.lancerdemande);
 
 module.exports = router;
