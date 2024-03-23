@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       Prestation.belongsTo(models.Tarif, { foreignKey: 'id' });
       Prestation.belongsTo(models.Domaine, { foreignKey: 'DomaineId' });
       Prestation.belongsToMany(models.Artisan, { through: 'ArtisanPrestations' });
+      Prestation.hasMany(models.Demande, { foreignKey: 'DemandeId' });
 
     }
   }
