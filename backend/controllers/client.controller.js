@@ -89,8 +89,8 @@ function updateclient(req, res) {
         });
 }
 async function lancerdemande(req, res) {
+    const clientId = req.userId;
     const demandeId = req.params.demandeId;
-    const clientId = req.params.clientId;
 
     try {
         // Vérifier si la demande existe
