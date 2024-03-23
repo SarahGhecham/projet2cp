@@ -114,11 +114,28 @@ async function lancerdemande(req, res) {
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
+function AfficherArtisan(req,res){
+    const id=req.params.id;
+    models.Artisan.findByPk(id).then(result=>{
+        if(result)
+           res.status(201).json(result)
+        else
+            res.status(404).json({
+          message:"artisan not found"
+        })
+    }).catch(error=>{
+        res.status(500).json({
+            message:"something went wrong",
+            error : error
+        })
+    })
+}
 
 
 module.exports = {
     signUp: signUp,
     updateclient:updateclient,
-    lancerdemande:lancerdemande
+    lancerdemande:lancerdemande,
+    AfficherArtisan
     //login: login
 }
