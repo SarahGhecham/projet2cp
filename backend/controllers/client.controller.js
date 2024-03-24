@@ -88,6 +88,27 @@ function updateclient(req, res) {
             });
         });
 }
+function creerEvaluation(req, res) {
+    const evaluation = {
+        Note:req.body.Note,
+        Commentaire:req.body.Commentaire
+    };
+    const Note=req.body.Note;
+    if (isNaN(Note) || Note < 0 || Note > 5) {
+        return res.status(400).json({ message: "La notation doit être un nombre décimal entre 0 et 5." });
+    }
+    models.Evaluation.create(evaluation).then(result => {
+        res.status(201).json({
+            message: "réussite",
+            evaluation: result
+        });
+    }).catch(error => {
+        res.status(500).json({
+            message: "Something went wrong",
+            error: error
+        });
+    });
+}
 async function lancerdemande(req, res) {
     const clientId = req.userId;
     const demandeId = req.params.demandeId;
@@ -136,6 +157,7 @@ module.exports = {
     signUp: signUp,
     updateclient:updateclient,
     lancerdemande:lancerdemande,
-    AfficherArtisan
+    AfficherArtisan,
+    creerEvaluation:creerEvaluation
     //login: login
 }
