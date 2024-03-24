@@ -11,10 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Prestation.belongsTo(models.Tarif, { foreignKey: 'id' });
-      Prestation.belongsTo(models.Domaine, { foreignKey: 'id' });
+      Prestation.belongsTo(models.Tarif, { foreignKey: 'TarifID' });
+      Prestation.belongsTo(models.Domaine, { foreignKey: 'DomaineID' });
       Prestation.belongsToMany(models.Artisan, { through: 'ArtisanPrestations' });
-      Prestation.hasMany(models.Demande, { foreignKey: 'id' });
+      Prestation.hasMany(models.Demande, { foreignKey: 'PrestationId' });
 
     }
   }
@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     DuréeMax: DataTypes.STRING,
     DuréeMin: DataTypes.STRING,
     TarifId: DataTypes.INTEGER,
-    DomaineId: DataTypes.INTEGER
+    DomaineId: DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'Prestation',

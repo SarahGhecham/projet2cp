@@ -9,6 +9,14 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      PrestationId: {
+        allowNull: false, // La colonne PrestationId ne peut pas être nulle
+        type: Sequelize.INTEGER,
+        references: { // Définition de la clé étrangère
+          model: 'Prestations', // Nom de la table référencée
+          key: 'id' // Nom de la colonne référencée dans la table Prestations
+        }
+      },
       nom: {
         type: Sequelize.STRING
       },

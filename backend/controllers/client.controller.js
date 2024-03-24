@@ -113,14 +113,18 @@ function creerEvaluation(req, res) {
 }
 async function lancerdemande(req, res) {
     const clientId = req.userId;
-    const demandeId = req.params.demandeId;
+    const demandeNom = req.body.nom;
+    const prestationId = req.body.prestationId;
 
     try {
-        // Vérifier si la demande existe
-        const demande = await models.Demande.findByPk(demandeId);
-        if (!demande) {
-            return res.status(404).json({ message: `La demande avec l'ID ${demandeId} n'existe pas.` });
+        // Vérifier si la prestation existe
+        const prestation = await models.Prestation.findByPk(prestationId);
+        if (!prestation) {
+            return res.status(404).json({ message: `La prestation avec l'ID ${prestationId} n'existe pas.` });
         }
+
+        // Créer la demande avec le nom fourni
+        const nouvelleDemande = await models.Demande.create({ nom: demandeNom });
 
         // Trouver le client
         const client = await models.Client.findByPk(clientId);
@@ -128,15 +132,21 @@ async function lancerdemande(req, res) {
             return res.status(404).json({ message: `Le client avec l'ID ${clientId} n'existe pas.` });
         }
 
-        // Ajouter la demande au client
-        await demande.update({ ClientId: clientId }); // Mettre à jour la demande avec l'ID du client
+        // Associer la demande au client
+        await nouvelleDemande.update({ ClientId: clientId });
+        // Associer la demande à la prestation
+        await nouvelleDemande.update({ PrestationId: prestationId });
+        console.log(nouvelleDemande.PrestationId);
+        console.log(nouvelleDemande.ClientId);
 
-        return res.status(201).json({ message: `La relation entre la demande avec l'ID ${demandeId} et le client avec l'ID ${clientId} a été ajoutée avec succès.` });
+        return res.status(201).json({ message: `La demande a été créée avec succès et associée au client et à la prestation.` });
     } catch (error) {
-        console.error('Une erreur s\'est produite lors de l\'ajout de la relation demande-client :', error);
+        console.error('Une erreur s\'est produite lors de la création de la demande :', error);
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
+
+
 function AfficherArtisan(req,res){
     const id=req.params.id;
     models.Artisan.findByPk(id).then(result=>{
@@ -193,6 +203,7 @@ async function creerRDV(req, res) {
         }
 
         const clientId = demande.ClientId;
+        console.log(clientId);
         const prestationId = demande.PrestationId;
         console.log("ID de prestation:", prestationId);
 
@@ -278,6 +289,6 @@ module.exports = {
     confirmerRDV:confirmerRDV,
     annulerRDV:annulerRDV,
     AfficherArtisan:AfficherArtisan,
-    creerEvaluation:creerEvaluation
+    creerEvaluation:creerEvaluation,
     //login: login
 }
