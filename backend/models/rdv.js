@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       RDV.belongsTo(models.Demande, { foreignKey: 'DemandeId'});
+      RDV.hasOne(models.Evaluation, { foreignKey: 'RDVId' });
 
     }
   }

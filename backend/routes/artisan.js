@@ -6,5 +6,6 @@ const router = express.Router();
 router.patch('/:id', artisanController.updateartisan);
 router.post('/accepterRDV',auth(),artisanController.accepterRDV);
 router.post('/annulerRDV',auth(),artisanController.annulerRDV);
+//router.get('/consulterdemandes/:artisanId',artisanController.consulterdemandes);
 
 module.exports = router;
