@@ -16,18 +16,28 @@ module.exports = (sequelize, DataTypes) => {
       
   }
   
-  
-
-  Jour.init({
-   
-    Jour: DataTypes.DATE,
-    HeureDebut: DataTypes.TIME,
-    HeureFin: DataTypes.TIME
-  }, {
-    sequelize,
-    modelName: 'Jour',
-  
-  });
+  Jour.init(
+    {
+      jour: {
+        type: DataTypes.ENUM('dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'),
+        allowNull: false,
+        unique: true,
+       
+      },
+      heureDebut: {
+        type: DataTypes.TIME,
+        allowNull: false,
+      },
+      heureFin: {
+        type: DataTypes.TIME,
+        allowNull: false,
+      },
+    },
+    {
+      sequelize,
+      modelName: 'Jour',
+    }
+  );
 
   return Jour;
 };

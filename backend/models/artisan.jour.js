@@ -10,15 +10,14 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: 'artisan', // This should be the name of the Artisan model
-                key: 'id'
+                model: 'artisan',
             }
         },
         jourId: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: 'Jour', // This should be the name of the Jour model
+                model: 'Jour',
                 key: 'id'
             }
         }

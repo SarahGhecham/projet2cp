@@ -12,7 +12,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'artisans', // Make sure this matches the actual table name of your Artisan model
+          model: 'artisans', 
           key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -22,7 +22,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'jours', // Make sure this matches the actual table name of your Jour model
+          model: 'jours', 
           key: 'id'
         },
         onUpdate: 'CASCADE',
