@@ -11,11 +11,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Evaluation.belongsTo(models.RDV, { foreignKey: 'RDVId'});
     }
   }
   Evaluation.init({
     Note: DataTypes.DECIMAL,
-    Commentaire: DataTypes.STRING
+    Commentaire: DataTypes.STRING,
+    RDVId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Evaluation',

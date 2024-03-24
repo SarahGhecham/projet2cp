@@ -67,16 +67,36 @@ async function annulerRDV(req, res) {
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
+async function getDemandes() {
+    artisanId=req.userId;
+    try {
+        // Recherchez les IDs des demandes associées à l'artisan dans la table de liaison ArtisanDemande
+        const artisanDemandes = await models.ArtisanDemande.findAll({
+            where: { Artisan_idArtisan: artisanId }
+        });
 
+        // Récupérez les détails de chaque demande à partir de la table Demande
+        const demandeIds = artisanDemandes.map(ad => ad.Demande_idDemande);
+        const demandes = await models.Demande.findAll({
+            where: { idDemande: demandeIds } // Utilisez l'ID des demandes associées à l'artisan
+        });
+        /*
+        const Rendezvous = await models.RDV.findAll({
+            where: { DemandeId : demandeIds}
+        })
+        */ 
 
-
-
-
-
+        return demandes;
+    } catch (error) {
+        console.error('Une erreur s\'est produite lors de la récupération des demandes :', error);
+        throw error;
+    }
+}
 
 
 module.exports = {
     updateartisan:updateartisan,
     accepterRDV:accepterRDV,
-    annulerRDV:annulerRDV
+    annulerRDV:annulerRDV,
+    getDemandes
 }

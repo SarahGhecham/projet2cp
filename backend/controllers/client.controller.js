@@ -93,16 +93,22 @@ function updateclient(req, res) {
 function creerEvaluation(req, res) {
     const evaluation = {
         Note:req.body.Note,
-        Commentaire:req.body.Commentaire
+        Commentaire:req.body.Commentaire,
+        RDVId: req.body.RDVId
     };
     const Note=req.body.Note;
+    const RDVId=req.body.RDVId;
+    const RDV =  models.RDV.findByPk(RDVId);
+    if (!RDV) {
+        return res.status(404).json({ message: `La demande avec l'ID ${RDVId} n'existe pas.` });
+    }
     if (isNaN(Note) || Note < 0 || Note > 5) {
         return res.status(400).json({ message: "La notation doit être un nombre décimal entre 0 et 5." });
     }
     models.Evaluation.create(evaluation).then(result => {
         res.status(201).json({
             message: "réussite",
-            evaluation: result
+            evaluation: result,
         });
     }).catch(error => {
         res.status(500).json({
@@ -124,7 +130,11 @@ async function lancerdemande(req, res) {
         }
 
         // Créer la demande avec le nom fourni
-        const nouvelleDemande = await models.Demande.create({ nom: demandeNom });
+        const nouvelleDemande = await models.Demande.create(
+            { nom: demandeNom,
+             PrestationId : prestationId,
+             ClientId : clientId
+            });
 
         // Trouver le client
         const client = await models.Client.findByPk(clientId);
@@ -172,15 +182,32 @@ function AfficherArtisan(req,res){
     })
 }
 
+function test(req,res){
+    const id=req.params.id;
+    models.Demande.findByPk(id).then(result=>{
+        if(result)
+           res.status(201).json(result)
+        else
+            res.status(404).json({
+          message:"demande not found"
+        })
+    }).catch(error=>{
+        res.status(500).json({
+            message:"something went wrong"
+        })
+    })
+}
+
 
 async function creerRDV(req, res) {
     const demandeId = req.body.demandeId;
     const dateDebutString = req.body.dateDebut;
+    const dateFinString = req.body.dateFin;
     const heureDebutString = req.body.heureDebut; // Heure de début sous forme de chaîne
 
     // Convertir la chaîne de caractères de la date en un objet Date valide
     const dateDebut = new Date(dateDebutString);
-
+    const dateFin = new Date(dateFinString);
     // Extraire les heures et les minutes de l'heure de début
     const [heureDebutHours, heureDebutMinutes] = heureDebutString.split(':');
 
@@ -222,7 +249,7 @@ async function creerRDV(req, res) {
         // Créer le RDV
         const rdv = await models.RDV.create({
             DateDebut: dateDebut,
-            DateFin: dateDebut, // La date de fin est la même que la date de début
+            DateFin: dateFin, // La date de fin est la même que la date de début
             HeureDebut: heureDebut,
             HeureFin: heureFinFormatee,
             accepte: false,
@@ -290,5 +317,5 @@ module.exports = {
     annulerRDV:annulerRDV,
     AfficherArtisan:AfficherArtisan,
     creerEvaluation:creerEvaluation,
-    //login: login
+    test
 }
