@@ -12,14 +12,16 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Demande.belongsTo(models.Client, { foreignKey: 'Id' });  
+      Demande.belongsTo(models.Client, { foreignKey: 'ClientId' });  
       Demande.belongsToMany(models.Artisan, { through: 'ArtisanDemandes' });
-      Demande.belongsTo(models.Prestation, { foreignKey: 'id' });
+      Demande.belongsTo(models.Prestation, { foreignKey: 'PrestationId' });
 
     }
   }
   Demande.init({
     nom: DataTypes.STRING,
+    PrestationId: DataTypes.INTEGER,
+    ClientId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Demande',

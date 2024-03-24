@@ -7,10 +7,9 @@ const router = express.Router();
 router.post('/sign-up',clientController.signUp);
 router.post('/creerEvaluation',clientController.creerEvaluation);
 router.patch('/:id',clientController.updateclient);
-router.post('/lancerdemande/:demandeId',auth(),clientController.lancerdemande);
+router.post('/lancerdemande',auth(),clientController.lancerdemande);
 router.post('/creerRDV',auth(),clientController.creerRDV);
 router.post('/confirmerRDV',auth(),clientController.confirmerRDV);
 router.post('/annulerRDV',auth(),clientController.annulerRDV);
-router.post('/lancerdemande/:demandeId/:clientId',clientController.lancerdemande);
 
 module.exports = router;
