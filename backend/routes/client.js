@@ -11,6 +11,5 @@ router.post('/lancerdemande/:demandeId',auth(),clientController.lancerdemande);
 router.post('/creerRDV',auth(),clientController.creerRDV);
 router.post('/confirmerRDV',auth(),clientController.confirmerRDV);
 router.post('/annulerRDV',auth(),clientController.annulerRDV);
-router.post('/lancerdemande/:demandeId/:clientId',clientController.lancerdemande);
-
+router.post('/AffcherArtisan/:id',clientController.AfficherArtisan);
 module.exports = router;
