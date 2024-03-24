@@ -182,8 +182,6 @@ function AjouterDomaine(req, res) {
 }
 
 function CreerTarif(req, res) {
-    
-
     const {
         TarifJourMin,
         TarifJourMax,
