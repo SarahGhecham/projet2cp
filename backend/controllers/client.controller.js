@@ -150,8 +150,16 @@ async function lancerdemande(req, res) {
 function AfficherArtisan(req,res){
     const id=req.params.id;
     models.Artisan.findByPk(id).then(result=>{
-        if(result)
-           res.status(201).json(result)
+        if(result){
+            const artisanInfo = {
+                NomArtisan: result.NomArtisan,
+                PrenomArtisan: result.PrenomArtisan,
+                NumeroTelArtisan: result.NumeroTelArtisan,
+                AdresseArtisan: result.AdresseArtisan
+            };
+            res.status(201).json(artisanInfo);
+        }
+           
         else
             res.status(404).json({
           message:"artisan not found"
