@@ -73,10 +73,9 @@ async function annulerRDV(req, res) {
 
 
 
-
-
 module.exports = {
     updateartisan:updateartisan,
     accepterRDV:accepterRDV,
-    annulerRDV:annulerRDV
+    annulerRDV:annulerRDV,
+    
 }
