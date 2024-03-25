@@ -202,12 +202,10 @@ function test(req,res){
 async function creerRDV(req, res) {
     const demandeId = req.body.demandeId;
     const dateDebutString = req.body.dateDebut;
-    const dateFinString = req.body.dateFin;
     const heureDebutString = req.body.heureDebut; // Heure de début sous forme de chaîne
 
     // Convertir la chaîne de caractères de la date en un objet Date valide
     const dateDebut = new Date(dateDebutString);
-    const dateFin = new Date(dateFinString);
     // Extraire les heures et les minutes de l'heure de début
     const [heureDebutHours, heureDebutMinutes] = heureDebutString.split(':');
 
@@ -249,7 +247,7 @@ async function creerRDV(req, res) {
         // Créer le RDV
         const rdv = await models.RDV.create({
             DateDebut: dateDebut,
-            DateFin: dateFin, // La date de fin est la même que la date de début
+            DateFin: dateDebut, // La date de fin est la même que la date de début
             HeureDebut: heureDebut,
             HeureFin: heureFinFormatee,
             accepte: false,
