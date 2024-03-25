@@ -58,6 +58,9 @@ function signUp(req, res) {
         });
     });
 }
+
+const fs = require('fs');
+
 function updateclient(req, res) {
     const id = req.params.id;
     const updatedClient = {
@@ -67,9 +70,16 @@ function updateclient(req, res) {
         EmailClient: req.body.EmailClient,
         AdresseClient: req.body.AdresseClient,
         NumeroTelClient: req.body.NumeroTelClient,
-        photo: req.body.photo // the 'photo' attribute to the updatedClient object
+        disponibilite: req.body.disponibilite 
     };
 
+    // Check if file exists in the request
+    if (req.files && req.files.photo) {
+        const photoData = req.files.photo.data; // Access the binary data of the uploaded file
+        updatedClient.photo = photoData;
+    }
+
+    // Update the Client model with the updated data
     models.Client.update(updatedClient, { where: { id: id } })
         .then(result => {
             if (result[0] === 1) {
@@ -88,7 +98,6 @@ function updateclient(req, res) {
             });
         });
 }
-
 
 module.exports = {
     signUp: signUp,

@@ -1,8 +1,6 @@
 const Validator=require('fastest-validator');
 const models=require('../models');
 
-
-
 function updateartisan(req, res) {
     const id = req.params.id;
     const updatedArtisan = {
@@ -15,6 +13,13 @@ function updateartisan(req, res) {
         disponibilite: req.body.disponibilite // the 'disponibilite' attribute to the updatedArtisan object
     };
 
+    // Check if file exists in the request
+    if (req.files && req.files.photo) {
+        const photoData = req.files.photo.data; // Access the binary data of the uploaded file
+        updatedArtisan.photo = photoData;
+    }
+
+    // Update the Artisan model with the updated data
     models.Artisan.update(updatedArtisan, { where: { id: id } })
         .then(result => {
             if (result[0] === 1) {
