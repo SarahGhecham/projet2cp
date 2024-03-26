@@ -93,16 +93,22 @@ function updateclient(req, res) {
 function creerEvaluation(req, res) {
     const evaluation = {
         Note:req.body.Note,
-        Commentaire:req.body.Commentaire
+        Commentaire:req.body.Commentaire,
+        RDVId: req.body.RDVId
     };
     const Note=req.body.Note;
+    const RDVId=req.body.RDVId;
+    const RDV =  models.RDV.findByPk(RDVId);
+    if (!RDV) {
+        return res.status(404).json({ message: `La demande avec l'ID ${RDVId} n'existe pas.` });
+    }
     if (isNaN(Note) || Note < 0 || Note > 5) {
         return res.status(400).json({ message: "La notation doit être un nombre décimal entre 0 et 5." });
     }
     models.Evaluation.create(evaluation).then(result => {
         res.status(201).json({
             message: "réussite",
-            evaluation: result
+            evaluation: result,
         });
     }).catch(error => {
         res.status(500).json({
@@ -124,7 +130,11 @@ async function lancerdemande(req, res) {
         }
 
         // Créer la demande avec le nom fourni
-        const nouvelleDemande = await models.Demande.create({ nom: demandeNom });
+        const nouvelleDemande = await models.Demande.create(
+            { nom: demandeNom,
+             PrestationId : prestationId,
+             ClientId : clientId
+            });
 
         // Trouver le client
         const client = await models.Client.findByPk(clientId);
@@ -172,6 +182,22 @@ function AfficherArtisan(req,res){
     })
 }
 
+function test(req,res){
+    const id=req.params.id;
+    models.Demande.findByPk(id).then(result=>{
+        if(result)
+           res.status(201).json(result)
+        else
+            res.status(404).json({
+          message:"demande not found"
+        })
+    }).catch(error=>{
+        res.status(500).json({
+            message:"something went wrong"
+        })
+    })
+}
+
 
 async function creerRDV(req, res) {
     const demandeId = req.body.demandeId;
@@ -181,7 +207,6 @@ async function creerRDV(req, res) {
 
     // Convertir la chaîne de caractères de la date en un objet Date valide
     const dateDebut = new Date(dateDebutString);
-
     // Extraire les heures et les minutes de l'heure de début
     const [heureDebutHours, heureDebutMinutes] = heureDebutString.split(':');
 
@@ -272,8 +297,80 @@ async function annulerRDV(req, res) {
     }
 }
 
+async function AfficherEvaluations(req, res) {
+    const artisanId = req.params.artisanId; // Supposons que l'ID de l'artisan soit passé dans les paramètres de l'URL
 
+    try {
+        // Recherchez les IDs des demandes associées à l'artisan dans la table de liaison ArtisanDemande
+        const artisanDemandes = await models.ArtisanDemande.findAll({
+            where: { ArtisanId: artisanId }
+        });
 
+        // Récupérez les IDs des demandes associées à l'artisan
+        const demandeIds = artisanDemandes.map(ad => ad.DemandeId);
+
+        // Récupérez tous les rendez-vous associés aux demandes
+        const rdvs = await models.RDV.findAll({
+            where: { DemandeId: demandeIds },
+            attributes: ['id'] // Sélectionnez seulement l'attribut ID du rendez-vous
+        });
+
+        // Récupérez les IDs de tous les rendez-vous
+        const rendezVousIds = rdvs.map(rdv => rdv.id);
+
+        // Récupérez tous les IDs des évaluations associées aux rendez-vous
+        const evaluations = await models.Evaluation.findAll({
+            where: { RDVId: rendezVousIds },
+            attributes: ['id'] // Sélectionnez seulement l'attribut ID de l'évaluation
+        });
+
+        // Récupérez les détails de chaque évaluation à partir de son ID
+        const evaluationsDetails = await Promise.all(evaluations.map(async (evaluation) => {
+            const evaluationDetails = await models.Evaluation.findByPk(evaluation.id, {
+                include: [{
+                    model: models.RDV,
+                include: [
+                    {
+                        model: models.Demande,
+                        include: [
+                            {
+                                model: models.Client,
+                                model: models.Prestation // Inclure le modèle Client associé à la demande
+                            }
+                        ]
+                    }
+                ]
+                }]
+            });
+            return evaluationDetails;
+        }));
+
+        // Envoyez les détails des évaluations en réponse
+        return res.status(200).json(evaluationsDetails);
+    } catch (error) {
+        console.error('Une erreur s\'est produite lors de la récupération des demandes :', error);
+        return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
+    }
+}
+
+function AfficherPrestations(req, res) {
+    const domaineId = req.body.domaineId; // Supposons que vous récupériez l'ID du domaine depuis les paramètres de l'URL
+
+    models.Prestation.findAll({
+        where: { DomaineId: domaineId },
+        include: [{
+            model: models.Tarif // Inclure le modèle Tarif associé à chaque prestation
+        }]
+    }).then(result => {
+        if (result.length > 0) {
+            res.status(200).json(result);
+        } else {
+            res.status(404).json({ message: "Aucune prestation trouvée pour ce domaine." });
+        }
+    }).catch(error => {
+        res.status(500).json({ message: "Une erreur s'est produite lors de la récupération des prestations.", error: error });
+    });
+}
 
 module.exports = {
     signUp: signUp,
@@ -284,5 +381,7 @@ module.exports = {
     annulerRDV:annulerRDV,
     AfficherArtisan:AfficherArtisan,
     creerEvaluation:creerEvaluation,
-    //login: login
+    test,
+    AfficherEvaluations,
+    AfficherPrestations
 }
