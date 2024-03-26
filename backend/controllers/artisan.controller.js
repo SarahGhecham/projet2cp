@@ -128,7 +128,17 @@ async function AfficherEvaluations(req, res) {
             const evaluationDetails = await models.Evaluation.findByPk(evaluation.id, {
                 include: [{
                     model: models.RDV,
-                    include: [models.Demande] // Inclure les détails de la demande associée au rendez-vous
+                include: [
+                    {
+                        model: models.Demande,
+                        include: [
+                            {
+                                model: models.Client,
+                                model: models.Prestation // Inclure le modèle Client associé à la demande
+                            }
+                        ]
+                    }
+                ]// Inclure les détails de la demande associée au rendez-vous
                 }]
             });
             return evaluationDetails;

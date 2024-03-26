@@ -13,4 +13,5 @@ router.post('/confirmerRDV',auth(),clientController.confirmerRDV);
 router.post('/annulerRDV',auth(),clientController.annulerRDV);
 router.post('/AffcherArtisan/:id',clientController.AfficherArtisan);
 router.get('/test/:id',clientController.test);
+router.get('/AfficherEvaluations/:artisanId',auth(),clientController.AfficherEvaluations);
 module.exports = router;

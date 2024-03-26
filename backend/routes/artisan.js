@@ -8,6 +8,6 @@ router.post('/accepterRDV',auth(),artisanController.accepterRDV);
 router.post('/annulerRDV',auth(),artisanController.annulerRDV);
 router.get('/getdemandes',auth(),artisanController.HistoriqueInterventions);
 router.post('/test',artisanController.associerDemandeArtisan);
-router.get('/gettest',auth(),artisanController.AfficherEvaluations);
+router.get('/AfficherEvaluations',auth(),artisanController.AfficherEvaluations);
 
 module.exports = router;
