@@ -359,6 +359,24 @@ async function AfficherEvaluations(req, res) {
     }
 }
 
+function AfficherPrestations(req, res) {
+    const domaineId = req.body.domaineId; // Supposons que vous récupériez l'ID du domaine depuis les paramètres de l'URL
+
+    models.Prestation.findAll({
+        where: { DomaineId: domaineId },
+        include: [{
+            model: models.Tarif // Inclure le modèle Tarif associé à chaque prestation
+        }]
+    }).then(result => {
+        if (result.length > 0) {
+            res.status(200).json(result);
+        } else {
+            res.status(404).json({ message: "Aucune prestation trouvée pour ce domaine." });
+        }
+    }).catch(error => {
+        res.status(500).json({ message: "Une erreur s'est produite lors de la récupération des prestations.", error: error });
+    });
+}
 
 module.exports = {
     signUp: signUp,
@@ -370,5 +388,6 @@ module.exports = {
     AfficherArtisan:AfficherArtisan,
     creerEvaluation:creerEvaluation,
     test,
-    AfficherEvaluations
+    AfficherEvaluations,
+    AfficherPrestations
 }
