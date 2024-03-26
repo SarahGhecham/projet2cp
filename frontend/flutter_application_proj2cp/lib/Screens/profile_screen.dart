@@ -1,4 +1,4 @@
-// ignore_for_file: unused_field, unnecessary_null_comparison, unnecessary_import, prefer_final_fields, library_private_types_in_public_api, prefer_const_constructors, deprecated_member_use, sized_box_for_whitespace, use_key_in_widget_constructors
+
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -43,19 +43,18 @@ class _ProfileState extends State<Profile> {
   }
 
   void _saveChanges() {
-    // Assuming you have text controllers for editing the name, surname, email, and address
+    
     _userData['name'] = _nameController.text;
     _userData['surname'] = _surnameController.text;
     _userData['gmail'] = _gmailController.text; // Update for gmail
     _userData['address'] = _addressController.text;
 
-    // Only update profilePicturePath if _pickedImagePath is not null
+  
 
     _userData['profilePicturePath'] = _pickedImagePath;
 
-    // Other data updates if needed
 
-    // Optionally, you can save the updated data to a database or any other storage mechanism
+  
   }
 
   @override
