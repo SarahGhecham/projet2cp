@@ -22,7 +22,8 @@ module.exports = (sequelize, DataTypes) => {
   Demande.init({
     nom: DataTypes.STRING,
     PrestationId: DataTypes.INTEGER,
-    ClientId: DataTypes.INTEGER
+    ClientId: DataTypes.INTEGER,
+    Urgente:DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Demande',
