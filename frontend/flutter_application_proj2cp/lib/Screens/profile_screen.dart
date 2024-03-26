@@ -25,7 +25,7 @@ class _ProfileState extends State<Profile> {
       'points': 50,
       'name': 'John',
       'surname': 'Doe',
-      'adresse': '123 Main St, City',
+      'address': '123 Main St, City',
       'gmail': 'john.doe@example.com'
     };
   }
@@ -215,7 +215,7 @@ class _ProfileState extends State<Profile> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Service',
+                          'Services',
                           style: TextStyle(
                             color: Color(0xFFFF8787),
                             fontSize: 12,
@@ -292,7 +292,10 @@ class _ProfileState extends State<Profile> {
                                     hintStyle: TextStyle(color: Colors.grey),
                                   ),
                                   style: TextStyle(
-                                    color: Colors.black,
+                                   color: _userData['name'] != null &&
+                                          _userData['name'].isNotEmpty
+                                      ? Colors.black
+                                      : Colors.grey,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -348,7 +351,10 @@ class _ProfileState extends State<Profile> {
                                     ? _userData['surname']
                                     : 'surname',
                                 style: TextStyle(
-                                  color: Colors.black,
+                                 color: _userData['surname'] != null &&
+                                          _userData['surname'].isNotEmpty
+                                      ? Colors.black
+                                      : Colors.grey,
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -401,7 +407,10 @@ class _ProfileState extends State<Profile> {
                                     ? _userData['gmail']
                                     : 'Gmail',
                                 style: TextStyle(
-                                  color: Colors.black,
+                                  color: _userData['gmail'] != null &&
+                                          _userData['gmail'].isNotEmpty
+                                      ? Colors.black
+                                      : Colors.grey,
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -445,12 +454,15 @@ class _ProfileState extends State<Profile> {
                                 ),
                               )
                             : Text(
-                                _userData['adresse'] != null &&
-                                        _userData['adresse'].isNotEmpty
-                                    ? _userData['adresse']
+                                _userData['address'] != null &&
+                                        _userData['address'].isNotEmpty
+                                    ? _userData['address']
                                     : 'Adress',
                                 style: TextStyle(
-                                  color: Colors.black,
+                                   color: _userData['address'] != null &&
+                                          _userData['address'].isNotEmpty
+                                      ? Colors.black
+                                      : Colors.grey,
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
                                 ),
