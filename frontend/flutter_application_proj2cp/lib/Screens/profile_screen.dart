@@ -42,19 +42,30 @@ class _ProfileState extends State<Profile> {
     });
   }
 
-  void _saveChanges() {
+void _saveChanges() {
     
-    _userData['name'] = _nameController.text;
-    _userData['surname'] = _surnameController.text;
-    _userData['gmail'] = _gmailController.text; // Update for gmail
-    _userData['address'] = _addressController.text;
+    _userData['name'] = _nameController.text.isNotEmpty
+        ? _nameController.text
+        : _userData['name'];
 
-  
+    
+    _userData['surname'] = _surnameController.text.isNotEmpty
+        ? _surnameController.text
+        : _userData['surname'];
+
+   
+    _userData['gmail'] = _gmailController.text.isNotEmpty
+        ? _gmailController.text
+        : _userData['gmail'];
+
+   
+    _userData['address'] = _addressController.text.isNotEmpty
+        ? _addressController.text
+        : _userData['address'];
+
+   
 
     _userData['profilePicturePath'] = _pickedImagePath;
-
-
-  
   }
 
   @override
