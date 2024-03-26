@@ -303,7 +303,61 @@ async function annulerRDV(req, res) {
     }
 }
 
+async function AfficherEvaluations(req, res) {
+    const artisanId = req.params.artisanId; // Supposons que l'ID de l'artisan soit passé dans les paramètres de l'URL
 
+    try {
+        // Recherchez les IDs des demandes associées à l'artisan dans la table de liaison ArtisanDemande
+        const artisanDemandes = await models.ArtisanDemande.findAll({
+            where: { ArtisanId: artisanId }
+        });
+
+        // Récupérez les IDs des demandes associées à l'artisan
+        const demandeIds = artisanDemandes.map(ad => ad.DemandeId);
+
+        // Récupérez tous les rendez-vous associés aux demandes
+        const rdvs = await models.RDV.findAll({
+            where: { DemandeId: demandeIds },
+            attributes: ['id'] // Sélectionnez seulement l'attribut ID du rendez-vous
+        });
+
+        // Récupérez les IDs de tous les rendez-vous
+        const rendezVousIds = rdvs.map(rdv => rdv.id);
+
+        // Récupérez tous les IDs des évaluations associées aux rendez-vous
+        const evaluations = await models.Evaluation.findAll({
+            where: { RDVId: rendezVousIds },
+            attributes: ['id'] // Sélectionnez seulement l'attribut ID de l'évaluation
+        });
+
+        // Récupérez les détails de chaque évaluation à partir de son ID
+        const evaluationsDetails = await Promise.all(evaluations.map(async (evaluation) => {
+            const evaluationDetails = await models.Evaluation.findByPk(evaluation.id, {
+                include: [{
+                    model: models.RDV,
+                include: [
+                    {
+                        model: models.Demande,
+                        include: [
+                            {
+                                model: models.Client,
+                                model: models.Prestation // Inclure le modèle Client associé à la demande
+                            }
+                        ]
+                    }
+                ]
+                }]
+            });
+            return evaluationDetails;
+        }));
+
+        // Envoyez les détails des évaluations en réponse
+        return res.status(200).json(evaluationsDetails);
+    } catch (error) {
+        console.error('Une erreur s\'est produite lors de la récupération des demandes :', error);
+        return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
+    }
+}
 
 
 module.exports = {
@@ -315,5 +369,6 @@ module.exports = {
     annulerRDV:annulerRDV,
     AfficherArtisan:AfficherArtisan,
     creerEvaluation:creerEvaluation,
-    test
+    test,
+    AfficherEvaluations
 }
