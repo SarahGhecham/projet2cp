@@ -27,6 +27,9 @@ module.exports = {
       DomaineId: {
         type: Sequelize.INTEGER
       },
+    Ecologique: {
+        type: Sequelize.BOOLEAN
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

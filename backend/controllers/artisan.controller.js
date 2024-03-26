@@ -191,8 +191,6 @@ async function HistoriqueInterventions(req, res) {
 }
 
 
-
-
 module.exports = {
     updateartisan:updateartisan,
     accepterRDV:accepterRDV,

@@ -20,6 +20,9 @@ module.exports = {
       nom: {
         type: Sequelize.STRING
       },
+      Urgente: {
+        type: Sequelize.BOOLEAN
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

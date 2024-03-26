@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     DuréeMin: DataTypes.STRING,
     TarifId: DataTypes.INTEGER,
     DomaineId: DataTypes.INTEGER,
+    Ecologique: DataTypes.BOOLEAN,
   }, {
     sequelize,
     modelName: 'Prestation',
