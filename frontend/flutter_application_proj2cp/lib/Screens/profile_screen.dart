@@ -31,7 +31,7 @@ class _ProfileState extends State<Profile> {
   }
 
   final ImagePicker _imagePicker = ImagePicker();
-  var _pickedImagePath = ''; // var jsp si c ccorrect hna
+  var _pickedImagePath = null ; // var jsp si c ccorrect hna
   TextEditingController _nameController = TextEditingController();
   TextEditingController _surnameController = TextEditingController();
   TextEditingController _gmailController = TextEditingController();
