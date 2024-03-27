@@ -27,7 +27,13 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/images_entree/
+    - assets/images/domaines/
     - assets/logo.png
     - assets/Ellipse.png
     - assets/icons/
+    - assets/pdp_user.jpg
+    - assets/images/servicesPopulaires/
+    - assets/images/offresSpecials/
+
+
+   
