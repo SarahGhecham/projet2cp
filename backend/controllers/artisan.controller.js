@@ -197,5 +197,6 @@ module.exports = {
     annulerRDV:annulerRDV,
     HistoriqueInterventions,
     associerDemandeArtisan,
-    AfficherEvaluations
+    AfficherEvaluations,
+    
 }

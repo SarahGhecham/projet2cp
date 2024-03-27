@@ -1,6 +1,7 @@
 const express = require('express');
 const artisanController = require('../controllers/artisan.controller');
 const { auth } = require('../middleware/check-auth');
+const clientController = require('../controllers/client.controller');
 
 const router = express.Router();
 router.patch('/:id', artisanController.updateartisan);
@@ -9,5 +10,6 @@ router.post('/annulerRDV',auth(),artisanController.annulerRDV);
 router.get('/getdemandes',auth(),artisanController.HistoriqueInterventions);
 router.post('/test',artisanController.associerDemandeArtisan);
 router.get('/AfficherEvaluations',auth(),artisanController.AfficherEvaluations);
+
 
 module.exports = router;
