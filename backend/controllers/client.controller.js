@@ -115,11 +115,14 @@ function creerEvaluation(req, res) {
             }
             const now = new Date();
             const rdvDateFin = new Date(RDV.DateFin);
-            const rdvHeureFin = new Date(`1970-01-01T${RDV.HeureFin}`); // Crée une date de référence (1970-01-01) avec l'heure de fin du RDV
-            const rdvDateTimeFin = new Date(rdvDateFin.getFullYear(), rdvDateFin.getMonth(), rdvDateFin.getDate(), rdvHeureFin.getHours(), rdvHeureFin.getMinutes(), rdvHeureFin.getSeconds()); 
-            // Comparaison de la date actuelle avec la date et l'heure de fin du RDV
-            if (now < rdvDateTimeFin) {
+            const rdvHeureFin = new Date(RDV.HeureFin);
+            // Comparaison de la date actuelle avec la date de fin du RDV
+            if (now < rdvDateFin) {
                 return res.status(400).json({ message: `La date actuelle est antérieure à la fin du rendez-vous.` });
+            }
+            // Comparaison de l'heure actuelle avec l'heure de fin du RDV
+            if (now.toDateString() === rdvDateFin.toDateString() && now.getHours() < rdvHeureFin.getHours()) {
+                return res.status(400).json({ message: `L'heure actuelle est antérieure à la fin du rendez-vous.` });
             }
             if (isNaN(Note) || Note < 0 || Note > 5) {
                 return res.status(400).json({ message: "La notation doit être un nombre décimal entre 0 et 5." });
