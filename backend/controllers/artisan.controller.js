@@ -10,14 +10,11 @@ function updateartisan(req, res) {
         EmailArtisan: req.body.EmailArtisan,
         AdresseArtisan: req.body.AdresseArtisan,
         NumeroTelArtisan: req.body.NumeroTelArtisan,
-        disponibilite: req.body.disponibilite // the 'disponibilite' attribute to the updatedArtisan object
+        disponibilite: req.body.disponibilite, // the 'disponibilite' attribute to the updatedArtisan object
+        photo:req.body.photo 
     };
 
-    // Check if file exists in the request
-    if (req.files && req.files.photo) {
-        const photoData = req.files.photo.data; // Access the binary data of the uploaded file
-        updatedArtisan.photo = photoData;
-    }
+   
 
     // Update the Artisan model with the updated data
     models.Artisan.update(updatedArtisan, { where: { id: id } })

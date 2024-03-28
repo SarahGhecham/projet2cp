@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: true // Default value for disponibilite
     },
     photo: {
-      type: DataTypes.BLOB,
+      type: DataTypes.STRING,
       allowNull: true
     }
   }, {

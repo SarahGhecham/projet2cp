@@ -70,14 +70,9 @@ function updateclient(req, res) {
         EmailClient: req.body.EmailClient,
         AdresseClient: req.body.AdresseClient,
         NumeroTelClient: req.body.NumeroTelClient,
-        disponibilite: req.body.disponibilite 
+        disponibilite: req.body.disponibilite ,
+        photo:req.body.photo
     };
-
-    // Check if file exists in the request
-    if (req.files && req.files.photo) {
-        const photoData = req.files.photo.data; // Access the binary data of the uploaded file
-        updatedClient.photo = photoData;
-    }
 
     // Update the Client model with the updated data
     models.Client.update(updatedClient, { where: { id: id } })
