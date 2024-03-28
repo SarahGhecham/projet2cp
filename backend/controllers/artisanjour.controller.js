@@ -60,8 +60,57 @@ async function deleteJourFromArtisan(req, res) {
         return res.status(500).json({ message: 'Internal server error' });
     }
 }
+async function displayplanningofArtisan(req, res) {
+    try {
+        const artisanId = req.params.artisanId;
+
+        // Find the artisan by ID
+        const artisan = await models.Artisan.findByPk(artisanId);
+
+        // Check if the artisan exists
+        if (!artisan) {
+            return res.status(404).json({ message: `Artisan with ID ${artisanId} not found.` });
+        }
+
+        // Retrieve all jourethorraires associated with the artisan
+        const jourethorraires = await artisan.getJours();
+
+        // Format the data as needed before sending the response
+        let formattedJourethorraires = [];
+        jourethorraires.forEach(jour => {
+            // Get the horaires for the current jour
+            const horaires = `${jour.heureDebut} à ${jour.heureFin}`;
+
+            // Check if the jour already exists in formattedJourethorraires
+            const existingJour = formattedJourethorraires.find(item => item.jour === jour.jour);
+
+            // If the jour exists, check if the horaires already exist, if not, append
+            if (existingJour) {
+                if (!existingJour.horaires.includes(horaires)) {
+                    existingJour.horaires += `, ${horaires}`;
+                }
+            } else {
+                // If the jour doesn't exist, create a new item
+                formattedJourethorraires.push({
+                    jour: jour.jour,
+                    horaires: horaires
+                });
+            }
+        });
+
+        // Respond with the formatted jourethorraires
+        return res.status(200).json(formattedJourethorraires);
+    } catch (error) {
+        console.error('Error fetching jourethorraires for artisan:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+
 
 module.exports = {
     addJourToArtisan,
-    deleteJourFromArtisan
+    deleteJourFromArtisan,
+    displayplanningofArtisan
 };
+
