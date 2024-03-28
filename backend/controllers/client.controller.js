@@ -318,15 +318,17 @@ async function creerRDV(req, res) {
     }
 }
 
-
 async function confirmerRDV(req, res) {
     const rdvId = req.body.rdvId; 
 
     try {
-        
         const rdv = await models.RDV.findByPk(rdvId);      
         if (!rdv) {
             return res.status(404).json({ message: `Le RDV avec l'ID ${rdvId} n'existe pas.` });
+        }
+
+        if (!rdv.accepte) {
+            return res.status(400).json({ message: `Le RDV avec l'ID ${rdvId} n'a pas été accepté.` });
         }
 
         rdv.confirme = true;
@@ -337,6 +339,7 @@ async function confirmerRDV(req, res) {
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
+
 async function annulerRDV(req, res) {
     const rdvId = req.body.rdvId; 
 
