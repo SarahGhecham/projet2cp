@@ -5,7 +5,7 @@ const {Prestation} = require('../models');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
-
+const moment = require('moment');
 
 
 // Inscription du client
@@ -115,15 +115,23 @@ function creerEvaluation(req, res) {
             }
             const now = new Date();
             const rdvDateFin = new Date(RDV.DateFin);
-            const rdvHeureFin = new Date(RDV.HeureFin);
+            //const rdvHeureFin = new Date(RDV.HeureFin);
             // Comparaison de la date actuelle avec la date de fin du RDV
             if (now < rdvDateFin) {
                 return res.status(400).json({ message: `La date actuelle est antérieure à la fin du rendez-vous.` });
             }
-            // Comparaison de l'heure actuelle avec l'heure de fin du RDV
-            if (now.toDateString() === rdvDateFin.toDateString() && now.getHours() < rdvHeureFin.getHours()) {
-                return res.status(400).json({ message: `L'heure actuelle est antérieure à la fin du rendez-vous.` });
-            }
+              
+            // Comparaison de la date et l'heure actuelles avec la date et l'heure de fin du RDV
+         const maintenant = moment();
+         const rdvHeureFin = moment(RDV.HeureFin, 'HH:mm');
+
+            // Créer un objet de date et heure pour la date et l'heure actuelles
+        const nowDateTime = moment(`${maintenant.format('YYYY-MM-DD')} ${maintenant.format('HH:mm')}`, 'YYYY-MM-DD HH:mm');
+
+           // Comparer maintenant avec l'heure de fin du rendez-vous
+        if (nowDateTime.isBefore(rdvHeureFin)) {
+            return res.status(400).json({ message: `L'heure actuelle est antérieure à la fin du rendez-vous.` });
+          }
             if (isNaN(Note) || Note < 0 || Note > 5) {
                 return res.status(400).json({ message: "La notation doit être un nombre décimal entre 0 et 5." });
             }
