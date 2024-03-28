@@ -1,15 +1,45 @@
 const Validator=require('fastest-validator');
 const models=require('../models');
 
+function AfficherProfil(req,res){
+    const id=req.userId;
+    models.Artisan.findByPk(id).then(result=>{
+        if(result){
+            const artisanInfo = {
+                NomArtisan: result.NomArtisan,
+                PrenomArtisan: result.PrenomArtisan,
+                EmailArtisan: result.EmailArtisan,
+                AdresseArtisan: result.AdresseArtisan,
+                NumeroTelArtisan: result.NumeroTelArtisan,
+                Disponibilite: result.Disponibilite,
+                Points: result.Points,
+                Service_account: result.Service_account
+            };
+            res.status(201).json(artisanInfo);
+        }
+           
+        else
+            res.status(404).json({
+          message:"artisan not found"
+        })
+    }).catch(error=>{
+        res.status(500).json({
+            message:"something went wrong",
+            error : error
+        })
+    })
+}
+
 function updateartisan(req, res) {
-    const id = req.params.id;
+    const id = req.userId;
     const updatedArtisan = {
         NomArtisan: req.body.NomArtisan,
         PrenomArtisan:req.body.PrenomArtisan,
         MotdepasseArtisan: req.body.MotdepasseArtisan,
         EmailArtisan: req.body.EmailArtisan,
         AdresseArtisan: req.body.AdresseArtisan,
-        NumeroTelArtisan: req.body.NumeroTelArtisan
+        NumeroTelArtisan: req.body.NumeroTelArtisan,
+        Disponnibilite: req.body.Disponnibilite
     };
 
     models.Artisan.update(updatedArtisan, { where: { id: id } })
@@ -198,5 +228,5 @@ module.exports = {
     HistoriqueInterventions,
     associerDemandeArtisan,
     AfficherEvaluations,
-    
+    AfficherProfil
 }

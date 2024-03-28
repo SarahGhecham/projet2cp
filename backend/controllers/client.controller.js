@@ -165,7 +165,10 @@ function AfficherArtisan(req,res){
                 NomArtisan: result.NomArtisan,
                 PrenomArtisan: result.PrenomArtisan,
                 NumeroTelArtisan: result.NumeroTelArtisan,
-                AdresseArtisan: result.AdresseArtisan
+                AdresseArtisan: result.AdresseArtisan,
+                Disponnibilite: result.Disponnibilite,
+                Points: result.Points,
+                Service_account: result.Service_account
             };
             res.status(201).json(artisanInfo);
         }
@@ -173,6 +176,34 @@ function AfficherArtisan(req,res){
         else
             res.status(404).json({
           message:"artisan not found"
+        })
+    }).catch(error=>{
+        res.status(500).json({
+            message:"something went wrong",
+            error : error
+        })
+    })
+}
+
+function AfficherProfil(req,res){
+    const id=req.userId;
+    models.Client.findByPk(id).then(result=>{
+        if(result){
+            const clientInfo = {
+                NomClient: result.NomClient,
+                PrenomClient: result.PrenomClient,
+                EmailClient: result.EmailClient,
+                AdresseClient: result.AdresseClient,
+                NumeroTelClient: result.NumeroTelClient,
+                Points: result.Points,
+                Service_account: result.Service_account
+            };
+            res.status(201).json(clientInfo);
+        }
+           
+        else
+            res.status(404).json({
+          message:"client not found"
         })
     }).catch(error=>{
         res.status(500).json({
@@ -383,5 +414,6 @@ module.exports = {
     creerEvaluation:creerEvaluation,
     test,
     AfficherEvaluations,
-    AfficherPrestations
+    AfficherPrestations,
+    AfficherProfil
 }

@@ -25,7 +25,9 @@ module.exports = (sequelize, DataTypes) => {
     ActifClient: {
       type: DataTypes.BOOLEAN,
       defaultValue: true 
-      }
+      },
+    Points: DataTypes.INTEGER,
+    Service_account: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Client',

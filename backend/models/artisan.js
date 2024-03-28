@@ -26,7 +26,13 @@ module.exports = (sequelize, DataTypes) => {
     ActifArtisan: {
       type: DataTypes.BOOLEAN,
       defaultValue: true 
-      }
+      },
+    Disponibilite: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true // Default value for disponibilite
+      },
+    Points: DataTypes.INTEGER,
+    Service_account: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Artisan',
