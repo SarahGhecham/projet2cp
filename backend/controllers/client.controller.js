@@ -6,6 +6,8 @@ const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 
+
+
 // Inscription du client
 function signUp(req, res) {
     models.Client.findOne({
@@ -91,33 +93,55 @@ function updateclient(req, res) {
             });
         });
 }
+
 function creerEvaluation(req, res) {
     const evaluation = {
-        Note:req.body.Note,
-        Commentaire:req.body.Commentaire,
+        Note: req.body.Note,
+        Commentaire: req.body.Commentaire,
         RDVId: req.body.RDVId
     };
-    const Note=req.body.Note;
-    const RDVId=req.body.RDVId;
-    const RDV =  models.RDV.findByPk(RDVId);
-    if (!RDV) {
-        return res.status(404).json({ message: `La demande avec l'ID ${RDVId} n'existe pas.` });
-    }
-    if (isNaN(Note) || Note < 0 || Note > 5) {
-        return res.status(400).json({ message: "La notation doit être un nombre décimal entre 0 et 5." });
-    }
-    models.Evaluation.create(evaluation).then(result => {
-        res.status(201).json({
-            message: "réussite",
-            evaluation: result,
+    const Note = req.body.Note;
+    const RDVId = req.body.RDVId;
+    models.RDV.findByPk(RDVId)
+        .then(RDV => {
+            if (!RDV) {
+                return res.status(404).json({ message: `La demande avec l'ID ${RDVId} n'existe pas.` });
+            }
+            if (RDV.annule) {
+                return res.status(400).json({ message: `Le rendez-vous avec l'ID ${RDVId} a été annulé.` });
+            }
+            if (!RDV.confirme) {
+                return res.status(400).json({ message: `Le rendez-vous avec l'ID ${RDVId} n'est pas confirmé.` });
+            }
+            const now = new Date();
+            const rdvDateFin = new Date(RDV.DateFin);
+            const rdvHeureFin = new Date(`1970-01-01T${RDV.HeureFin}`); // Crée une date de référence (1970-01-01) avec l'heure de fin du RDV
+            const rdvDateTimeFin = new Date(rdvDateFin.getFullYear(), rdvDateFin.getMonth(), rdvDateFin.getDate(), rdvHeureFin.getHours(), rdvHeureFin.getMinutes(), rdvHeureFin.getSeconds()); 
+            // Comparaison de la date actuelle avec la date et l'heure de fin du RDV
+            if (now < rdvDateTimeFin) {
+                return res.status(400).json({ message: `La date actuelle est antérieure à la fin du rendez-vous.` });
+            }
+            if (isNaN(Note) || Note < 0 || Note > 5) {
+                return res.status(400).json({ message: "La notation doit être un nombre décimal entre 0 et 5." });
+            }
+            return models.Evaluation.create(evaluation);
+        })
+        .then(result => {
+            res.status(201).json({
+                message: "Réussite",
+                evaluation: result,
+            });
+        })
+        .catch(error => {
+            res.status(500).json({
+                message: "Something went wrong",
+                error: error
+            });
         });
-    }).catch(error => {
-        res.status(500).json({
-            message: "Something went wrong",
-            error: error
-        });
-    });
 }
+
+
+
 async function lancerdemande(req, res) {
     const clientId = req.userId;
     const demandeNom = req.body.nom;
