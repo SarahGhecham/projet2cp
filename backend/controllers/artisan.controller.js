@@ -1,5 +1,6 @@
 const Validator=require('fastest-validator');
 const models=require('../models');
+const { Op } = require('sequelize');
 
 function AfficherProfil(req,res){
     const id=req.userId;
@@ -126,7 +127,7 @@ async function associerDemandeArtisan(req, res) {
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
-async function AfficherEvaluations(req, res) {
+/*async function AfficherEvaluations(req, res) {
     const artisanId = req.userId; // Supposons que l'ID de l'artisan soit passé dans les paramètres de l'URL
 
     try {
@@ -218,15 +219,124 @@ async function HistoriqueInterventions(req, res) {
         console.error('Une erreur s\'est produite lors de la récupération des demandes :', error);
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
+}*/
+async function Activiteterminee(req, res) {
+    const artisanId = req.userId; // Supposons que l'ID de l'artisan soit passé dans les paramètres de l'URL
+
+    try {
+        // Recherchez les IDs des demandes associées à l'artisan dans la table de liaison ArtisanDemande
+        const artisanDemandes = await models.ArtisanDemande.findAll({
+            where: { ArtisanId: artisanId }
+        });
+
+        // Récupérez les IDs des demandes associées à l'artisan
+        const demandeIds = artisanDemandes.map(ad => ad.DemandeId);
+
+        // Récupérez les IDs des rendez-vous associés aux demandes
+        const rendezVousIds = await models.RDV.findAll({
+            where: { DemandeId: demandeIds }
+        });
+        
+
+        // Récupérez les IDs des évaluations associées aux rendez-vous
+        const evaluationIds = await models.Evaluation.findAll({
+            where: { RDVId: rendezVousIds.map(rv => rv.id) }
+        });
+        // Filtrer uniquement les IDs des demandes qui ont un rendez-vous avec une évaluation associée
+        const demandesAvecEvaluationIds = rendezVousIds
+            .filter(rv => evaluationIds.some(e => e.RDVId === rv.id))
+            .map(rv => rv.DemandeId);
+
+        // Récupérez les détails de chaque demande à partir de la table Demande
+        const demandesAvecEvaluation = await models.Demande.findAll({
+            where: { id:{[Op.in]: demandesAvecEvaluationIds}},
+            include: [
+                {
+                    model: models.Client // Inclure le modèle Client associé à la demande
+                },
+                {
+                    model: models.Prestation // Inclure le modèle Prestation associé à la demande
+                },
+                {
+                    model: models.RDV, // Inclure le modèle RDV associé à la demande
+                    include: [
+                        {
+                            model: models.Evaluation // Inclure le modèle Evaluation associé au RDV
+                        }
+                    ]
+                }
+            ] // Utilisez les IDs des demandes avec rendez-vous avec évaluation
+        });
+
+        return res.status(200).json(demandesAvecEvaluation);
+    } catch (error) {
+        console.error('Une erreur s\'est produite lors de la récupération des demandes :', error);
+        return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
+    }
 }
 
+async function ActiviteEncours(req, res) {
+    const artisanId = req.userId; // Supposons que l'ID de l'artisan soit passé dans les paramètres de l'URL
+
+    try {
+        // Recherchez les IDs des demandes associées à l'artisan dans la table de liaison ArtisanDemande
+        const artisanDemandes = await models.ArtisanDemande.findAll({
+            where: { ArtisanId: artisanId }
+        });
+
+        // Récupérez les IDs des demandes associées à l'artisan
+        const demandeIds = artisanDemandes.map(ad => ad.DemandeId);
+
+        // Récupérez les IDs des rendez-vous associés aux demandes
+        const rdvs = await models.RDV.findAll({
+            where: { DemandeId: demandeIds },
+            attributes: ['id', 'DemandeId'] 
+        });
+        const demandeIds2 = rdvs.map(rdv => rdv.DemandeId);
+
+        // Récupérez les IDs des évaluations associées aux rendez-vous
+        const evaluationIds = await models.Evaluation.findAll({
+            where: { RDVId: rdvs.map(rv => rv.id) }
+        });
+        // Filtrer uniquement les IDs des demandes qui ont un rendez-vous avec une évaluation associée
+        const demandesAvecEvaluationIds = rdvs
+            .filter(rv => evaluationIds.some(e => e.RDVId === rv.id))
+            .map(rv => rv.DemandeId);
+
+        // Récupérez les détails de chaque demande à partir de la table Demande
+        const demandesAvecEvaluation = await models.Demande.findAll({
+            where: {  id: {
+                [Op.notIn]: demandesAvecEvaluationIds, // Exclure les IDs des demandes sans évaluations
+                [Op.in]: demandeIds2 // Inclure les IDs des demandes associées au Rendez-vous et au client
+            }},
+            include: [
+                {
+                    model: models.Client // Inclure le modèle Client associé à la demande
+                },
+                {
+                    model: models.Prestation // Inclure le modèle Prestation associé à la demande
+                },
+                {
+                    model: models.RDV, // Inclure le modèle RDV associé à la demande
+                }
+            ] // Utilisez les IDs des demandes avec rendez-vous avec évaluation
+        });
+
+        return res.status(200).json(demandesAvecEvaluation);
+    } catch (error) {
+        console.error('Une erreur s\'est produite lors de la récupération des demandes :', error);
+        return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
+    }
+}
 
 module.exports = {
     updateartisan:updateartisan,
     accepterRDV:accepterRDV,
     annulerRDV:annulerRDV,
-    HistoriqueInterventions,
+    //HistoriqueInterventions,
     associerDemandeArtisan,
-    AfficherEvaluations,
-    AfficherProfil
+    //AfficherEvaluations,
+    AfficherProfil,
+    Activiteterminee,
+    ActiviteEncours,
 }
