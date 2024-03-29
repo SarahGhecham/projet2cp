@@ -275,7 +275,7 @@ async function Activiteterminee(req, res) {
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
-async function ActiviteEncours(req, res) {
+/*async function ActiviteEncours(req, res) {
     const artisanId = req.userId; 
 
     try {
@@ -319,7 +319,47 @@ async function ActiviteEncours(req, res) {
         console.error('Une erreur s\'est produite lors de la récupération des rendez-vous en cours :', error);
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     } 
+}*/
+async function ActiviteEncours(req, res) {
+    const artisanId = req.userId;
+
+    try {
+        const maintenant = new Date();
+
+        const demandes = await models.ArtisanDemande.findAll({
+            where: { ArtisanId: artisanId }
+        });
+
+        const demandeIds = demandes.map(demande => demande.id);
+
+        const rdvs = await models.RDV.findAll({
+            where: { DemandeId: demandeIds },
+            attributes: ['id', 'DemandeId', 'accepte', 'confirme', 'annule', 'DateFin', 'HeureFin'] // Sélectionner également les attributs d'acceptation, de confirmation, d'annulation, de date et d'heure de fin
+        });
+
+        const rendezVousEnCours = rdvs.filter(rdv => {
+            const rdvDateFin = new Date(rdv.DateFin);
+            const rdvHeureFin = new Date(`${rdv.DateFin}T${rdv.HeureFin}`);
+            return  (!rdv.annule && rdv.accepte && !rdv.confirme) || (!rdv.annule && rdv.accepte && rdv.confirme && (rdvDateFin > maintenant || (rdvDateFin.getTime() === maintenant.getTime() && rdvHeureFin > maintenant)));
+        });
+
+        const rendezVousDetails = await Promise.all(rendezVousEnCours.map(async (rdv) => {
+            const demande = await models.Demande.findByPk(rdv.DemandeId, {
+                include: [
+                    { model: models.Client },
+                    { model: models.Prestation }
+                ]
+            });
+            return { rdv, demande };
+        }));
+
+        return res.status(200).json(rendezVousDetails);
+    } catch (error) {
+        console.error('Une erreur s\'est produite lors de la récupération des rendez-vous en cours :', error);
+        return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
+    }
 }
+
 async function DetailsRDVTermine(req, res) {
     const artisanId = req.userId;
     const rdvId = req.body.rdvId;

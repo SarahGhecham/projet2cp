@@ -359,49 +359,47 @@ async function annulerRDV(req, res) {
 }
 
 
-
 async function ActiviteEncours(req, res) {
-    const clientId = req.userId; 
+    const clientId = req.userId;
 
     try {
-        // Rechercher les IDs des demandes associées au client
+        const maintenant = new Date();
+
         const demandes = await models.Demande.findAll({
             where: { ClientId: clientId }
         });
 
-        // Récupérer les IDs des demandes associées au client
         const demandeIds = demandes.map(demande => demande.id);
 
-        // Rechercher tous les rendez-vous associés aux demandes
         const rdvs = await models.RDV.findAll({
             where: { DemandeId: demandeIds },
-            attributes: ['id', 'DemandeId', 'accepte', 'confirme', 'annule'] // Sélectionner également les attributs d'acceptation, de confirmation et d'annulation
+            attributes: ['id', 'DemandeId', 'accepte', 'confirme', 'annule', 'DateFin', 'HeureFin'] // Sélectionner également les attributs d'acceptation, de confirmation, d'annulation, de date et d'heure de fin
         });
 
-        // Filtrer les rendez-vous non acceptés, non confirmés et non annulés
-        const rdvEnCoursIds = rdvs.filter(rdv => !rdv.annule && (!rdv.accepte || !rdv.confirme)).map(rdv => rdv.id);
-
-        // Rechercher les détails de chaque rendez-vous en cours à partir de son ID
-        const rendezVousEnCours = await models.RDV.findAll({
-            where: { id: rdvEnCoursIds },
-            include: [
-                {
-                    model: models.Demande,
-                    include: [
-                        { model: models.Client }, // Inclure le modèle Client associé à la demande
-                        { model: models.Prestation } // Inclure le modèle Prestation associé à la demande
-                    ]
-                }
-            ]
+        const rendezVousEnCours = rdvs.filter(rdv => {
+            const rdvDateFin = new Date(rdv.DateFin);
+            const rdvHeureFin = new Date(`${rdv.DateFin}T${rdv.HeureFin}`);
+            return (!rdv.annule && !rdv.accepte) || (!rdv.annule && rdv.accepte && !rdv.confirme) || (!rdv.annule && rdv.accepte && rdv.confirme && (rdvDateFin > maintenant || (rdvDateFin.getTime() === maintenant.getTime() && rdvHeureFin > maintenant)));
         });
 
-        // Envoyer les détails des rendez-vous en cours en réponse
-        return res.status(200).json(rendezVousEnCours);
+        const rendezVousDetails = await Promise.all(rendezVousEnCours.map(async (rdv) => {
+            const demande = await models.Demande.findByPk(rdv.DemandeId, {
+                include: [
+                    { model: models.Client },
+                    { model: models.Prestation }
+                ]
+            });
+            return { rdv, demande };
+        }));
+
+        return res.status(200).json(rendezVousDetails);
     } catch (error) {
         console.error('Une erreur s\'est produite lors de la récupération des rendez-vous en cours :', error);
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
-    } 
+    }
 }
+
+
 
 async function Activiteterminee(req, res) {
     const clientId = req.userId; 
