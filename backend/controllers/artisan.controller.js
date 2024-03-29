@@ -331,20 +331,30 @@ async function DetailsRDVTermine(req, res) {
         if (!rdv) {
             return res.status(404).json({ message: `Le RDV avec l'ID ${rdvId} n'existe pas.` });
         }
-         // Vérifier si le rendez-vous a été annulé
-         if (rdv.annule) {
+       
+        // Vérifier si le rendez-vous a été annulé
+        if (rdv.annule) {
             return res.status(400).json({ message: `Le RDV avec l'ID ${rdvId} a été annulé.` });
         }
-
+        
         // Vérifier si le rendez-vous a été confirmé
         if (!rdv.confirme) {
             return res.status(400).json({ message: `Le RDV avec l'ID ${rdvId} n'a pas été confirmé.` });
         }
 
-        // Récupérer les détails de le client
+        // Vérifier si la date de fin et l'heure de fin sont inférieures à la date et à l'heure actuelles
+        const now = new Date();
+        const rdvDateFin = new Date(rdv.DateFin);
+        const rdvHeureFin = new Date(rdv.HeureFin);
+
+        if (rdvDateFin > now || (rdvDateFin.getTime() === now.getTime() && rdvHeureFin.getTime() > now.getTime())) {
+            return res.status(400).json({ message: `Le RDV avec l'ID ${rdvId} n'est pas encore terminé.` });
+        }
+
+        // Récupérer les détails de l'artisan associé à la demande
         const clientDemande = await models.Demande.findOne({
             where: { Id: rdv.DemandeId }
-        })
+        });
 
         if (!clientDemande) {
             return res.status(404).json({ message: `Aucun client n'est associé à la demande de RDV avec l'ID ${rdvId}.` });
@@ -353,14 +363,28 @@ async function DetailsRDVTermine(req, res) {
         const client = await models.Client.findByPk(clientDemande.ClientId, {
             attributes: ['NomClient', 'PrenomClient']
         });
-        // Retourner les détails de l'artisan, du rendez-vous et de la prestation
-        return res.status(200).json({ client, rdv, prestation: rdv.Demande.Prestation });
+
+        const rdvAffich = {
+            DateDebut: rdv.DateDebut,
+            HeureDebut: rdv.HeureDebut,
+            DateFin: rdv.DateFin,
+            HeureFin: rdv.HeureFin
+        };
+
+        const prestation = {
+            Nom: rdv.Demande.Prestation.NomPrestation,
+            Materiel: rdv.Demande.Prestation.Matériel,
+            DureeMax: rdv.Demande.Prestation.DuréeMax,
+            DureeMin: rdv.Demande.Prestation.DuréeMin,
+            Ecologique: rdv.Demande.Prestation.Ecologique
+        };
+
+        return res.status(200).json({ client, rdv: rdvAffich, prestation });
     } catch (error) {
-        console.error("Erreur lors de la récupération des détails de la demande confirmée :", error);
+        console.error("Erreur lors de la récupération des détails du RDV terminé :", error);
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
-
 module.exports = {
     updateartisan:updateartisan,
     accepterRDV:accepterRDV,

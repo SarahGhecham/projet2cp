@@ -18,5 +18,6 @@ router.get('/AfficherActiviteTerminee',auth(),clientController.Activiteterminee)
 router.get('/AfficherActiviteEncours',auth(),clientController.ActiviteEncours);
 router.get('/AfficherPrestations',auth(),clientController.AfficherPrestations);
 router.get('/DetailsDemandeConfirmee',auth(),clientController.DetailsDemandeConfirmee);
+router.get('/DetailsRDVTermine',auth(),clientController.DetailsRDVTermine);
 
 module.exports = router;
