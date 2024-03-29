@@ -275,51 +275,7 @@ async function Activiteterminee(req, res) {
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
-/*async function ActiviteEncours(req, res) {
-    const artisanId = req.userId; 
 
-    try {
-        // Rechercher les IDs des demandes associées à l'artisan
-        const artisanDemandes = await models.ArtisanDemande.findAll({
-            where: { ArtisanId: artisanId }
-        });
-
-        // Récupérer les IDs des demandes associées à l'artisan
-        const demandeIds = artisanDemandes.map(ad => ad.DemandeId);
-
-        const rdvs = await models.RDV.findAll({
-            where: { 
-                DemandeId: demandeIds,
-                annule: false, 
-                accepte: true, 
-                confirme: false 
-                
-            },
-            attributes: ['id', 'DemandeId'] 
-        });
-
-        const rdvEnCoursIds = rdvs.map(rdv => rdv.id);
-
-        const rendezVousEnCours = await models.RDV.findAll({
-            where: { id: rdvEnCoursIds },
-            include: [
-                {
-                    model: models.Demande,
-                    include: [
-                        { model: models.Client }, 
-                        { model: models.Prestation }
-                    ]
-                }
-            ]
-        });
-
-     
-        return res.status(200).json(rendezVousEnCours);
-    } catch (error) {
-        console.error('Une erreur s\'est produite lors de la récupération des rendez-vous en cours :', error);
-        return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
-    } 
-}*/
 async function ActiviteEncours(req, res) {
     const artisanId = req.userId;
 

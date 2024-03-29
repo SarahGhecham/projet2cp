@@ -405,42 +405,37 @@ async function Activiteterminee(req, res) {
     const clientId = req.userId; 
 
     try {
-        // Récupérer la date et l'heure actuelles
         const maintenant = new Date();
 
-        // Recherchez les demandes du client avec leurs détails associés
         const demandesAvecDetails = await models.Demande.findAll({
             where: { ClientId: clientId },
             include: [
                 {
-                    model: models.Client // Inclure les détails du client
+                    model: models.Client 
                 },
                 {
-                    model: models.Prestation // Inclure les détails de la prestation
+                    model: models.Prestation 
                 },
                 {
-                    model: models.RDV, // Inclure les détails du rendez-vous
+                    model: models.RDV, 
                     where: { 
-                        accepte: true, // Rendez-vous accepté
-                        confirme: true, // Rendez-vous confirmé
-                        annule: false, // Rendez-vous non annulé
+                        accepte: true, 
+                        confirme: true, 
+                        annule: false, 
                         [Op.and]: [
-                            { DateFin: { [Op.lt]: maintenant } }, // Date de fin du RDV inférieure à maintenant
-                            { HeureFin: { [Op.lt]: maintenant.getHours() + ":" + maintenant.getMinutes() } } // Heure de fin du RDV inférieure à maintenant
+                            { DateFin: { [Op.lt]: maintenant } }, 
+                            { HeureFin: { [Op.lt]: maintenant.getHours() + ":" + maintenant.getMinutes() } } 
                         ]
                     }
                 }
             ]
         });
 
-        // Si aucune demande n'est trouvée, renvoyer une réponse appropriée
         if (demandesAvecDetails.length === 0) {
             return res.status(404).json({ message: "Aucune demande terminée trouvée pour ce client." });
         }
 
-        // Récupérer les détails des artisans pour chaque demande
         await Promise.all(demandesAvecDetails.map(async (demande) => {
-            // Récupérer les détails de l'artisan associé à la demande
             const artisanDemande = await models.ArtisanDemande.findOne({
                 where: { DemandeId: demande.id }
             });
@@ -448,11 +443,9 @@ async function Activiteterminee(req, res) {
                 attributes: ['NomArtisan', 'PrenomArtisan']
             });
 
-            // Ajouter les détails de l'artisan à la demande
             demande.dataValues.Artisan = artisan;
         }));
 
-        // Envoyer les détails des demandes avec leurs détails associés et les artisans associés en réponse
         return res.status(200).json(demandesAvecDetails);
     } catch (error) {
         console.error("Une erreur s'est produite lors de la récupération des demandes avec les détails associés :", error);
