@@ -224,6 +224,8 @@ async function Activiteterminee(req, res) {
     const artisanId = req.userId; 
 
     try {
+        // Récupérer la date et l'heure actuelles
+        const maintenant = new Date();
         const artisanDemandes = await models.ArtisanDemande.findAll({
             where: { ArtisanId: artisanId }
         });
@@ -253,11 +255,16 @@ async function Activiteterminee(req, res) {
                 },
                 {
                     model: models.RDV, 
-                    include: [
-                        {
-                            model: models.Evaluation 
-                        }
-                    ]
+                    where: { 
+                        accepte: true, // Rendez-vous accepté
+                        confirme: true, // Rendez-vous confirmé
+                        annule: false, // Rendez-vous non annulé
+                        [Op.and]: [
+                            { DateFin: { [Op.lt]: maintenant } }, // Date de fin du RDV inférieure à maintenant
+                            { HeureFin: { [Op.lt]: maintenant.getHours() + ":" + maintenant.getMinutes() } } // Heure de fin du RDV inférieure à maintenant
+                        ]
+                    }
+                   
                 }
             ] // Utilisez les IDs des demandes avec rendez-vous avec évaluation
         });

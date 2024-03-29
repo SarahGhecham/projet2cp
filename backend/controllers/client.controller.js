@@ -94,7 +94,7 @@ function updateclient(req, res) {
         });
 }
 
-function creerEvaluation(req, res) {
+async function creerEvaluation(req, res) {
     const evaluation = {
         Note: req.body.Note,
         Commentaire: req.body.Commentaire,
@@ -102,53 +102,44 @@ function creerEvaluation(req, res) {
     };
     const Note = req.body.Note;
     const RDVId = req.body.RDVId;
-    models.RDV.findByPk(RDVId)
-        .then(RDV => {
-            if (!RDV) {
-                return res.status(404).json({ message: `La demande avec l'ID ${RDVId} n'existe pas.` });
-            }
-            if (RDV.annule) {
-                return res.status(400).json({ message: `Le rendez-vous avec l'ID ${RDVId} a été annulé.` });
-            }
-            if (!RDV.confirme) {
-                return res.status(400).json({ message: `Le rendez-vous avec l'ID ${RDVId} n'est pas confirmé.` });
-            }
-            const now = new Date();
-            const rdvDateFin = new Date(RDV.DateFin);
-            //const rdvHeureFin = new Date(RDV.HeureFin);
-            // Comparaison de la date actuelle avec la date de fin du RDV
-            if (now < rdvDateFin) {
-                return res.status(400).json({ message: `La date actuelle est antérieure à la fin du rendez-vous.` });
-            }
-              
-            // Comparaison de la date et l'heure actuelles avec la date et l'heure de fin du RDV
-         const maintenant = moment();
-         const rdvHeureFin = moment(RDV.HeureFin, 'HH:mm');
-
-            // Créer un objet de date et heure pour la date et l'heure actuelles
+    try {
+        const RDV = await models.RDV.findByPk(RDVId);
+        if (!RDV) {
+            return res.status(404).json({ message: `Le rendez-vous avec l'ID ${RDVId} n'existe pas.` });
+        }
+        if (RDV.annule) {
+            return res.status(400).json({ message: `Le rendez-vous avec l'ID ${RDVId} a été annulé.` });
+        }
+        if (!RDV.confirme) {
+            return res.status(400).json({ message: `Le rendez-vous avec l'ID ${RDVId} n'est pas confirmé.` });
+        }
+        const now = new Date();
+        const rdvDateFin = new Date(RDV.DateFin);
+        // Comparaison de la date actuelle avec la date de fin du RDV
+        if (now < rdvDateFin) {
+            return res.status(400).json({ message: `La date actuelle est antérieure à la fin du rendez-vous.` });
+        }
+        // Comparaison de la date et l'heure actuelles avec la date et l'heure de fin du RDV
+        const maintenant = moment();
+        const rdvHeureFin = moment(RDV.HeureFin, 'HH:mm');
+        // Créer un objet de date et heure pour la date et l'heure actuelles
         const nowDateTime = moment(`${maintenant.format('YYYY-MM-DD')} ${maintenant.format('HH:mm')}`, 'YYYY-MM-DD HH:mm');
-
-           // Comparer maintenant avec l'heure de fin du rendez-vous
+        // Comparer maintenant avec l'heure de fin du rendez-vous
         if (nowDateTime.isBefore(rdvHeureFin)) {
             return res.status(400).json({ message: `L'heure actuelle est antérieure à la fin du rendez-vous.` });
-          }
-            if (isNaN(Note) || Note < 0 || Note > 5) {
-                return res.status(400).json({ message: "La notation doit être un nombre décimal entre 0 et 5." });
-            }
-            return models.Evaluation.create(evaluation);
-        })
-        .then(result => {
-            res.status(201).json({
-                message: "Réussite",
-                evaluation: result,
-            });
-        })
-        .catch(error => {
-            res.status(500).json({
-                message: "Something went wrong",
-                error: error
-            });
+        }
+        if (isNaN(Note) || Note < 0 || Note > 5) {
+            return res.status(400).json({ message: "La notation doit être un nombre décimal entre 0 et 5." });
+        }
+        const result = await models.Evaluation.create(evaluation);
+        return res.status(201).json({
+            message: "Réussite",
+            evaluation: result,
         });
+    } catch (error) {
+        console.error("Une erreur s'est produite lors de la création de l'évaluation :", error);
+        return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
+    }
 }
 
 
@@ -411,10 +402,14 @@ async function ActiviteEncours(req, res) {
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     } 
 }
+
 async function Activiteterminee(req, res) {
     const clientId = req.userId; 
 
     try {
+        // Récupérer la date et l'heure actuelles
+        const maintenant = new Date();
+
         // Recherchez les demandes du client avec leurs détails associés
         const demandesAvecDetails = await models.Demande.findAll({
             where: { ClientId: clientId },
@@ -430,7 +425,11 @@ async function Activiteterminee(req, res) {
                     where: { 
                         accepte: true, // Rendez-vous accepté
                         confirme: true, // Rendez-vous confirmé
-                        annule: false // Rendez-vous non annulé
+                        annule: false, // Rendez-vous non annulé
+                        [Op.and]: [
+                            { DateFin: { [Op.lt]: maintenant } }, // Date de fin du RDV inférieure à maintenant
+                            { HeureFin: { [Op.lt]: maintenant.getHours() + ":" + maintenant.getMinutes() } } // Heure de fin du RDV inférieure à maintenant
+                        ]
                     }
                 }
             ]
@@ -438,7 +437,7 @@ async function Activiteterminee(req, res) {
 
         // Si aucune demande n'est trouvée, renvoyer une réponse appropriée
         if (demandesAvecDetails.length === 0) {
-            return res.status(404).json({ message: "Aucune demande trouvée pour ce client." });
+            return res.status(404).json({ message: "Aucune demande terminée trouvée pour ce client." });
         }
 
         // Récupérer les détails des artisans pour chaque demande
@@ -462,9 +461,6 @@ async function Activiteterminee(req, res) {
         return res.status(500).json({ message: "Une erreur s'est produite lors du traitement de votre demande." });
     }
 }
-
-
-
 
 
 function AfficherPrestations(req, res) {
@@ -500,7 +496,10 @@ async function DetailsDemandeConfirmee(req, res) {
         if (!rdv) {
             return res.status(404).json({ message: `Le RDV avec l'ID ${rdvId} n'existe pas.` });
         }
-
+       // Vérifier si le rendez-vous a été annulé
+       if (rdv.annule) {
+            return res.status(400).json({ message: `Le RDV avec l'ID ${rdvId} a été annulé.` });
+        }
         // Vérifier si le rendez-vous a été confirmé
         if (!rdv.confirme) {
             return res.status(400).json({ message: `Le RDV avec l'ID ${rdvId} n'a pas été confirmé.` });
