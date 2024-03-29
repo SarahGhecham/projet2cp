@@ -14,6 +14,7 @@ router.post('/test',artisanController.associerDemandeArtisan);
 router.get('/AfficherActiviteTerminee',auth(),artisanController.Activiteterminee);
 router.get('/AfficherActiviteEncours',auth(),artisanController.ActiviteEncours);
 router.get('/DetailsRDVTermine',auth(),artisanController.DetailsRDVTermine);
+router.get('/DetailsDemandeConfirmee',auth(),artisanController.DetailsDemandeConfirmee);
 
 
 module.exports = router;

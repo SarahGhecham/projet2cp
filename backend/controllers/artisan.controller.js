@@ -315,7 +315,59 @@ async function ActiviteEncours(req, res) {
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
+async function DetailsDemandeConfirmee(req, res) {
+    const artisanId = req.userId;
+    const rdvId = req.body.rdvId;
 
+    try {
+        const rdv = await models.RDV.findByPk(rdvId, {
+            include: [
+                { model: models.Demande, include: [models.Prestation],
+                 }
+            ]
+        });
+
+        if (!rdv) {
+            return res.status(404).json({ message: `Le RDV avec l'ID ${rdvId} n'existe pas.` });
+        }
+       
+        if (rdv.annule) {
+            return res.status(400).json({ message: `Le RDV avec l'ID ${rdvId} a été annulé.` });
+        }
+        
+        if (!rdv.confirme) {
+            return res.status(400).json({ message: `Le RDV avec l'ID ${rdvId} n'a pas été confirmé.` });
+        }
+
+        const clientDemande = await models.Demande.findOne({
+            where: { Id: rdv.DemandeId }
+        });
+
+        if (!clientDemande) {
+            return res.status(404).json({ message: `Aucun client n'est associé à la demande de RDV avec l'ID ${rdvId}.` });
+        }
+
+        const client = await models.Client.findByPk(clientDemande.ClientId, {
+            attributes: ['NomClient', 'PrenomClient']
+        });
+
+        const rdvAffich = {
+            DateDebut: rdv.DateDebut,
+            HeureDebut: rdv.HeureDebut
+        };
+        const prestation={
+            Nom: rdv.Demande.Prestation.NomPrestation,
+            Materiel: rdv.Demande.Prestation.Maéeriel,
+            DureeMax: rdv.Demande.Prestation.DuréeMax,
+            DurreMin: rdv.Demande.Prestation.DuréeMin,
+            Ecologique: rdv.Demande.Prestation.Ecologique
+        }
+        return res.status(200).json({ client, rdv: rdvAffich, prestation });
+    } catch (error) {
+        console.error("Erreur lors de la récupération des détails de la demande confirmée :", error);
+        return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
+    }
+}
 async function DetailsRDVTermine(req, res) {
     const artisanId = req.userId;
     const rdvId = req.body.rdvId;
@@ -395,5 +447,6 @@ module.exports = {
     AfficherProfil,
     Activiteterminee,
     ActiviteEncours,
+    DetailsDemandeConfirmee,
     DetailsRDVTermine,
 }
