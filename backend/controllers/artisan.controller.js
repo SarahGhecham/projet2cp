@@ -12,8 +12,6 @@ function AfficherProfil(req,res){
                 AdresseArtisan: result.AdresseArtisan,
                 NumeroTelArtisan: result.NumeroTelArtisan,
                 Disponibilite: result.Disponibilite,
-                Points: result.Points,
-                Service_account: result.Service_account
             };
             res.status(201).json(artisanInfo);
         }
