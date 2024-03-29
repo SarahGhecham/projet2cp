@@ -411,65 +411,60 @@ async function ActiviteEncours(req, res) {
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     } 
 }
-
-
-
 async function Activiteterminee(req, res) {
-    const clientId = req.userId; // Supposons que l'ID du client soit passé dans les paramètres de l'URL
+    const clientId = req.userId; 
 
     try {
-        // Recherchez les IDs des demandes associées au client
-        const demandes = await models.Demande.findAll({
-            where: { ClientId: clientId }
-        });
-
-        // Récupérez les IDs des demandes associées au client
-        const demandeIds = demandes.map(demande => demande.id);
-
-        // Recherchez tous les rendez-vous associés aux demandes
-        const rdvs = await models.RDV.findAll({
-            where: { DemandeId: demandeIds },
-            attributes: ['id','DemandeId'] // Sélectionnez seulement l'attribut ID du rendez-vous
-        });
-
-        // Récupérez les IDs de tous les rendez-vous
-        const rendezVousIds = rdvs.map(RDV => RDV.id);
-
-        // Recherchez tous les IDs des évaluations associées aux rendez-vous
-        const evaluations = await models.Evaluation.findAll({
-            where: { RDVId: rendezVousIds },
-            attributes: ['id', 'RDVId'] // Sélectionnez seulement l'attribut ID de l'évaluation
-        });
-
-        // Récupérez les IDs des rendez-vous ayant des évaluations associées
-        const rdvAvecEvaluationsIds = evaluations.map(evaluation => evaluation.RDVId);
-
-        // Récupérez les IDs des demandes associées aux rendez-vous ayant des évaluations
-        const demandeAvecEvaluationsIds = rdvs.filter(rdv => rdvAvecEvaluationsIds.includes(rdv.id)).map(rdv => rdv.DemandeId);
-
-        // Récupérez les détails de chaque demande ayant des évaluations à partir de son ID
-        const demandesAvecEvaluations = await models.Demande.findAll({
-            where: { id: demandeAvecEvaluationsIds },
+        // Recherchez les demandes du client avec leurs détails associés
+        const demandesAvecDetails = await models.Demande.findAll({
+            where: { ClientId: clientId },
             include: [
                 {
-                    model: models.Client // Inclure le modèle Client associé à la demande
+                    model: models.Client // Inclure les détails du client
                 },
                 {
-                    model: models.Prestation // Inclure le modèle Prestation associé à la demande
+                    model: models.Prestation // Inclure les détails de la prestation
                 },
                 {
-                    model: models.RDV, // Inclure le modèle RDV associé à la demande
+                    model: models.RDV, // Inclure les détails du rendez-vous
+                    where: { 
+                        accepte: true, // Rendez-vous accepté
+                        confirme: true, // Rendez-vous confirmé
+                        annule: false // Rendez-vous non annulé
+                    }
                 }
             ]
         });
 
-        // Envoyez les détails des demandes avec évaluations en réponse
-        return res.status(200).json(demandesAvecEvaluations);
+        // Si aucune demande n'est trouvée, renvoyer une réponse appropriée
+        if (demandesAvecDetails.length === 0) {
+            return res.status(404).json({ message: "Aucune demande trouvée pour ce client." });
+        }
+
+        // Récupérer les détails des artisans pour chaque demande
+        await Promise.all(demandesAvecDetails.map(async (demande) => {
+            // Récupérer les détails de l'artisan associé à la demande
+            const artisanDemande = await models.ArtisanDemande.findOne({
+                where: { DemandeId: demande.id }
+            });
+            const artisan = await models.Artisan.findByPk(artisanDemande.ArtisanId, {
+                attributes: ['NomArtisan', 'PrenomArtisan']
+            });
+
+            // Ajouter les détails de l'artisan à la demande
+            demande.dataValues.Artisan = artisan;
+        }));
+
+        // Envoyer les détails des demandes avec leurs détails associés et les artisans associés en réponse
+        return res.status(200).json(demandesAvecDetails);
     } catch (error) {
-        console.error('Une erreur s\'est produite lors de la récupération des demandes avec évaluations :', error);
-        return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
+        console.error("Une erreur s'est produite lors de la récupération des demandes avec les détails associés :", error);
+        return res.status(500).json({ message: "Une erreur s'est produite lors du traitement de votre demande." });
     }
 }
+
+
+
 
 
 function AfficherPrestations(req, res) {
