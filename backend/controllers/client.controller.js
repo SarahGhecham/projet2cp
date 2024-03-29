@@ -367,68 +367,51 @@ async function annulerRDV(req, res) {
     }
 }
 
+
+
 async function ActiviteEncours(req, res) {
     const clientId = req.userId; 
 
     try {
-        // Recherchez les IDs des demandes associées au client
+        // Rechercher les IDs des demandes associées au client
         const demandes = await models.Demande.findAll({
             where: { ClientId: clientId }
         });
 
-        // Récupérez les IDs des demandes associées au client
+        // Récupérer les IDs des demandes associées au client
         const demandeIds = demandes.map(demande => demande.id);
 
-        // Recherchez tous les rendez-vous associés aux demandes
+        // Rechercher tous les rendez-vous associés aux demandes
         const rdvs = await models.RDV.findAll({
             where: { DemandeId: demandeIds },
-            attributes: ['id', 'DemandeId'] // Sélectionnez seulement l'attribut ID du rendez-vous
-        });
-        const demandeIds2 = rdvs.map(rdv => rdv.DemandeId);
-
-        // Récupérez les IDs de tous les rendez-vous
-        const rendezVousIds = rdvs.map(RDV => RDV.id);
-
-        // Recherchez tous les IDs des évaluations associées aux rendez-vous
-        const evaluations = await models.Evaluation.findAll({
-            where: { RDVId: rendezVousIds },
-            attributes: ['RDVId'] // Sélectionnez seulement l'attribut ID de l'évaluation
+            attributes: ['id', 'DemandeId', 'accepte', 'confirme', 'annule'] // Sélectionner également les attributs d'acceptation, de confirmation et d'annulation
         });
 
-        // Récupérez les IDs des rendez-vous ayant des évaluations associées
-        const rdvAvecEvaluationsIds = evaluations.map(evaluation => evaluation.RDVId);
+        // Filtrer les rendez-vous non acceptés, non confirmés et non annulés
+        const rdvEnCoursIds = rdvs.filter(rdv => !rdv.annule && (!rdv.accepte || !rdv.confirme)).map(rdv => rdv.id);
 
-        // Récupérez les IDs des rendez-vous sans évaluations associées
-        const rdvSansEvaluationsIds = rendezVousIds.filter(rdvId =>  rdvAvecEvaluationsIds.includes(rdvId));
-        // Récupérez les IDs des demandes associées aux rendez-vous avec évaluations
-        const demandeSansEvaluationsIds = rdvs.filter(rdv => rdvSansEvaluationsIds.includes(rdv.id)).map(rdv => rdv.DemandeId);
-
-        // Récupérez les détails de chaque demande sans évaluations à partir de son ID
-        const demandesSansEvaluations = await models.Demande.findAll({
-            where: {  id: {
-                [Op.notIn]: demandeSansEvaluationsIds, // Exclure les IDs des demandes sans évaluations
-                [Op.in]: demandeIds2 // Inclure les IDs des demandes associées au Rendez-vous et au client
-            }},
+        // Rechercher les détails de chaque rendez-vous en cours à partir de son ID
+        const rendezVousEnCours = await models.RDV.findAll({
+            where: { id: rdvEnCoursIds },
             include: [
                 {
-                    model: models.Client // Inclure le modèle Client associé à la demande
-                },
-                {
-                    model: models.Prestation // Inclure le modèle Prestation associé à la demande
-                },
-                {
-                    model: models.RDV // Inclure le modèle RDV associé à la demande
+                    model: models.Demande,
+                    include: [
+                        { model: models.Client }, // Inclure le modèle Client associé à la demande
+                        { model: models.Prestation } // Inclure le modèle Prestation associé à la demande
+                    ]
                 }
             ]
         });
 
-        // Envoyez les détails des demandes sans évaluations en réponse
-        return res.status(200).json(demandesSansEvaluations);
+        // Envoyer les détails des rendez-vous en cours en réponse
+        return res.status(200).json(rendezVousEnCours);
     } catch (error) {
-        console.error('Une erreur s\'est produite lors de la récupération des demandes sans évaluations :', error);
+        console.error('Une erreur s\'est produite lors de la récupération des rendez-vous en cours :', error);
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     } 
 }
+
 
 
 async function Activiteterminee(req, res) {
