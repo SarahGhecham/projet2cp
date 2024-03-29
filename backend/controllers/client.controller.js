@@ -485,7 +485,7 @@ function AfficherPrestations(req, res) {
         res.status(500).json({ message: "Une erreur s'est produite lors de la récupération des prestations.", error: error });
     });
 }
-async function DetailsDemandeConfirmee(req, res) {
+async function DetailsRDVConfirme(req, res) {
     const clientId = req.userId;
     const rdvId = req.body.rdvId;
 
@@ -541,5 +541,5 @@ module.exports = {
     ActiviteEncours,
     AfficherPrestations,
     AfficherProfil,
-    DetailsDemandeConfirmee,
+    DetailsRDVConfirme,
 }
