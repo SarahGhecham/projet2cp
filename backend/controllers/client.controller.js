@@ -488,6 +488,7 @@ async function Activiteterminee(req, res) {
     }
 }
 
+
 function AfficherPrestations(req, res) {
     const domaineId = req.body.domaineId; // Supposons que vous récupériez l'ID du domaine depuis les paramètres de l'URL
 
@@ -506,6 +507,47 @@ function AfficherPrestations(req, res) {
         res.status(500).json({ message: "Une erreur s'est produite lors de la récupération des prestations.", error: error });
     });
 }
+async function DetailsDemandeConfirmee(req, res) {
+    const clientId = req.userId;
+    const rdvId = req.body.rdvId;
+
+    try {
+        // Récupérer les détails du rendez-vous
+        const rdv = await models.RDV.findByPk(rdvId, {
+            include: [
+                { model: models.Demande, include: [models.Prestation] }
+            ]
+        });
+
+        if (!rdv) {
+            return res.status(404).json({ message: `Le RDV avec l'ID ${rdvId} n'existe pas.` });
+        }
+
+        // Vérifier si le rendez-vous a été confirmé
+        if (!rdv.confirme) {
+            return res.status(400).json({ message: `Le RDV avec l'ID ${rdvId} n'a pas été confirmé.` });
+        }
+
+        // Récupérer les détails de l'artisan associé à la demande
+        const artisanDemande = await models.ArtisanDemande.findOne({
+            where: { DemandeId: rdv.DemandeId }
+        });
+
+        if (!artisanDemande) {
+            return res.status(404).json({ message: `Aucun artisan n'est associé à la demande de RDV avec l'ID ${rdvId}.` });
+        }
+
+        const artisan = await models.Artisan.findByPk(artisanDemande.ArtisanId, {
+            attributes: ['NomArtisan', 'PrenomArtisan']
+        });
+        // Retourner les détails de l'artisan, du rendez-vous et de la prestation
+        return res.status(200).json({ artisan, rdv, prestation: rdv.Demande.Prestation });
+    } catch (error) {
+        console.error("Erreur lors de la récupération des détails de la demande confirmée :", error);
+        return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
+    }
+}
+
 
 module.exports = {
     signUp: signUp,
@@ -521,4 +563,5 @@ module.exports = {
     ActiviteEncours,
     AfficherPrestations,
     AfficherProfil,
+    DetailsDemandeConfirmee,
 }

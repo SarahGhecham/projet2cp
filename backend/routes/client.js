@@ -17,4 +17,6 @@ router.get('/test/:id',clientController.test);
 router.get('/AfficherActiviteTerminee',auth(),clientController.Activiteterminee);
 router.get('/AfficherActiviteEncours',auth(),clientController.ActiviteEncours);
 router.get('/AfficherPrestations',auth(),clientController.AfficherPrestations);
+router.get('/DetailsDemandeConfirmee',auth(),clientController.DetailsDemandeConfirmee);
+
 module.exports = router;
