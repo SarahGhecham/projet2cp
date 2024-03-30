@@ -52,7 +52,7 @@ function CreerArtisan(req, res) {
                             EmailArtisan: req.body.EmailArtisan,
                             AdresseArtisan: req.body.AdresseArtisan,
                             NumeroTelArtisan: req.body.NumeroTelArtisan,
-                            disponibilite:req.body.disponibilite ,
+                            Disponibilite:req.body.Disponibilite ,
                             photo:req.body.photo
                         }
                         models.Artisan.create(artisan).then(result => {
