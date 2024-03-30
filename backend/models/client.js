@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+const demande = require('./demande');
 module.exports = (sequelize, DataTypes) => {
   class Client extends Model {
     /**
@@ -11,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Client.hasMany(models.Demande, { foreignKey: 'ClientId' });
     }
   }
   Client.init({
@@ -23,7 +25,9 @@ module.exports = (sequelize, DataTypes) => {
     ActifClient: {
       type: DataTypes.BOOLEAN,
       defaultValue: true 
-      }
+      },
+    Points: DataTypes.INTEGER,
+    Service_account: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Client',

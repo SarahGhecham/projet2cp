@@ -11,6 +11,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Artisan.belongsToMany(models.Prestation, { through: 'ArtisanPrestations' });
+      Artisan.belongsToMany(models.Demande, { through: 'ArtisanDemandes' });
+
     }
   }
   Artisan.init({
@@ -23,7 +26,13 @@ module.exports = (sequelize, DataTypes) => {
     ActifArtisan: {
       type: DataTypes.BOOLEAN,
       defaultValue: true 
-      }
+      },
+    Disponibilite: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true // Default value for disponibilite
+      },
+    Points: DataTypes.INTEGER,
+    Service_account: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Artisan',

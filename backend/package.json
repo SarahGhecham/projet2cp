@@ -4,8 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-   
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
   },
   "author": "",
   "license": "ISC",
@@ -17,7 +17,11 @@
     "fastest-validator": "^1.17.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.9.2",
+    "nodeman": "^1.1.2",
     "nodemon": "^3.1.0",
     "sequelize": "^6.37.1"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.6.2"
   }
 }
