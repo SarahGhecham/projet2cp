@@ -33,10 +33,7 @@ module.exports = (sequelize, DataTypes) => {
       },
     Points: DataTypes.INTEGER,
     Service_account: DataTypes.INTEGER ,
-    disponibilite: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true // Default value for disponibilite
-    },
+    
     photo: {
       type: DataTypes.STRING,
       allowNull: true
