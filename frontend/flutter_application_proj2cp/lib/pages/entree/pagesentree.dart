@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_proj2cp/pages/intro_screens/intro_page_1.dart';
-import 'package:flutter_application_proj2cp/pages/intro_screens/intro_page_2.dart';
-import 'package:flutter_application_proj2cp/pages/intro_screens/intro_page_3.dart';
+import 'package:flutter_application_proj2cp/pages/entree/intro_screens/intro_page_1.dart';
+import 'package:flutter_application_proj2cp/pages/entree/intro_screens/intro_page_2.dart';
+import 'package:flutter_application_proj2cp/pages/entree/intro_screens/intro_page_3.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:google_fonts/google_fonts.dart';
 
