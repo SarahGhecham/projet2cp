@@ -4,6 +4,7 @@ const { RDV, Demande} = require('../models');
 const {Prestation} = require('../models');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
 // Inscription du client
 function signUp(req, res) {
@@ -61,17 +62,52 @@ function signUp(req, res) {
     });
 }
 
-function updateclient(req, res) {
-    const id = req.params.id;
+function AfficherProfil(req, res) {
+    const id = req.userId;
+    models.Client.findByPk(id).then(result => {
+        if (result) {
+            const clientInfo = {
+                NomClient: result.NomClient,
+                PrenomClient: result.PrenomClient,
+                EmailClient: result.EmailClient,
+                AdresseClient: result.AdresseClient,
+                NumeroTelClient: result.NumeroTelClient,
+                // Add any other client attributes you want to include
+            };
+            res.status(201).json(clientInfo);
+        } else {
+            res.status(404).json({
+                message: "Client not found"
+            });
+        }
+    }).catch(error => {
+        res.status(500).json({
+            message: "Something went wrong",
+            error: error
+        });
+    });
+}
+
+async function updateClient(req, res) {
+    const id = req.userId;
+
+    // Hash the new password if provided
+    let hashedPassword = null;
+    if (req.body.MotdepasseClient) {
+        hashedPassword = await bcrypt.hash(req.body.MotdepasseClient, 10);
+    }
+
     const updatedClient = {
         NomClient: req.body.NomClient,
-        PrenomClient:req.body.PrenomClient,
-        MotdepasseClient: req.body.MotdepasseClient,
+        PrenomClient: req.body.PrenomClient,
+        MotdepasseClient: hashedPassword, // Hashed password
         EmailClient: req.body.EmailClient,
         AdresseClient: req.body.AdresseClient,
-        NumeroTelClient: req.body.NumeroTelClient
+        NumeroTelClient: req.body.NumeroTelClient,
+        //  any other client attributes you want to update
     };
 
+    // Update the Client model with the updated data
     models.Client.update(updatedClient, { where: { id: id } })
         .then(result => {
             if (result[0] === 1) {
@@ -90,6 +126,7 @@ function updateclient(req, res) {
             });
         });
 }
+
 function creerEvaluation(req, res) {
     const evaluation = {
         Note:req.body.Note,
@@ -405,7 +442,7 @@ function AfficherPrestations(req, res) {
 
 module.exports = {
     signUp: signUp,
-    updateclient:updateclient,
+    updateClient:updateClient,
     lancerdemande:lancerdemande,
     creerRDV:creerRDV, 
     confirmerRDV:confirmerRDV,
