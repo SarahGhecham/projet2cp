@@ -50,19 +50,22 @@ class _SignUpPageState extends State<SignUpPage> {
                 Container(
                   width: 100,
                   height: 41,
+                  decoration: BoxDecoration(
+                    color: Color(0xFFDCC8C5).withOpacity(0.22),
+                    border: Border.all(
+                      color: Color(0xFFDCC8C5),
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   child: TextFormField(
                     controller: _nameController,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
                       hintText: "Nom",
                       hintStyle: TextStyle(fontFamily: "Poppins", color: Color(0xFF777777),),
-                      filled: true,
-                      fillColor: Color(0xFFDCC8C5).withOpacity(0.22),
-                      contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0,),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Color(0xFFDCC8C5), width: 1.0,),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                      contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0,),
+                      border: InputBorder.none,
                     ),
                   ),
                 ),
@@ -70,19 +73,22 @@ class _SignUpPageState extends State<SignUpPage> {
                 Container(
                   width: 100,
                   height: 41,
+                  decoration: BoxDecoration(
+                    color: Color(0xFFDCC8C5).withOpacity(0.22),
+                    border: Border.all(
+                      color: Color(0xFFDCC8C5),
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   child: TextFormField(
                     controller: _surnameController,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
-                      hintText: "Prenom",
+                      hintText: "Prénom",
                       hintStyle: TextStyle(fontFamily: "Poppins", color: Color(0xFF777777),),
-                      filled: true,
-                      fillColor: Color(0xFFDCC8C5).withOpacity(0.22),
-                      contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0,),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Color(0xFFDCC8C5), width: 1.0,),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                      contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0,),
+                      border: InputBorder.none,
                     ),
                   ),
                 ),
@@ -92,19 +98,22 @@ class _SignUpPageState extends State<SignUpPage> {
             Container(
               width: 277,
               height: 41,
+              decoration: BoxDecoration(
+                color: Color(0xFFDCC8C5).withOpacity(0.22),
+                border: Border.all(
+                  color: Color(0xFFDCC8C5),
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
               child: TextFormField(
                 controller: _usernameController,
-                keyboardType: TextInputType.emailAddress,
+                keyboardType: TextInputType.text,
                 decoration: InputDecoration(
-                  hintText: "Email",
+                  hintText: "E-mail",
                   hintStyle: TextStyle(fontFamily: "Poppins", color: Color(0xFF777777),),
-                  filled: true,
-                  fillColor: Color(0xFFDCC8C5).withOpacity(0.22),
-                  contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0,),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFFDCC8C5), width: 1.0,),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                  contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0,),
+                  border: InputBorder.none,
                 ),
               ),
             ),
@@ -112,20 +121,22 @@ class _SignUpPageState extends State<SignUpPage> {
             Container(
               width: 277,
               height: 41,
+              decoration: BoxDecoration(
+                color: Color(0xFFDCC8C5).withOpacity(0.22),
+                border: Border.all(
+                  color: Color(0xFFDCC8C5),
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
               child: TextFormField(
                 controller: _locationController,
                 keyboardType: TextInputType.text,
-                obscureText: true,
                 decoration: InputDecoration(
                   hintText: "Adresse",
                   hintStyle: TextStyle(fontFamily: "Poppins", color: Color(0xFF777777),),
-                  filled: true,
-                  fillColor: Color(0xFFDCC8C5).withOpacity(0.22),
-                  contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0,),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFFDCC8C5), width: 1.0,),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                  contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0,),
+                  border: InputBorder.none,
                 ),
               ),
             ),
@@ -133,6 +144,14 @@ class _SignUpPageState extends State<SignUpPage> {
             Container(
               width: 277,
               height: 41,
+              decoration: BoxDecoration(
+                color: Color(0xFFDCC8C5).withOpacity(0.22),
+                border: Border.all(
+                  color: Color(0xFFDCC8C5),
+                  width: 2,
+                ),
+               borderRadius: BorderRadius.circular(10),
+              ),
               child: TextFormField(
                 controller: _passwordController,
                 keyboardType: TextInputType.text,
@@ -140,22 +159,18 @@ class _SignUpPageState extends State<SignUpPage> {
                 decoration: InputDecoration(
                   hintText: "Mot de passe",
                   hintStyle: TextStyle(fontFamily: "Poppins", color: Color(0xFF777777),),
-                  filled: true,
-                  fillColor: Color(0xFFDCC8C5).withOpacity(0.22),
-                  contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0,),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFFDCC8C5), width: 1.0,),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                  contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0,),
+                  border: InputBorder.none,
                 ),
               ),
             ),
             SizedBox(height: 30),
             ElevatedButton(
               onPressed: (){},
-              child: Text("Connexion",
+              child: Text("S'inscrire",
                 style: TextStyle(
                     color: Colors.white,
+                    fontWeight: FontWeight.bold,
                     fontFamily: "Poppins"
                 ),
               ),

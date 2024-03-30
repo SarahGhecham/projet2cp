@@ -1,4 +1,4 @@
-name: testing
+name: flutter_application_proj2cp
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -36,6 +36,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
   flutter_svg: ^2.0.10+1
+  google_fonts: ^6.2.1
 
 
 dev_dependencies:
@@ -77,12 +78,7 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  fonts:
-    - family: Poppins
-      fonts:
-        - asset: fonts/Poppins/Poppins-Regular.ttf
-        - asset: fonts/Poppins/Poppins-SemiBold.ttf
-        - asset: fonts/Poppins/Poppins-Bold.ttf
+
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro
