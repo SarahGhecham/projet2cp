@@ -1,6 +1,6 @@
 const Validator=require('fastest-validator');
 const models=require('../models');
-const bcryptjs=require('bcryptjs');
+const bcrypt = require('bcrypt');
 
 function AfficherProfil(req,res){
     const id=req.userId;
