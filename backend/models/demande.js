@@ -15,13 +15,16 @@ module.exports = (sequelize, DataTypes) => {
       Demande.belongsTo(models.Client, { foreignKey: 'ClientId' });  
       Demande.belongsToMany(models.Artisan, { through: 'ArtisanDemandes' });
       Demande.belongsTo(models.Prestation, { foreignKey: 'PrestationId' });
+      Demande.hasOne(models.RDV, { foreignKey: 'DemandeId' });
+
 
     }
   }
   Demande.init({
     nom: DataTypes.STRING,
     PrestationId: DataTypes.INTEGER,
-    ClientId: DataTypes.INTEGER
+    ClientId: DataTypes.INTEGER,
+    Urgente:DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Demande',

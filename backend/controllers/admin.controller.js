@@ -214,7 +214,8 @@ function CreerPrestation(req, res) {
         DuréeMax,
         DuréeMin,
         TarifId,
-        DomaineId
+        DomaineId,
+        Ecologique
     } = req.body;
 
     // Création de la prestation dans la base de données
@@ -224,7 +225,8 @@ function CreerPrestation(req, res) {
         DuréeMax,
         DuréeMin,
         TarifId,
-        DomaineId
+        DomaineId,
+        Ecologique
     }).then(() => {
         return res.status(200).json({ message: "Prestation créée avec succès." });
     }).catch(error => {
