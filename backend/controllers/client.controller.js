@@ -13,7 +13,7 @@ function signUp(req, res) {
     }).then(result => {
         if (result) {
             res.status(409).json({
-                message: "Compte email existant"
+                message: "Compte email deja éxistant"
             });
         } else {
             models.Artisan.findOne({
@@ -62,32 +62,6 @@ function signUp(req, res) {
     });
 }
 
-function AfficherProfil(req, res) {
-    const id = req.userId;
-    models.Client.findByPk(id).then(result => {
-        if (result) {
-            const clientInfo = {
-                NomClient: result.NomClient,
-                PrenomClient: result.PrenomClient,
-                EmailClient: result.EmailClient,
-                AdresseClient: result.AdresseClient,
-                NumeroTelClient: result.NumeroTelClient,
-                // Add any other client attributes you want to include
-            };
-            res.status(201).json(clientInfo);
-        } else {
-            res.status(404).json({
-                message: "Client not found"
-            });
-        }
-    }).catch(error => {
-        res.status(500).json({
-            message: "Something went wrong",
-            error: error
-        });
-    });
-}
-
 async function updateClient(req, res) {
     const id = req.userId;
 
@@ -105,7 +79,7 @@ async function updateClient(req, res) {
         AdresseClient: req.body.AdresseClient,
         NumeroTelClient: req.body.NumeroTelClient,
         //  any other client attributes you want to update
-    };
+   const fs = require('fs');
 
     // Update the Client model with the updated data
     models.Client.update(updatedClient, { where: { id: id } })

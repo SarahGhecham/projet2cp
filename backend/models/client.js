@@ -25,7 +25,11 @@ module.exports = (sequelize, DataTypes) => {
     ActifClient: {
       type: DataTypes.BOOLEAN,
       defaultValue: true 
-      },
+    },
+    photo: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
     Points: DataTypes.INTEGER,
     
     photo: {

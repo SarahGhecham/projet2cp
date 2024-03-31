@@ -89,8 +89,8 @@ async function updateartisan(req, res) {
         EmailArtisan: req.body.EmailArtisan,
         AdresseArtisan: req.body.AdresseArtisan,
         NumeroTelArtisan: req.body.NumeroTelArtisan,
-        disponibilite: req.body.disponibilite,
-        photo: req.body.photo 
+        photo: req.body.photo ,
+        Disponnibilite: req.body.Disponnibilite
     };
 
     // Update the Artisan model with the updated data
