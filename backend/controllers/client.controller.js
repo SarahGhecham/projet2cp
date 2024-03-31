@@ -79,7 +79,8 @@ async function updateClient(req, res) {
         AdresseClient: req.body.AdresseClient,
         NumeroTelClient: req.body.NumeroTelClient,
         //  any other client attributes you want to update
-   const fs = require('fs');
+    }
+   const fs = require('fs')
 
     // Update the Client model with the updated data
     models.Client.update(updatedClient, { where: { id: id } })
@@ -100,6 +101,7 @@ async function updateClient(req, res) {
             });
         });
 }
+
 
 function creerEvaluation(req, res) {
     const evaluation = {
