@@ -44,7 +44,12 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: true // Default value for disponibilite
       },
     Points: DataTypes.INTEGER,
-    Service_account: DataTypes.INTEGER
+    Service_account: DataTypes.INTEGER ,
+    
+    photo: {
+      type: DataTypes.STRING,
+      allowNull: true
+    }
   }, {
     sequelize,
     modelName: 'Artisan',

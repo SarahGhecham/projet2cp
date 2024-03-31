@@ -2,15 +2,50 @@ const Validator=require('fastest-validator');
 const models=require('../models');
 const bcrypt = require('bcrypt');
 
-async function updateartisan(req, res) {
-    const id = req.params.id;
+async function consulterdemandes(req, res) {
+    const artisanId = req.userId;
 
-    // Hash the new password if provided
-    let hashedPassword = null;
-    if (req.body.MotdepasseArtisan) {
-        hashedPassword = await bcrypt.hash(req.body.MotdepasseArtisan, 10);
+    try {
+        // Find the artisan by ID
+        const artisan = await models.Artisan.findByPk(artisanId);
+
+        if (!artisan) {
+            return res.status(404).json({ message: `Artisan with ID ${artisanId} not found.` });
+        }
+
+        // Retrieve demands associated with the artisan
+        const demands = await artisan.getDemandes();
+
+        // Fetch attributes of clients and prestations for each demand
+        const demandsWithDetails = await Promise.all(demands.map(async (demand) => {
+            const client = await demand.getClient();
+            const prestation = await demand.getPrestation();
+            return {
+                id: demand.id,
+                nomDemande: demand.nom,
+                client: {
+                    id: client.id,
+                    nomClient: client.NomClient,
+                    prenomClient: client.PrenomClient,
+                    emailClient: client.EmailClient,
+                    // we can Add more client attributes as needed
+                },
+                prestation: {
+                    id: prestation.id,
+                    nomPrestation: prestation.NomPrestation,
+                    // we can Add more prestation attributes as needed
+                }
+            };
+        }));
+
+        return res.status(200).json(demandsWithDetails);
+    } catch (error) {
+        console.error('Error retrieving demands for artisan:', error);
+        return res.status(500).json({ message: 'Internal server error' });
     }
 }
+
+
 function AfficherProfil(req,res){
     const id=req.userId;
     models.Artisan.findByPk(id).then(result=>{
@@ -22,8 +57,6 @@ function AfficherProfil(req,res){
                 AdresseArtisan: result.AdresseArtisan,
                 NumeroTelArtisan: result.NumeroTelArtisan,
                 Disponibilite: result.Disponibilite,
-                Points: result.Points,
-                Service_account: result.Service_account
             };
             res.status(201).json(artisanInfo);
         }
@@ -40,8 +73,15 @@ function AfficherProfil(req,res){
     })
 }
 
-function updateartisan(req, res) {
+async function updateartisan(req, res) {
     const id = req.userId;
+
+    // Hash the new password if provided
+    let hashedPassword = null;
+    if (req.body.MotdepasseArtisan) {
+        hashedPassword = await bcrypt.hash(req.body.MotdepasseArtisan, 10);
+    }
+
     const updatedArtisan = {
         NomArtisan: req.body.NomArtisan,
         PrenomArtisan: req.body.PrenomArtisan,
@@ -240,5 +280,6 @@ module.exports = {
     HistoriqueInterventions,
     associerDemandeArtisan,
     AfficherEvaluations,
-    AfficherProfil
+    AfficherProfil ,
+    consulterdemandes
 }
