@@ -233,7 +233,8 @@ function AfficherProfil(req,res){
                 AdresseClient: result.AdresseClient,
                 NumeroTelClient: result.NumeroTelClient,
                 Points: result.Points,
-                Service_account: result.Service_account
+                Service_account: result.Service_account ,
+                photo: result.photo
             };
             res.status(201).json(clientInfo);
         }
