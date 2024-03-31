@@ -10,7 +10,7 @@ async function updateartisan(req, res) {
     if (req.body.MotdepasseArtisan) {
         hashedPassword = await bcrypt.hash(req.body.MotdepasseArtisan, 10);
     }
-
+}
 function AfficherProfil(req,res){
     const id=req.userId;
     models.Artisan.findByPk(id).then(result=>{

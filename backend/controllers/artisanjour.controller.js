@@ -8,7 +8,6 @@ async function addJourToArtisan(req, res) {
             jour: req.body.jour, 
             heureDebut: req.body.heureDebut,
             heureFin: req.body.heureFin
-           
         };
 
         // Find the artisan by ID

@@ -34,11 +34,11 @@ module.exports = (sequelize, DataTypes) => {
     ActifArtisan: {
       type: DataTypes.BOOLEAN,
       defaultValue: true 
+    },
     photo: {
       type: DataTypes.STRING,
       allowNull: true
-    }
-      },
+    },
     Disponibilite: {
         type: DataTypes.BOOLEAN,
         defaultValue: true // Default value for disponibilite
