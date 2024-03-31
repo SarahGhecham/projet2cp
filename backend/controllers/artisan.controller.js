@@ -1,5 +1,15 @@
 const Validator=require('fastest-validator');
 const models=require('../models');
+const bcrypt = require('bcrypt');
+
+async function updateartisan(req, res) {
+    const id = req.params.id;
+
+    // Hash the new password if provided
+    let hashedPassword = null;
+    if (req.body.MotdepasseArtisan) {
+        hashedPassword = await bcrypt.hash(req.body.MotdepasseArtisan, 10);
+    }
 
 function AfficherProfil(req,res){
     const id=req.userId;
@@ -34,14 +44,16 @@ function updateartisan(req, res) {
     const id = req.userId;
     const updatedArtisan = {
         NomArtisan: req.body.NomArtisan,
-        PrenomArtisan:req.body.PrenomArtisan,
-        MotdepasseArtisan: req.body.MotdepasseArtisan,
+        PrenomArtisan: req.body.PrenomArtisan,
+        MotdepasseArtisan: hashedPassword, // Hashed password
         EmailArtisan: req.body.EmailArtisan,
         AdresseArtisan: req.body.AdresseArtisan,
         NumeroTelArtisan: req.body.NumeroTelArtisan,
+        photo: req.body.photo ,
         Disponnibilite: req.body.Disponnibilite
     };
 
+    // Update the Artisan model with the updated data
     models.Artisan.update(updatedArtisan, { where: { id: id } })
         .then(result => {
             if (result[0] === 1) {

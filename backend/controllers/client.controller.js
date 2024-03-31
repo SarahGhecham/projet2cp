@@ -12,7 +12,7 @@ function signUp(req, res) {
     }).then(result => {
         if (result) {
             res.status(409).json({
-                message: "Compte email existant"
+                message: "Compte email deja éxistant"
             });
         } else {
             models.Artisan.findOne({
@@ -61,17 +61,22 @@ function signUp(req, res) {
     });
 }
 
+const fs = require('fs');
+
 function updateclient(req, res) {
     const id = req.params.id;
     const updatedClient = {
         NomClient: req.body.NomClient,
-        PrenomClient:req.body.PrenomClient,
+        PrenomClient: req.body.PrenomClient,
         MotdepasseClient: req.body.MotdepasseClient,
         EmailClient: req.body.EmailClient,
         AdresseClient: req.body.AdresseClient,
-        NumeroTelClient: req.body.NumeroTelClient
+        NumeroTelClient: req.body.NumeroTelClient,
+        disponibilite: req.body.disponibilite ,
+        photo:req.body.photo
     };
 
+    // Update the Client model with the updated data
     models.Client.update(updatedClient, { where: { id: id } })
         .then(result => {
             if (result[0] === 1) {
