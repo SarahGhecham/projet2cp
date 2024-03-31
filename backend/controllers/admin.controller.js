@@ -26,6 +26,7 @@ function Creeradmin(req,res){
         });
     });
 }
+
 function CreerArtisan(req, res) {
     models.Client.findOne({
         where: { EmailClient: req.body.EmailArtisan }
@@ -50,7 +51,9 @@ function CreerArtisan(req, res) {
                             MotdepasseArtisan: hash,
                             EmailArtisan: req.body.EmailArtisan,
                             AdresseArtisan: req.body.AdresseArtisan,
-                            NumeroTelArtisan: req.body.NumeroTelArtisan
+                            NumeroTelArtisan: req.body.NumeroTelArtisan,
+                            Disponibilite:req.body.Disponibilite ,
+                            photo:req.body.photo
                         }
                         models.Artisan.create(artisan).then(result => {
                             res.status(201).json({

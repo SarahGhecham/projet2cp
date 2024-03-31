@@ -4,6 +4,7 @@ const { RDV, Demande} = require('../models');
 const {Prestation} = require('../models');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
 // Inscription du client
 function signUp(req, res) {
@@ -61,20 +62,24 @@ function signUp(req, res) {
     });
 }
 
-const fs = require('fs');
+async function updateClient(req, res) {
+    const id = req.userId;
 
-function updateclient(req, res) {
-    const id = req.params.id;
+    // Hash the new password if provided
+    let hashedPassword = null;
+    if (req.body.MotdepasseClient) {
+        hashedPassword = await bcrypt.hash(req.body.MotdepasseClient, 10);
+    }
+
     const updatedClient = {
         NomClient: req.body.NomClient,
         PrenomClient: req.body.PrenomClient,
-        MotdepasseClient: req.body.MotdepasseClient,
+        MotdepasseClient: hashedPassword, // Hashed password
         EmailClient: req.body.EmailClient,
         AdresseClient: req.body.AdresseClient,
         NumeroTelClient: req.body.NumeroTelClient,
-        disponibilite: req.body.disponibilite ,
-        photo:req.body.photo
-    };
+        //  any other client attributes you want to update
+   const fs = require('fs');
 
     // Update the Client model with the updated data
     models.Client.update(updatedClient, { where: { id: id } })
@@ -95,6 +100,7 @@ function updateclient(req, res) {
             });
         });
 }
+
 function creerEvaluation(req, res) {
     const evaluation = {
         Note:req.body.Note,
@@ -410,7 +416,7 @@ function AfficherPrestations(req, res) {
 
 module.exports = {
     signUp: signUp,
-    updateclient:updateclient,
+    updateClient:updateClient,
     lancerdemande:lancerdemande,
     creerRDV:creerRDV, 
     confirmerRDV:confirmerRDV,
