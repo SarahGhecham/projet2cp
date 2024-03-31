@@ -20,6 +20,8 @@ module.exports = (sequelize, DataTypes) => {
         through: models['artisan.jour'],
         foreignKey: 'artisanId'
       });
+      Artisan.belongsToMany(models.Prestation, { through: 'ArtisanPrestations' });
+      Artisan.belongsToMany(models.Demande, { through: 'ArtisanDemandes' });
     }
   }
   Artisan.init({
@@ -32,15 +34,17 @@ module.exports = (sequelize, DataTypes) => {
     ActifArtisan: {
       type: DataTypes.BOOLEAN,
       defaultValue: true 
-    },
-    disponibilite: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true // Default value for disponibilite
-    },
     photo: {
       type: DataTypes.STRING,
       allowNull: true
     }
+      },
+    Disponibilite: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true // Default value for disponibilite
+      },
+    Points: DataTypes.INTEGER,
+    Service_account: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Artisan',

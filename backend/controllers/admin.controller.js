@@ -1,6 +1,8 @@
 const Validator=require('fastest-validator');
 const models=require('../models');
 const bcryptjs=require('bcryptjs');
+
+
 function Creeradmin(req,res){
  bcryptjs.genSalt(10, function (err, salt) {
         bcryptjs.hash(req.body.MotdepasseAdmin, salt, function (err, hash) {
@@ -167,6 +169,101 @@ function show(req,res){
     })
 }
 
+function AjouterDomaine(req, res) {
+    const { NomDomaine } = req.body; 
+    
+    models.Domaine.create({ 
+        NomDomaine
+    }).then(nouveauDomaine => {
+        res.status(201).json({ success: true, domaine: nouveauDomaine });
+    }).catch(error => {
+        res.status(500).json({ success: false, message: "Une erreur s'est produite lors de l'ajout du domaine." });
+    });
+}
+
+function CreerTarif(req, res) {
+    const {
+        TarifJourMin,
+        TarifJourMax,
+        PourcentageNuit,
+        PourcentageJourFérié,
+        PourcentageWeekend,
+        Unité
+    } = req.body;
+
+
+    models.Tarif.create({
+        TarifJourMin,
+        TarifJourMax,
+        PourcentageNuit,
+        PourcentageJourFérié,
+        PourcentageWeekend,
+        Unité
+    }).then(() => {
+        return res.status(200).json({ message: "Tarif créé avec succès." });
+    }).catch(error => {
+        console.error("Une erreur s'est produite lors de la création du tarif:", error);
+        return res.status(500).json({ message: "Une erreur s'est produite lors de la création du tarif." });
+    });
+}
+function CreerPrestation(req, res) {
+   
+    const {
+        NomPrestation,
+        Matériel,
+        DuréeMax,
+        DuréeMin,
+        TarifId,
+        DomaineId,
+        Ecologique
+    } = req.body;
+
+    // Création de la prestation dans la base de données
+     models.Prestation.create({
+        NomPrestation,
+        Matériel,
+        DuréeMax,
+        DuréeMin,
+        TarifId,
+        DomaineId,
+        Ecologique
+    }).then(() => {
+        return res.status(200).json({ message: "Prestation créée avec succès." });
+    }).catch(error => {
+        console.error("Une erreur s'est produite lors de la création de la prestation:", error);
+        return res.status(500).json({ message: "Une erreur s'est produite lors de la création de la prestation." });
+    });
+}
+async function AjouterPrestation(req, res) {
+    try {
+        artisanId = req.userId;
+        const { prestationName } = req.body;
+
+        const prestation = await models.Prestation.findOne({ where: { NomPrestation: prestationName } });
+
+        if (!prestation) {
+            return res.status(404).json({ message: "La prestation spécifiée n'existe pas." });
+        }
+
+        if (!prestation.id) {
+            return res.status(404).json({ message: "La prestation spécifiée n'a pas d'identifiant valide." });
+        }
+
+        await models.ArtisanPrestation.create({
+            ArtisanId: artisanId,
+            PrestationId: prestation.id
+        });
+
+        return res.status(200).json({ message: "Prestation ajoutée avec succès à l'artisan." });
+    } catch (error) {
+        console.error("Une erreur s'est produite lors de l'ajout de la prestation à l'artisan:", error);
+        return res.status(500).json({ message: "Une erreur s'est produite lors de l'ajout de la prestation à l'artisan." });
+    }
+}
+
+
+
+
 module.exports={
     CreerArtisan:CreerArtisan,
     Creeradmin:Creeradmin,
@@ -176,5 +273,9 @@ module.exports={
     AfficherClients:AfficherClients,
     DesactiverClient:DesactiverClient,
     DesactiverArtisan:DesactiverArtisan,
+    AjouterDomaine:AjouterDomaine,
+    CreerTarif:CreerTarif,
+    CreerPrestation:CreerPrestation,
+    AjouterPrestation:AjouterPrestation,
 
 }
