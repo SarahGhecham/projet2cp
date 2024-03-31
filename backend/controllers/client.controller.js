@@ -6,7 +6,7 @@ const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 const moment = require('moment');
-
+const bcrypt = require('bcryptjs');
 
 // Inscription du client
 function signUp(req, res) {
@@ -15,7 +15,7 @@ function signUp(req, res) {
     }).then(result => {
         if (result) {
             res.status(409).json({
-                message: "Compte email existant"
+                message: "Compte email deja éxistant"
             });
         } else {
             models.Artisan.findOne({
@@ -64,17 +64,27 @@ function signUp(req, res) {
     });
 }
 
-function updateclient(req, res) {
-    const id = req.params.id;
+async function updateClient(req, res) {
+    const id = req.userId;
+
+    // Hash the new password if provided
+    let hashedPassword = null;
+    if (req.body.MotdepasseClient) {
+        hashedPassword = await bcrypt.hash(req.body.MotdepasseClient, 10);
+    }
+
     const updatedClient = {
         NomClient: req.body.NomClient,
-        PrenomClient:req.body.PrenomClient,
-        MotdepasseClient: req.body.MotdepasseClient,
+        PrenomClient: req.body.PrenomClient,
+        MotdepasseClient: hashedPassword, // Hashed password
         EmailClient: req.body.EmailClient,
         AdresseClient: req.body.AdresseClient,
-        NumeroTelClient: req.body.NumeroTelClient
-    };
+        NumeroTelClient: req.body.NumeroTelClient,
+        //  any other client attributes you want to update
+    }
+   const fs = require('fs')
 
+    // Update the Client model with the updated data
     models.Client.update(updatedClient, { where: { id: id } })
         .then(result => {
             if (result[0] === 1) {
@@ -601,7 +611,7 @@ async function DetailsRDVTermine(req, res) {
 
 module.exports = {
     signUp: signUp,
-    updateclient:updateclient,
+    updateClient:updateClient,
     lancerdemande:lancerdemande,
     creerRDV:creerRDV, 
     confirmerRDV:confirmerRDV,

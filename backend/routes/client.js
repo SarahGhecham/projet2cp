@@ -6,7 +6,7 @@ const CheckAuthMiddleWare = require('../middleware/check-auth');
 const router = express.Router();
 router.post('/sign-up',clientController.signUp);
 router.post('/creerEvaluation',auth(),clientController.creerEvaluation);
-router.patch('/:id',clientController.updateclient);
+router.patch('/updateClient',auth(),clientController.updateClient);
 router.post('/lancerdemande',auth(),clientController.lancerdemande);
 router.post('/creerRDV',auth(),clientController.creerRDV);
 router.post('/confirmerRDV',auth(),clientController.confirmerRDV);
