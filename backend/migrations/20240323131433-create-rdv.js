@@ -15,6 +15,9 @@ module.exports = {
       DateFin: {
         type: Sequelize.DATE
       },
+      HeureDebut: {
+        type: Sequelize.TIME
+      },
       HeureFin: {
         type: Sequelize.TIME
       },

@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
   RDV.init({
     DateDebut: DataTypes.DATE,
     DateFin: DataTypes.DATE,
+    HeureDebut: DataTypes.TIME,
     HeureFin: DataTypes.TIME,
     accepte: DataTypes.BOOLEAN,
     confirme: DataTypes.BOOLEAN,

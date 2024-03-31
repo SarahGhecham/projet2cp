@@ -13,7 +13,10 @@ router.post('/test',artisanController.associerDemandeArtisan);
 //router.get('/AfficherEvaluations',auth(),artisanController.AfficherEvaluations);
 router.get('/AfficherActiviteTerminee',auth(),artisanController.Activiteterminee);
 router.get('/AfficherActiviteEncours',auth(),artisanController.ActiviteEncours);
+router.get('/DetailsRDVTermine',auth(),artisanController.DetailsRDVTermine);
+router.get('/DetailsDemandeConfirmee',auth(),artisanController.DetailsDemandeConfirmee);
 router.get('/ConsulterDemandes',auth(),artisanController.consulterdemandes);
+
 
 
 module.exports = router;
