@@ -11,6 +11,7 @@ router.post('/annulerRDV',auth(),artisanController.annulerRDV);
 router.get('/HistoriqueInterventions',auth(),artisanController.HistoriqueInterventions);
 router.post('/test',artisanController.associerDemandeArtisan);
 router.get('/AfficherEvaluations',auth(),artisanController.AfficherEvaluations);
+router.get('/ConsulterDemandes',auth(),artisanController.consulterdemandes);
 
 
 module.exports = router;
