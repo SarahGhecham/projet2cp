@@ -1,20 +1,73 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_application_proj2cp/pages/inscription.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 class LogInPage extends StatefulWidget {
+  const LogInPage({Key? key}) : super(key: key);
   @override
   State<LogInPage> createState() => _LogInPageState();
 }
+
 
 class _LogInPageState extends State<LogInPage> {
 
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  Future<void> _authenticateUser() async {
+    final username = _usernameController.text;
+    final password = _passwordController.text;
 
+    final url = Uri.parse('http://localhost:3000/connexion/login');
+
+    try {
+      final response = await http.post(
+        url,
+        body: json.encode({'username': username, 'password': password}),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+
+        final responseData = json.decode(response.body);
+
+
+        final token = responseData['token'];
+
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(),
+          ),
+        );
+      } else {
+
+        print('Authentication failed');
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Authentication Failed'),
+            content: Text('Invalid username or password. Please try again.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +142,7 @@ class _LogInPageState extends State<LogInPage> {
             ),
             SizedBox(height: 30),
             ElevatedButton(
-              onPressed: (){},
+              onPressed: _authenticateUser,
               child: Text("Connexion",
                 style: GoogleFonts.poppins(
                     color: Colors.white,
