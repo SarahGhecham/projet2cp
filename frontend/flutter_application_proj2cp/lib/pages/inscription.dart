@@ -12,15 +12,15 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _nameController = TextEditingController();
-  final _surnameController = TextEditingController();
   final _locationController = TextEditingController();
+  final _telephoneController = TextEditingController();
+  final _emailController = TextEditingController();
 
   Future<void> _signUpUser() async {
     final username = _usernameController.text;
     final password = _passwordController.text;
-    final name = _nameController.text;
-    final surname = _surnameController.text;
+    final email = _emailController.text;
+    final telephone = _telephoneController.text;
     final location = _locationController.text;
 
     final url = Uri.parse('http://10.0.2.2:3000/client/sign-up');
@@ -29,16 +29,17 @@ class _SignUpPageState extends State<SignUpPage> {
       final response = await http.post(
         url,
         body: json.encode({
-          'name': name,
-          'surname': surname,
           'username': username,
+          'telephone': telephone,
+          'email': email,
           'location': location,
           'password': password,
         }),
         headers: {'Content-Type': 'application/json'},
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
+        // Signup successful, navigate to HomeScreen or perform any other action
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -46,6 +47,7 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
         );
       } else {
+        // Signup failed, display error message
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -106,7 +108,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: TextFormField(
-                    controller: _nameController,
+                    controller: _usernameController,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
                       hintText: "Nom",
@@ -135,10 +137,10 @@ class _SignUpPageState extends State<SignUpPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: TextFormField(
-                    controller: _surnameController,
+                    controller: _telephoneController,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
-                      hintText: "Prénom",
+                      hintText: "Numéro",
                       hintStyle: TextStyle(
                         fontFamily: "Poppins",
                         color: Color(0xFF777777),
@@ -166,8 +168,8 @@ class _SignUpPageState extends State<SignUpPage> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: TextFormField(
-                controller: _usernameController,
-                keyboardType: TextInputType.text,
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   hintText: "E-mail",
                   hintStyle: TextStyle(
@@ -249,6 +251,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
+                    fontSize: 17,
                     fontFamily: "Poppins"),
               ),
               style: ButtonStyle(
