@@ -13,6 +13,17 @@ const nodemailer = require('nodemailer');
 
 async function signUp(req, res) {
     try {
+        const requiredFields = ['Username', 'MotdepasseClient', 'EmailClient', 'AdresseClient', 'NumeroTelClient'];
+        for (const field of requiredFields) {
+            if (!req.body[field]) {
+                return res.status(400).json({ message: `Le champ '${field}' n'est pas remplis!` });
+            }
+        }
+        const phonePattern = /^[0-9]{10}$/; 
+        if (!phonePattern.test(req.body.NumeroTelClient)) {
+            return res.status(400).json({ message: "Le numéro de téléphone n'a pas le bon format" });
+        }
+
         const apiKey = '2859b334b5cf4296976a534dbe5e69a7';
         const email = req.body.EmailClient;
 
@@ -40,7 +51,6 @@ async function signUp(req, res) {
                                             };
                                             models.Client.create(client)
                                                 .then(result => {
-                                                    
                                                     const transporter = nodemailer.createTransport({
                                                         service: 'gmail',
                                                         auth: {
@@ -56,8 +66,6 @@ async function signUp(req, res) {
                                                         text: `Bonjour ${req.body.Username},
 
 Nous sommes ravis de vous accueillir chez Beaver ! Vous avez maintenant accès à notre plateforme et à tous nos services.
-
-
 
 N'hésitez pas à explorer notre plateforme et à profiter de toutes les fonctionnalités que nous offrons. Si vous avez des questions ou avez besoin d'aide, n'hésitez pas à nous contacter.
 
