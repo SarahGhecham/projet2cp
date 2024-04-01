@@ -32,8 +32,7 @@ async function signUp(req, res) {
                                     bcryptjs.genSalt(10, function (err, salt) {
                                         bcryptjs.hash(req.body.MotdepasseClient, salt, function (err, hash) {
                                             const client = {
-                                                NomClient: req.body.NomClient,
-                                                PrenomClient: req.body.PrenomClient,
+                                                Username: req.body.Username,
                                                 MotdepasseClient: hash,
                                                 EmailClient: email,
                                                 AdresseClient: req.body.AdresseClient,
@@ -54,7 +53,7 @@ async function signUp(req, res) {
                                                         from: 'Beaver',
                                                         to: email,
                                                         subject: 'Confirmation d\'inscription',
-                                                        text: `Bonjour ${req.body.PrenomClient},
+                                                        text: `Bonjour ${req.body.Username},
 
 Nous sommes ravis de vous accueillir chez Beaver ! Vous avez maintenant accès à notre plateforme et à tous nos services.
 
