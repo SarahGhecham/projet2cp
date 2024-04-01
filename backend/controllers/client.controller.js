@@ -51,7 +51,7 @@ async function signUp(req, res) {
                                                     });
 
                                                     const mailOptions = {
-                                                        from: 'beaverappservices@gmail.com',
+                                                        from: 'Beaver',
                                                         to: email,
                                                         subject: 'Confirmation d\'inscription',
                                                         text: `Bonjour ${req.body.PrenomClient},
