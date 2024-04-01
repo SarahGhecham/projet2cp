@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
-
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -9,14 +10,60 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
   final _surnameController = TextEditingController();
   final _locationController = TextEditingController();
 
+  Future<void> _signUpUser() async {
+    final username = _usernameController.text;
+    final password = _passwordController.text;
+    final name = _nameController.text;
+    final surname = _surnameController.text;
+    final location = _locationController.text;
 
+    final url = Uri.parse('http://10.0.2.2:3000/client/sign-up');
+
+    try {
+      final response = await http.post(
+        url,
+        body: json.encode({
+          'name': name,
+          'surname': surname,
+          'username': username,
+          'location': location,
+          'password': password,
+        }),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(),
+          ),
+        );
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Signup Failed'),
+            content: Text('Failed to sign up. Please try again.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +74,8 @@ class _SignUpPageState extends State<SignUpPage> {
           children: <Widget>[
             SizedBox(height: 70),
             Container(
-              height:100,
-              width:300,
+              height: 100,
+              width: 300,
               child: Image.asset("assets/logo.png"),
             ),
             SizedBox(height: 30),
@@ -63,8 +110,14 @@ class _SignUpPageState extends State<SignUpPage> {
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
                       hintText: "Nom",
-                      hintStyle: TextStyle(fontFamily: "Poppins", color: Color(0xFF777777),),
-                      contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0,),
+                      hintStyle: TextStyle(
+                        fontFamily: "Poppins",
+                        color: Color(0xFF777777),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 10.0,
+                        horizontal: 16.0,
+                      ),
                       border: InputBorder.none,
                     ),
                   ),
@@ -86,8 +139,14 @@ class _SignUpPageState extends State<SignUpPage> {
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
                       hintText: "Prénom",
-                      hintStyle: TextStyle(fontFamily: "Poppins", color: Color(0xFF777777),),
-                      contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0,),
+                      hintStyle: TextStyle(
+                        fontFamily: "Poppins",
+                        color: Color(0xFF777777),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 10.0,
+                        horizontal: 16.0,
+                      ),
                       border: InputBorder.none,
                     ),
                   ),
@@ -111,8 +170,14 @@ class _SignUpPageState extends State<SignUpPage> {
                 keyboardType: TextInputType.text,
                 decoration: InputDecoration(
                   hintText: "E-mail",
-                  hintStyle: TextStyle(fontFamily: "Poppins", color: Color(0xFF777777),),
-                  contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0,),
+                  hintStyle: TextStyle(
+                    fontFamily: "Poppins",
+                    color: Color(0xFF777777),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 10.0,
+                    horizontal: 16.0,
+                  ),
                   border: InputBorder.none,
                 ),
               ),
@@ -134,8 +199,14 @@ class _SignUpPageState extends State<SignUpPage> {
                 keyboardType: TextInputType.text,
                 decoration: InputDecoration(
                   hintText: "Adresse",
-                  hintStyle: TextStyle(fontFamily: "Poppins", color: Color(0xFF777777),),
-                  contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0,),
+                  hintStyle: TextStyle(
+                    fontFamily: "Poppins",
+                    color: Color(0xFF777777),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 10.0,
+                    horizontal: 16.0,
+                  ),
                   border: InputBorder.none,
                 ),
               ),
@@ -150,7 +221,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   color: Color(0xFFDCC8C5),
                   width: 2,
                 ),
-               borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(10),
               ),
               child: TextFormField(
                 controller: _passwordController,
@@ -158,21 +229,27 @@ class _SignUpPageState extends State<SignUpPage> {
                 obscureText: true,
                 decoration: InputDecoration(
                   hintText: "Mot de passe",
-                  hintStyle: TextStyle(fontFamily: "Poppins", color: Color(0xFF777777),),
-                  contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0,),
+                  hintStyle: TextStyle(
+                    fontFamily: "Poppins",
+                    color: Color(0xFF777777),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 10.0,
+                    horizontal: 16.0,
+                  ),
                   border: InputBorder.none,
                 ),
               ),
             ),
             SizedBox(height: 30),
             ElevatedButton(
-              onPressed: (){},
-              child: Text("S'inscrire",
+              onPressed: _signUpUser,
+              child: Text(
+                "S'inscrire",
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontFamily: "Poppins"
-                ),
+                    fontFamily: "Poppins"),
               ),
               style: ButtonStyle(
                 minimumSize: MaterialStateProperty.all<Size>(Size(100, 37)),
@@ -181,7 +258,8 @@ class _SignUpPageState extends State<SignUpPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                backgroundColor: MaterialStateProperty.all<Color>(Color(0xFFFF8787)),
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Color(0xFFFF8787)),
               ),
             ),
             SizedBox(height: 20),
@@ -197,7 +275,13 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ),
                   SizedBox(width: 10),
-                  Text("or",style: TextStyle(color: Colors.grey, fontSize: 16, fontFamily: "Poppins"),),
+                  Text(
+                    "or",
+                    style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 16,
+                        fontFamily: "Poppins"),
+                  ),
                   SizedBox(width: 10),
                   SizedBox(
                     width: 150,
@@ -216,7 +300,11 @@ class _SignUpPageState extends State<SignUpPage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SvgPicture.asset("assets/apple.svg", width: 30, height: 30,),
+                    SvgPicture.asset(
+                      "assets/apple.svg",
+                      width: 30,
+                      height: 30,
+                    ),
                     SizedBox(height: 5), // Adjust the height as needed
                   ],
                 ),
@@ -226,20 +314,29 @@ class _SignUpPageState extends State<SignUpPage> {
                   children: [
                     Text(
                       "Connexion avec Apple",
-                      style: TextStyle(fontSize: 16, fontFamily: "Poppins",),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: "Poppins",
+                      ),
                     ),
                   ],
                 ),
               ],
             ),
-            SizedBox(height: 30,),
+            SizedBox(
+              height: 30,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SvgPicture.asset("assets/google.svg", width: 25, height: 25,),
+                    SvgPicture.asset(
+                      "assets/google.svg",
+                      width: 25,
+                      height: 25,
+                    ),
                     SizedBox(height: 5), // Adjust the height as needed
                   ],
                 ),
@@ -249,7 +346,10 @@ class _SignUpPageState extends State<SignUpPage> {
                   children: [
                     Text(
                       "Connexion avec Google",
-                      style: TextStyle(fontSize: 16, fontFamily: "Poppins",),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: "Poppins",
+                      ),
                     ),
                   ],
                 ),
@@ -259,7 +359,14 @@ class _SignUpPageState extends State<SignUpPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("J’accepte les termes d’utilisation de l’application",style: TextStyle(color: Color(0xFF777777), fontFamily: "Poppins", fontSize: 14,),),
+                Text(
+                  "J’accepte les termes d’utilisation de l’application",
+                  style: TextStyle(
+                    color: Color(0xFF777777),
+                    fontFamily: "Poppins",
+                    fontSize: 14,
+                  ),
+                ),
               ],
             ),
           ],
@@ -268,4 +375,3 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 }
-
