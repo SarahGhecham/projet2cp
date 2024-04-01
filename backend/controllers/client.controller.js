@@ -7,62 +7,110 @@ const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 const moment = require('moment');
 const bcrypt = require('bcryptjs');
+const axios = require('axios');
+const nodemailer = require('nodemailer');
 
-// Inscription du client
-function signUp(req, res) {
-    models.Client.findOne({
-        where: { EmailClient: req.body.EmailClient }
-    }).then(result => {
-        if (result) {
-            res.status(409).json({
-                message: "Compte email deja éxistant"
-            });
-        } else {
-            models.Artisan.findOne({
-                where: {EmailArtisan:req.body.EmailClient }
-            }).then(result=>{
-                if (result) {
-                    res.status(409).json({
-                        message: "Compte email existant"
-                    });
-                }else{   bcryptjs.genSalt(10, function (err, salt) {
-                    bcryptjs.hash(req.body.MotdepasseClient, salt, function (err, hash) {
-                        const client = {
-                            NomClient: req.body.NomClient,
-                            PrenomClient: req.body.PrenomClient,
-                            MotdepasseClient: hash,
-                            EmailClient: req.body.EmailClient,
-                            AdresseClient: req.body.AdresseClient,
-                            NumeroTelClient: req.body.NumeroTelClient
-                        }
-                        models.Client.create(client).then(result => {
-                            res.status(201).json({
-                                message: "Inscription client réussite",
-                                client: result
-                            });
-                        }).catch(error => {
-                            res.status(500).json({
-                                message: "Something went wrong",
-                                error: error
-                            });
-                        });
-                    });
-                });}
-            }).catch(error => {
-                res.status(500).json({
-                    message: "Something went wrong",
-                    error: error
-                });
-            });
-         
+
+async function signUp(req, res) {
+    try {
+        const requiredFields = ['Username', 'MotdepasseClient', 'EmailClient', 'AdresseClient', 'NumeroTelClient'];
+        for (const field of requiredFields) {
+            if (!req.body[field]) {
+                return res.status(400).json({ message: `Le champ '${field}' n'est pas remplis!` });
+            }
         }
-    }).catch(error => {
-        res.status(500).json({
-            message: "Something went wrong",
-            error: error
-        });
-    });
+        const phonePattern = /^[0-9]{10}$/; 
+        if (!phonePattern.test(req.body.NumeroTelClient)) {
+            return res.status(400).json({ message: "Le numéro de téléphone n'a pas le bon format" });
+        }
+
+        const apiKey = '2859b334b5cf4296976a534dbe5e69a7';
+        const email = req.body.EmailClient;
+
+        const response = await axios.get(`https://api.zerobounce.net/v2/validate?api_key=${apiKey}&email=${email}`);
+
+        if (response.data.status === 'valid') {
+            models.Client.findOne({ where: { EmailClient: email } })
+                .then(result => {
+                    if (result) {
+                        res.status(409).json({ message: "Compte email déjà existant" });
+                    } else {
+                        models.Artisan.findOne({ where: { EmailArtisan: email } })
+                            .then(result => {
+                                if (result) {
+                                    res.status(409).json({ message: "Compte email existant" });
+                                } else {
+                                    bcryptjs.genSalt(10, function (err, salt) {
+                                        bcryptjs.hash(req.body.MotdepasseClient, salt, function (err, hash) {
+                                            const client = {
+                                                Username: req.body.Username,
+                                                MotdepasseClient: hash,
+                                                EmailClient: email,
+                                                AdresseClient: req.body.AdresseClient,
+                                                NumeroTelClient: req.body.NumeroTelClient
+                                            };
+                                            models.Client.create(client)
+                                                .then(result => {
+                                                    const transporter = nodemailer.createTransport({
+                                                        service: 'gmail',
+                                                        auth: {
+                                                            user: 'beaverappservices@gmail.com',
+                                                            pass: 'rucn vtaq cmxq dcwe'
+                                                        }
+                                                    });
+
+                                                    const mailOptions = {
+                                                        from: 'Beaver',
+                                                        to: email,
+                                                        subject: 'Confirmation d\'inscription',
+                                                        text: `Bonjour ${req.body.Username},
+
+Nous sommes ravis de vous accueillir chez Beaver ! Vous avez maintenant accès à notre plateforme et à tous nos services.
+
+N'hésitez pas à explorer notre plateforme et à profiter de toutes les fonctionnalités que nous offrons. Si vous avez des questions ou avez besoin d'aide, n'hésitez pas à nous contacter.
+
+Nous vous remercions de votre confiance et sommes impatients de vous voir profiter pleinement de votre expérience avec Beaver !
+
+Cordialement,
+L'équipe Beaver`
+                                                    };
+
+                                                    transporter.sendMail(mailOptions, function (error, info) {
+                                                        if (error) {
+                                                            console.error("Erreur lors de l'envoi de l'email de confirmation :", error);
+                                                        } else {
+                                                            console.log('Email de confirmation envoyé : ' + info.response);
+                                                        }
+                                                    });
+
+                                                    res.status(201).json({ message: "Inscription client réussie", client: result });
+                                                })
+                                                .catch(error => {
+                                                    res.status(500).json({ message: "Something went wrong", error: error });
+                                                });
+                                        });
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                res.status(500).json({ message: "Something went wrong", error: error });
+                            });
+                    }
+                })
+                .catch(error => {
+                    res.status(500).json({ message: "Something went wrong", error: error });
+                });
+        } else {
+            res.status(400).json({ message: "Email invalide" });
+        }
+    } catch (error) {
+        console.error("Erreur lors de la validation de l'e-mail :", error);
+        res.status(500).json({ message: "Erreur lors de la validation de l'e-mail", error: error });
+    }
 }
+
+
+
 
 async function updateClient(req, res) {
     const id = req.userId;
@@ -233,7 +281,8 @@ function AfficherProfil(req,res){
                 AdresseClient: result.AdresseClient,
                 NumeroTelClient: result.NumeroTelClient,
                 Points: result.Points,
-                Service_account: result.Service_account
+                Service_account: result.Service_account ,
+                photo: result.photo
             };
             res.status(201).json(clientInfo);
         }
