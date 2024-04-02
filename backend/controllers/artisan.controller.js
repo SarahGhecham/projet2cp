@@ -26,9 +26,8 @@ async function consulterdemandes(req, res) {
                 nomDemande: demand.nom,
                 client: {
                     id: client.id,
-                    nomClient: client.NomClient,
-                    prenomClient: client.PrenomClient,
                     emailClient: client.EmailClient,
+                    username:client.Username
                     // we can Add more client attributes as needed
                 },
                 prestation: {

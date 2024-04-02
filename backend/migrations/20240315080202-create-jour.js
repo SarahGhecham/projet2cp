@@ -14,10 +14,14 @@ module.exports = {
         type: Sequelize.DATE
       },
       HeureDebut: {
-        type: Sequelize.TIME
+        type: Sequelize.TIME ,
+        allowNull: true,
+
       },
       HeureFin: {
-        type: Sequelize.TIME
+        type: Sequelize.TIME,
+        allowNull: true,
+
       },
       createdAt: {
         allowNull: false,

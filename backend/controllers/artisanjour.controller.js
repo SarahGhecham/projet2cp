@@ -6,8 +6,8 @@ async function addJourToArtisan(req, res) {
         const artisanId = req.params.artisanId;
         const jourData = {
             jour: req.body.jour, 
-            heureDebut: req.body.heureDebut,
-            heureFin: req.body.heureFin
+            HeureDebut: req.body.HeureDebut,
+            HeureFin: req.body.HeureFin
         };
 
         // Find the artisan by ID
@@ -30,7 +30,6 @@ async function addJourToArtisan(req, res) {
         return res.status(500).json({ message: 'Failed to add jour to artisan. Please try again later.' });
     }
 }
-
 async function deleteJourFromArtisan(req, res) {
     const artisanId = req.params.artisanId;
     const jourId = req.params.jourId;
@@ -50,15 +49,27 @@ async function deleteJourFromArtisan(req, res) {
             return res.status(404).json({ message: `Jour with ID ${jourId} not found` });
         }
 
+        // Store jour data before deletion
+        const jourData = {
+            id: jour.id,
+            jour: jour.jour,
+            HeureDebut: jour.HeureDebut,
+            HeureFin: jour.HeureFin
+        };
+
         // Remove the association between artisan and jour
         await artisan.removeJour(jour);
 
-        return res.status(200).json({ message: `Jour with ID ${jourId} successfully removed from artisan with ID ${artisanId}` });
+        return res.status(200).json({ 
+            message: `Jour ${jourData.jour} (ID: ${jourData.id}) is successfully removed from artisan with ID ${artisanId}`,
+            deletedJour: jourData
+        });
     } catch (error) {
         console.error('Error deleting jour from artisan:', error);
         return res.status(500).json({ message: 'Internal server error' });
     }
 }
+
 async function displayplanningofArtisan(req, res) {
     try {
         const artisanId = req.params.artisanId;
@@ -78,7 +89,7 @@ async function displayplanningofArtisan(req, res) {
         let formattedJourethorraires = [];
         jourethorraires.forEach(jour => {
             // Get the horaires for the current jour
-            const horaires = `${jour.heureDebut} à ${jour.heureFin}`;
+            const horaires = `${jour.HeureDebut} à ${jour.HeureFin}`;
 
             // Check if the jour already exists in formattedJourethorraires
             const existingJour = formattedJourethorraires.find(item => item.jour === jour.jour);
