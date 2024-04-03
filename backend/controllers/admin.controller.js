@@ -181,13 +181,15 @@ function AjouterDomaine(req, res) {
         return res.status(400).json({ success: false, message: "Veuillez télécharger une image pour le domaine." });
     }
 
-    const imageDomaine = req.file.filename;  
-
+   
+    const imageURL = `http://localhost:3000/imageDomaine/${req.file.filename}`; 
+    const imageDomaine = imageURL; 
+    
     models.Domaine.create({ 
         NomDomaine,
         imageDomaine
     }).then(nouveauDomaine => {
-        res.status(201).json({ success: true, domaine: nouveauDomaine });
+        res.status(201).json({ success: true, domaine: nouveauDomaine, imageURL: imageURL });
     }).catch(error => {
         res.status(500).json({ success: false, message: "Une erreur s'est produite lors de l'ajout du domaine." });
     });

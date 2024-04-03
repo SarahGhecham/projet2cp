@@ -18,5 +18,5 @@ app.use('/connexion', connexionRoute);
 app.use('/artisan', artisanRoute);
 app.use('/jours', jourRoutes);
 app.use('/artisanjour', artisanjourroute);
-
+app.use("/imageDomaine",express.static('uploads'));
 module.exports = app;
