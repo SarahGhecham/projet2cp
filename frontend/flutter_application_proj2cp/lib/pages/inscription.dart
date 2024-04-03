@@ -29,28 +29,17 @@ class _SignUpPageState extends State<SignUpPage> {
       final response = await http.post(
         url,
         body: json.encode({
-<<<<<<< HEAD
           'Username': username,
           'MotdepasseClient': password,
           'EmailClient': email,
           'AdresseClient': location,
           'NumeroTelClient': telephone,
-=======
-          'username': username,
-          'telephone': telephone,
-          'email': email,
-          'location': location,
-          'password': password,
->>>>>>> yasmine/intégration
+
         }),
         headers: {'Content-Type': 'application/json'},
       );
 
       if (response.statusCode == 201) {
-<<<<<<< HEAD
-=======
-        // Signup successful, navigate to HomeScreen or perform any other action
->>>>>>> yasmine/intégration
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -58,11 +47,7 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
         );
       } else {
-<<<<<<< HEAD
         print('Sign up failed');
-=======
-        // Signup failed, display error message
->>>>>>> yasmine/intégration
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -126,22 +111,14 @@ class _SignUpPageState extends State<SignUpPage> {
                     controller: _usernameController,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
-<<<<<<< HEAD
                       hintText: "Identifiant",
-=======
-                      hintText: "Nom",
->>>>>>> yasmine/intégration
                       hintStyle: TextStyle(
                         fontFamily: "Poppins",
                         color: Color(0xFF777777),
                       ),
                       contentPadding: EdgeInsets.symmetric(
                         vertical: 10.0,
-<<<<<<< HEAD
                         horizontal: 10.0,
-=======
-                        horizontal: 16.0,
->>>>>>> yasmine/intégration
                       ),
                       border: InputBorder.none,
                     ),
@@ -170,11 +147,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       contentPadding: EdgeInsets.symmetric(
                         vertical: 10.0,
-<<<<<<< HEAD
                         horizontal: 10.0,
-=======
-                        horizontal: 16.0,
->>>>>>> yasmine/intégration
                       ),
                       border: InputBorder.none,
                     ),
@@ -205,11 +178,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                   contentPadding: EdgeInsets.symmetric(
                     vertical: 10.0,
-<<<<<<< HEAD
                     horizontal: 10.0,
-=======
-                    horizontal: 16.0,
->>>>>>> yasmine/intégration
                   ),
                   border: InputBorder.none,
                 ),
@@ -238,11 +207,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                   contentPadding: EdgeInsets.symmetric(
                     vertical: 10.0,
-<<<<<<< HEAD
                     horizontal: 10.0,
-=======
-                    horizontal: 16.0,
->>>>>>> yasmine/intégration
                   ),
                   border: InputBorder.none,
                 ),
@@ -272,11 +237,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                   contentPadding: EdgeInsets.symmetric(
                     vertical: 10.0,
-<<<<<<< HEAD
                     horizontal: 10.0,
-=======
-                    horizontal: 16.0,
->>>>>>> yasmine/intégration
                   ),
                   border: InputBorder.none,
                 ),
@@ -290,10 +251,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-<<<<<<< HEAD
-=======
                     fontSize: 17,
->>>>>>> yasmine/intégration
                     fontFamily: "Poppins"),
               ),
               style: ButtonStyle(
