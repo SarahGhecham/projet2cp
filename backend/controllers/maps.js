@@ -9,7 +9,7 @@ async function geocode(address) {
         // Effectuer la requête HTTP pour géocoder l'adresse
         const response = await fetch(url);
         const data = await response.json(); // Convertir la réponse en JSON
-        console.log("Réponse de l'API Google Maps:", data);
+        //console.log("Réponse de l'API Google Maps:", data);
 
         // Vérifier si des résultats ont été trouvés pour l'adresse
         if (data && data.results && data.results.length > 0) {
@@ -31,13 +31,13 @@ async function geocode(address) {
 async function calculateRouteDistance(coords1, coords2) {
     try {
         // Construire l'URL pour la requête de calcul de l'itinéraire avec l'API Directions de Google Maps
-        const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${coords1.latitude},${coords1.longitude}&destination=${coords2.latitude},${coords2.longitude}&key=VOTRE_CLE_API`;
+        const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${coords1.latitude},${coords1.longitude}&destination=${coords2.latitude},${coords2.longitude}&key=AIzaSyD_d366EANPIHugZe9YF5QVxHHa_Bzef_4`;
 
         // Effectuer la requête HTTP pour obtenir l'itinéraire
         const response = await fetch(url);
 
         const data = await response.json(); // Convertir la réponse en JSON
-        console.log("Réponse de l'API Google Maps:", data);
+        //console.log("Réponse de l'API Google Maps:", data);
 
         // Vérifier si des résultats ont été renvoyés et s'il n'y a pas d'erreur
         if (data && data.routes && data.routes.length > 0 && data.routes[0].legs && data.routes[0].legs.length > 0) {
@@ -58,7 +58,7 @@ async function calculateRouteDistance(coords1, coords2) {
 
 // Exemple d'utilisation :
 const clientAddress = 'Résidence Les Pins, Ben Aknoun';
-const artisanAddress = 'École Militaire Polytechnique';
+const artisanAddress = 'ENP,El Harrach';
 
 (async () => {
     try {
