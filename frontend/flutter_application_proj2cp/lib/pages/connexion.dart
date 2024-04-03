@@ -6,6 +6,8 @@ import 'package:flutter_application_proj2cp/pages/inscription.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class LogInPage extends StatefulWidget {
   const LogInPage({Key? key}) : super(key: key);
@@ -31,9 +33,11 @@ class _LogInPageState extends State<LogInPage> {
       );
 
       if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
+        var responseData = json.decode(response.body);
+        var token = responseData['token'];
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', token);
 
-        final token = responseData['token'];
 
         Navigator.push(
           context,
