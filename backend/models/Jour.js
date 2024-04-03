@@ -24,13 +24,13 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
        
       },
-      heureDebut: {
+      HeureDebut: {
         type: DataTypes.TIME,
-        allowNull: false,
+        allowNull: true,
       },
-      heureFin: {
+      HeureFin: {
         type: DataTypes.TIME,
-        allowNull: false,
+        allowNull: true,
       },
     },
     {
