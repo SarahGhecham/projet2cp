@@ -23,12 +23,12 @@ async function signUp(req, res) {
             return res.status(400).json({ message: "Le numéro de téléphone n'a pas le bon format" });
         }
 
-        const apiKey = '2859b334b5cf4296976a534dbe5e69a7';
+       // const apiKey = '2859b334b5cf4296976a534dbe5e69a7';
         const email = req.body.EmailClient;
 
-        const response = await axios.get(`https://api.zerobounce.net/v2/validate?api_key=${apiKey}&email=${email}`);
+        //const response = await axios.get(`https://api.zerobounce.net/v2/validate?api_key=${apiKey}&email=${email}`);
 
-        if (response.data.status === 'valid') {
+       // if (response.data.status === 'valid') {
             models.Client.findOne({ where: { EmailClient: email } })
                 .then(result => {
                     if (result) {
@@ -101,9 +101,9 @@ L'équipe Beaver`
                 .catch(error => {
                     res.status(500).json({ message: "Something went wrong", error: error });
                 });
-        } else {
-            res.status(400).json({ message: "Email invalide" });
-        }
+       // } else {
+            //res.status(400).json({ message: "Email invalide" });
+       // }
     } catch (error) {
         console.error("Erreur lors de la validation de l'e-mail :", error);
         res.status(500).json({ message: "Erreur lors de la validation de l'e-mail", error: error });
@@ -184,9 +184,11 @@ async function creerEvaluation(req, res) {
         // Créer un objet de date et heure pour la date et l'heure actuelles
         const nowDateTime = moment(`${maintenant.format('YYYY-MM-DD')} ${maintenant.format('HH:mm')}`, 'YYYY-MM-DD HH:mm');
         // Comparer maintenant avec l'heure de fin du rendez-vous
+        if (now == rdvDateFin) {
         if (nowDateTime.isBefore(rdvHeureFin)) {
             return res.status(400).json({ message: `L'heure actuelle est antérieure à la fin du rendez-vous.` });
         }
+    }
         if (isNaN(Note) || Note < 0 || Note > 5) {
             return res.status(400).json({ message: "La notation doit être un nombre décimal entre 0 et 5." });
         }
