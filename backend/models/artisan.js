@@ -45,11 +45,6 @@ module.exports = (sequelize, DataTypes) => {
       },
     Points: DataTypes.INTEGER,
     Service_account: DataTypes.INTEGER ,
-    
-    photo: {
-      type: DataTypes.STRING,
-      allowNull: true
-    }
   }, {
     sequelize,
     modelName: 'Artisan',

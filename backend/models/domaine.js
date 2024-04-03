@@ -16,7 +16,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Domaine.init({
-    NomDomaine: DataTypes.STRING
+    NomDomaine: DataTypes.STRING,
+    imageDomaine: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Domaine',

@@ -1,7 +1,8 @@
 const Validator=require('fastest-validator');
 const models=require('../models');
 const bcryptjs=require('bcryptjs');
-
+//const upload = require('../helpers/image_uploader');
+const imageUploader = require('../helpers/image_uploader');
 
 function Creeradmin(req,res){
  bcryptjs.genSalt(10, function (err, salt) {
@@ -11,6 +12,7 @@ function Creeradmin(req,res){
                 PrenomAdmin: req.body.PrenomAdmin,
                 MotdepasseAdmin: hash,
                 EmailAdmin: req.body.EmailAdmin,
+                ActifAdmin: 1
             }
             models.Admin.create(admin).then(result => {
                 res.status(201).json({
@@ -174,16 +176,24 @@ function show(req,res){
 
 function AjouterDomaine(req, res) {
     const { NomDomaine } = req.body; 
+
+    if (!req.file) {
+        return res.status(400).json({ success: false, message: "Veuillez télécharger une image pour le domaine." });
+    }
+
+   
+    const imageURL = `http://localhost:3000/imageDomaine/${req.file.filename}`; 
+    const imageDomaine = imageURL; 
     
     models.Domaine.create({ 
-        NomDomaine
+        NomDomaine,
+        imageDomaine
     }).then(nouveauDomaine => {
-        res.status(201).json({ success: true, domaine: nouveauDomaine });
+        res.status(201).json({ success: true, domaine: nouveauDomaine, imageURL: imageURL });
     }).catch(error => {
         res.status(500).json({ success: false, message: "Une erreur s'est produite lors de l'ajout du domaine." });
     });
 }
-
 function CreerTarif(req, res) {
     const {
         TarifJourMin,
@@ -239,7 +249,7 @@ function CreerPrestation(req, res) {
 }
 async function AjouterPrestation(req, res) {
     try {
-        artisanId = req.userId;
+        artisanId = req.params.id;
         const { prestationName } = req.body;
 
         const prestation = await models.Prestation.findOne({ where: { NomPrestation: prestationName } });
@@ -280,5 +290,6 @@ module.exports={
     CreerTarif:CreerTarif,
     CreerPrestation:CreerPrestation,
     AjouterPrestation:AjouterPrestation,
+    
 
 }

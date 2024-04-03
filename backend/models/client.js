@@ -30,11 +30,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
     Points: DataTypes.INTEGER,
-    
-    photo: {
-      type: DataTypes.STRING,
-      allowNull: true
-    } ,
     Service_account: DataTypes.INTEGER
   }, {
     sequelize,

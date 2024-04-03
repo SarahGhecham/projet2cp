@@ -12,6 +12,9 @@ module.exports = {
       NomDomaine: {
         type: Sequelize.STRING
       },
+      imageDomaine: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
