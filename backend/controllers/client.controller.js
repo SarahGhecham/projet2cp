@@ -10,13 +10,12 @@ const bcrypt = require('bcryptjs');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 
-
 async function signUp(req, res) {
     try {
         const requiredFields = ['Username', 'MotdepasseClient', 'EmailClient', 'AdresseClient', 'NumeroTelClient'];
         for (const field of requiredFields) {
             if (!req.body[field]) {
-                return res.status(400).json({ message: `Le champ '${field}' n'est pas remplis!` });
+                return res.status(400).json({ message: `Le champ '${field}' n'est pas rempli!` });
             }
         }
         const phonePattern = /^[0-9]{10}$/; 
@@ -24,12 +23,12 @@ async function signUp(req, res) {
             return res.status(400).json({ message: "Le numéro de téléphone n'a pas le bon format" });
         }
 
-        const apiKey = '2859b334b5cf4296976a534dbe5e69a7';
+       // const apiKey = '2859b334b5cf4296976a534dbe5e69a7';
         const email = req.body.EmailClient;
 
-        const response = await axios.get(`https://api.zerobounce.net/v2/validate?api_key=${apiKey}&email=${email}`);
+        //const response = await axios.get(`https://api.zerobounce.net/v2/validate?api_key=${apiKey}&email=${email}`);
 
-        if (response.data.status === 'valid') {
+       // if (response.data.status === 'valid') {
             models.Client.findOne({ where: { EmailClient: email } })
                 .then(result => {
                     if (result) {
@@ -51,6 +50,8 @@ async function signUp(req, res) {
                                             };
                                             models.Client.create(client)
                                                 .then(result => {
+                                                    const token = jwt.sign({ userId: result.id, username: result.Username }, 'secret');
+
                                                     const transporter = nodemailer.createTransport({
                                                         service: 'gmail',
                                                         auth: {
@@ -83,10 +84,10 @@ L'équipe Beaver`
                                                         }
                                                     });
 
-                                                    res.status(201).json({ message: "Inscription client réussie", client: result });
+                                                    res.status(201).json({ message: "Inscription client réussie", client: result, token });
                                                 })
                                                 .catch(error => {
-                                                    res.status(500).json({ message: "Something went wrong", error: error });
+                                                    res.status(500).json({ message: "Une erreur s'est produite lors de la création du client", error: error });
                                                 });
                                         });
                                     });
@@ -100,9 +101,9 @@ L'équipe Beaver`
                 .catch(error => {
                     res.status(500).json({ message: "Something went wrong", error: error });
                 });
-        } else {
-            res.status(400).json({ message: "Email invalide" });
-        }
+       // } else {
+            //res.status(400).json({ message: "Email invalide" });
+       // }
     } catch (error) {
         console.error("Erreur lors de la validation de l'e-mail :", error);
         res.status(500).json({ message: "Erreur lors de la validation de l'e-mail", error: error });
@@ -183,9 +184,11 @@ async function creerEvaluation(req, res) {
         // Créer un objet de date et heure pour la date et l'heure actuelles
         const nowDateTime = moment(`${maintenant.format('YYYY-MM-DD')} ${maintenant.format('HH:mm')}`, 'YYYY-MM-DD HH:mm');
         // Comparer maintenant avec l'heure de fin du rendez-vous
+        if (now == rdvDateFin) {
         if (nowDateTime.isBefore(rdvHeureFin)) {
             return res.status(400).json({ message: `L'heure actuelle est antérieure à la fin du rendez-vous.` });
         }
+    }
         if (isNaN(Note) || Note < 0 || Note > 5) {
             return res.status(400).json({ message: "La notation doit être un nombre décimal entre 0 et 5." });
         }
