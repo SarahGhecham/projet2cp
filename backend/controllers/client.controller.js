@@ -10,13 +10,12 @@ const bcrypt = require('bcryptjs');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 
-
 async function signUp(req, res) {
     try {
         const requiredFields = ['Username', 'MotdepasseClient', 'EmailClient', 'AdresseClient', 'NumeroTelClient'];
         for (const field of requiredFields) {
             if (!req.body[field]) {
-                return res.status(400).json({ message: `Le champ '${field}' n'est pas remplis!` });
+                return res.status(400).json({ message: `Le champ '${field}' n'est pas rempli!` });
             }
         }
         const phonePattern = /^[0-9]{10}$/; 
@@ -51,6 +50,8 @@ async function signUp(req, res) {
                                             };
                                             models.Client.create(client)
                                                 .then(result => {
+                                                    const token = jwt.sign({ userId: result.id, username: result.Username }, 'secret');
+
                                                     const transporter = nodemailer.createTransport({
                                                         service: 'gmail',
                                                         auth: {
@@ -83,10 +84,10 @@ L'équipe Beaver`
                                                         }
                                                     });
 
-                                                    res.status(201).json({ message: "Inscription client réussie", client: result });
+                                                    res.status(201).json({ message: "Inscription client réussie", client: result, token });
                                                 })
                                                 .catch(error => {
-                                                    res.status(500).json({ message: "Something went wrong", error: error });
+                                                    res.status(500).json({ message: "Une erreur s'est produite lors de la création du client", error: error });
                                                 });
                                         });
                                     });
