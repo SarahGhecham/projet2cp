@@ -6,22 +6,6 @@ const mysql = require('mysql2');
 // Ajout du middleware body-parser
 app.use(bodyParser.json());
 
-// Création de la connexion à la base de données
-/*const connection = mysql.createConnection({
-    host: "bb3iqml8qb5lz0fvpovr-mysql.services.clever-cloud.com",
-    user: "udg0ybq1kucxqztv",
-    password: "ngZMvyI3omnAcWJIexrX",
-    database: "bb3iqml8qb5lz0fvpovr",
-    port: "3306"
-});
-connection.connect((err) => {
-    if (err) {
-      console.error('Erreur de connexion :', err);
-      return;
-    }
-    console.log('Connecté à la base de données MySQL sur Clever Cloud !');
-});
-*/
 
 const adminRoute = require('./routes/admins');
 const clientRoute = require('./routes/client');
