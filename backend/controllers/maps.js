@@ -1,21 +1,21 @@
 const fetch = require('node-fetch');
-const geolib = require('geolib');
 
 // Fonction pour géocoder une adresse et retourner ses coordonnées
 async function geocode(address) {
     try {
-        // Construire l'URL pour la requête de géocodage
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+        // Construire l'URL pour la requête de géocodage avec l'API Google Maps
+        const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=AIzaSyD_d366EANPIHugZe9YF5QVxHHa_Bzef_4`;
         
         // Effectuer la requête HTTP pour géocoder l'adresse
         const response = await fetch(url);
         const data = await response.json(); // Convertir la réponse en JSON
+        console.log("Réponse de l'API Google Maps:", data);
 
         // Vérifier si des résultats ont été trouvés pour l'adresse
-        if (data && data.length > 0) {
+        if (data && data.results && data.results.length > 0) {
             // Extraire les coordonnées de latitude et de longitude du premier résultat
-            const { lat, lon } = data[0];
-            return { latitude: parseFloat(lat), longitude: parseFloat(lon) };
+            const { lat, lng } = data.results[0].geometry.location;
+            return { latitude: lat, longitude: lng };
         } else {
             // Si aucun résultat n'a été trouvé, lancer une erreur
             throw new Error('No results found for the address');
@@ -27,20 +27,22 @@ async function geocode(address) {
     }
 }
 
-// Fonction pour calculer la distance routière entre deux coordonnées en utilisant l'API OSRM
+// Fonction pour calculer la distance routière entre deux coordonnées en utilisant l'API Google Maps
 async function calculateRouteDistance(coords1, coords2) {
     try {
-        // Construire l'URL pour la requête de calcul de la distance routière avec OSRM
-        const url = `https://router.project-osrm.org/route/v1/driving/${coords1.longitude},${coords1.latitude};${coords2.longitude},${coords2.latitude}?overview=false`;
+        // Construire l'URL pour la requête de calcul de l'itinéraire avec l'API Directions de Google Maps
+        const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${coords1.latitude},${coords1.longitude}&destination=${coords2.latitude},${coords2.longitude}&key=VOTRE_CLE_API`;
 
-        // Effectuer la requête HTTP pour calculer la distance routière
+        // Effectuer la requête HTTP pour obtenir l'itinéraire
         const response = await fetch(url);
-        const data = await response.json(); // Convertir la réponse en JSON
 
-        // Vérifier si des résultats ont été renvoyés
-        if (data && data.routes && data.routes.length > 0) {
-            // Extraire la distance en mètres depuis les résultats
-            const distanceInMeters = data.routes[0].distance;
+        const data = await response.json(); // Convertir la réponse en JSON
+        console.log("Réponse de l'API Google Maps:", data);
+
+        // Vérifier si des résultats ont été renvoyés et s'il n'y a pas d'erreur
+        if (data && data.routes && data.routes.length > 0 && data.routes[0].legs && data.routes[0].legs.length > 0) {
+            // Extraire la distance en mètres depuis les résultats de l'itinéraire
+            const distanceInMeters = data.routes[0].legs[0].distance.value;
             const distanceInKilometers = distanceInMeters / 1000; // Convertir en kilomètres
             return distanceInKilometers;
         } else {
@@ -52,6 +54,7 @@ async function calculateRouteDistance(coords1, coords2) {
         throw new Error('Failed to calculate route distance');
     }
 }
+
 
 // Exemple d'utilisation :
 const clientAddress = 'Résidence Les Pins, Ben Aknoun';
@@ -78,4 +81,5 @@ const artisanAddress = 'École Militaire Polytechnique';
         console.error('Error:', error);
     }
 })();
+
 
