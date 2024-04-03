@@ -96,7 +96,7 @@ class _SignUpPageState extends State<SignUpPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: 100,
+                  width: 125,
                   height: 41,
                   decoration: BoxDecoration(
                     color: Color(0xFFDCC8C5).withOpacity(0.22),
@@ -110,22 +110,22 @@ class _SignUpPageState extends State<SignUpPage> {
                     controller: _usernameController,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
-                      hintText: "Nom",
+                      hintText: "Identifiant",
                       hintStyle: TextStyle(
                         fontFamily: "Poppins",
                         color: Color(0xFF777777),
                       ),
                       contentPadding: EdgeInsets.symmetric(
                         vertical: 10.0,
-                        horizontal: 16.0,
+                        horizontal: 10.0,
                       ),
                       border: InputBorder.none,
                     ),
                   ),
                 ),
-                SizedBox(width: 75),
+                SizedBox(width: 27),
                 Container(
-                  width: 100,
+                  width: 125,
                   height: 41,
                   decoration: BoxDecoration(
                     color: Color(0xFFDCC8C5).withOpacity(0.22),
@@ -146,7 +146,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       contentPadding: EdgeInsets.symmetric(
                         vertical: 10.0,
-                        horizontal: 16.0,
+                        horizontal: 10.0,
                       ),
                       border: InputBorder.none,
                     ),
@@ -177,7 +177,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                   contentPadding: EdgeInsets.symmetric(
                     vertical: 10.0,
-                    horizontal: 16.0,
+                    horizontal: 10.0,
                   ),
                   border: InputBorder.none,
                 ),
@@ -206,7 +206,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                   contentPadding: EdgeInsets.symmetric(
                     vertical: 10.0,
-                    horizontal: 16.0,
+                    horizontal: 10.0,
                   ),
                   border: InputBorder.none,
                 ),
@@ -236,7 +236,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                   contentPadding: EdgeInsets.symmetric(
                     vertical: 10.0,
-                    horizontal: 16.0,
+                    horizontal: 10.0,
                   ),
                   border: InputBorder.none,
                 ),

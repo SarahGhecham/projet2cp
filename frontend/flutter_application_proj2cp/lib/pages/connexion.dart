@@ -26,7 +26,7 @@ class _LogInPageState extends State<LogInPage> {
     try {
       final response = await http.post(
         url,
-        body: json.encode({'EmailClient': email, 'MotdepasseClient': password}),
+        body: json.encode({'Email': email, 'Motdepasse': password}),
         headers: {'Content-Type': 'application/json'},
       );
 
