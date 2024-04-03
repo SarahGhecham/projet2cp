@@ -21,6 +21,9 @@ module.exports = {
       MotdepasseAdmin: {
         type: Sequelize.STRING
       },
+      ActifAdmin: {
+        type: Sequelize.BOOLEAN
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
