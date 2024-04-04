@@ -23,6 +23,15 @@ async function signUp(req, res) {
             return res.status(400).json({ message: "Le numéro de téléphone n'a pas le bon format" });
         }
 
+        const Cleapi = 'AIzaSyDRCkJohH9RkmMIgpoNB2KBlLF6YMOOmmk';
+        const address = req.body.AdresseClient;
+
+        
+        const isAddressValid = await validateAddress(address, Cleapi);
+
+        if (!isAddressValid) {
+            return res.status(400).json({ message: "L'adresse saisie est invalide" });
+        }
        // const apiKey = '2859b334b5cf4296976a534dbe5e69a7';
         const email = req.body.EmailClient;
 
@@ -110,6 +119,17 @@ L'équipe Beaver`
     }
 }
 
+async function validateAddress(address, Cleapi) {
+    try {
+        const encodedAddress = encodeURIComponent(address);
+        const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${Cleapi}`);
+
+        return response.data.results.length > 0;
+    } catch (error) {
+        console.error("Une erreur s'est produite lors de la validation de l'adresse :", error);
+        throw error;
+    }
+}
 
 
 
