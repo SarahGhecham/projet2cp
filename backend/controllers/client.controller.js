@@ -143,8 +143,7 @@ async function updateClient(req, res) {
     }
 
     const updatedClient = {
-        NomClient: req.body.NomClient,
-        PrenomClient: req.body.PrenomClient,
+       Username:req.body.Username ,
         MotdepasseClient: hashedPassword, // Hashed password
         EmailClient: req.body.EmailClient,
         AdresseClient: req.body.AdresseClient,
@@ -173,6 +172,43 @@ async function updateClient(req, res) {
         });
 }
 
+function updateClientImage(req, res) {
+    const id = req.params.id; // Extract client ID from request parameters
+
+    // Check if a file is uploaded
+    if (!req.file) {
+        return res.status(400).json({ success: false, message: "You must upload an image." });
+    }
+
+    // Construct the image URL for the client
+    const imageURL = `http://localhost:3000/imageClient/${req.file.filename}`;
+
+    // Update the client's photo URL in the database
+    models.Client.findByPk(id)
+        .then(client => {
+            if (!client) {
+                return res.status(404).json({ message: 'Client not found' });
+            }
+
+            // Update the client's photo URL
+            client.photo = imageURL;
+
+            // Save the updated client
+            return client.save();
+        })
+        .then(updatedClient => {
+            // Return success message and the updated client object
+            res.status(201).json({
+                success: true,
+                message: 'Client image updated successfully',
+                client: updatedClient,
+                imageURL: imageURL
+            });
+        })
+        .catch(error => {
+            res.status(500).json({ success: false, message: 'Something went wrong', error: error });
+        });
+}
 async function creerEvaluation(req, res) {
     const evaluation = {
         Note: req.body.Note,
@@ -294,12 +330,11 @@ function AfficherArtisan(req,res){
 }
 
 function AfficherProfil(req,res){
-    const id=req.userId;
+    const id=req.params.id;
     models.Client.findByPk(id).then(result=>{
         if(result){
             const clientInfo = {
-                NomClient: result.NomClient,
-                PrenomClient: result.PrenomClient,
+                Username:result.Username ,
                 EmailClient: result.EmailClient,
                 AdresseClient: result.AdresseClient,
                 NumeroTelClient: result.NumeroTelClient,
@@ -697,4 +732,5 @@ module.exports = {
     AfficherProfil,
     DetailsDemandeConfirmee,
     DetailsRDVTermine,
+    updateClientImage
 }
