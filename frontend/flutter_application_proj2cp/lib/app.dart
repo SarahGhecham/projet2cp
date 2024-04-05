@@ -26,7 +26,7 @@ class App extends StatelessWidget {
           /*theme: ThemeData(
             iconTheme: const IconThemeData(color: vertClair),
           ),*/
-          home: BottomNavBar(),
+          home: LogInPage(),
         );
       },
 
