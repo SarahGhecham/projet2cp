@@ -18,6 +18,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   final List<Widget> _pages = [
     HomeScreen(),
     Activite(),
+
     //MessagesScreen(),
     //ProfileScreen(),
   ];
@@ -31,6 +32,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: <Widget>[
           _pages[_selectedIndex],

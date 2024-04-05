@@ -93,20 +93,12 @@ class _ActiviteState extends State<Activite> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height:
-                  MediaQuery.of(context).size.height - kToolbarHeight - 10.0,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 35),
-                child: _showOngoing ? DemandesEnCours() : DemandesTermines(),
-              ),
-            ),
-            SizedBox(
-              height: 80,
-            )
-          ],
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height - kToolbarHeight - 10.0,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 35),
+            child: _showOngoing ? DemandesEnCours() : DemandesTermines(),
+          ),
         ),
       ),
     );
