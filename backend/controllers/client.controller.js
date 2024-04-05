@@ -202,7 +202,7 @@ async function creerEvaluation(req, res) {
 
 
 
-async function lancerdemande(req, res) {
+/*async function lancerdemande(req, res) {
     const clientId = req.userId;
     const demandeNom = req.body.nom;
     const prestationId = req.body.prestationId;
@@ -239,7 +239,73 @@ async function lancerdemande(req, res) {
         console.error('Une erreur s\'est produite lors de la création de la demande :', error);
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
+}*/
+
+async function lancerdemande(req, res) {
+    // Attributs de la demande
+    const description = req.body.description;
+    const clientId = req.userId; // Supposons que req.userId contient l'ID du client
+    const nomPrestation = req.body.nomPrestation;
+    const urgente = req.body.urgente;
+
+    // Vérifier si clientId est défini
+    if (!clientId) {
+        return res.status(400).json({ message: `L'ID du client n'est pas défini.` });
+    }
+
+    try {
+        // Vérifier si la prestation existe
+        const prestation = await models.Prestation.findOne({ where: { NomPrestation: nomPrestation } });
+        if (!prestation) {
+            return res.status(404).json({ message: `La prestation avec le nom '${nomPrestation}' n'existe pas.` });
+        }
+
+        // Créer la demande avec le nom fourni
+        const nouvelleDemande = await models.Demande.create({
+            Description: description,
+            PrestationId: prestation.id,
+            ClientId: clientId,
+            Urgente: urgente
+        });
+
+        // Vérifier si la demande a été créée avec succès
+        if (!nouvelleDemande) {
+            return res.status(500).json({ message: `Impossible de créer la demande.` });
+        }
+       // Trouver tous les couples (PrestationId, ArtisanId) associés
+        const artisansAssocies = await models.ArtisanPrestation.findAll({
+            where: { PrestationId: prestation.id },
+        });
+
+        // Vérifier si des couples sont associés à la prestation
+        if (!artisansAssocies || artisansAssocies.length === 0) {
+            return res.status(404).json({ message: `Aucun artisan n'est associé à la prestation '${nomPrestation}'.` });
+        }
+        
+        const idsArtisansAssocies = artisansAssocies.map(assoc => assoc.ArtisanId);
+        // Récupérer les détails de chaque artisan associé
+        const artisansIds = [];
+        for (const artisanId of idsArtisansAssocies) {
+            const artisan = await models.Artisan.findByPk(artisanId);
+            if (artisan) {
+                const adresse = artisan.AdresseArtisan; // Supposons que l'attribut s'appelle 'adresse'
+                console.log(adresse);
+
+                // Vérifier si la fonction retourne vrai avec cette adresse
+                    artisansIds.push(artisan.id);
+            }
+        }
+        return res.status(201).json({
+            message: `La demande a été créée avec succès et associée au client et à la prestation.`,
+            demande: nouvelleDemande,
+            artisansIds
+        });
+    } catch (error) {
+        console.error('Une erreur s\'est produite lors de la création de la demande :', error);
+        return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
+    }
 }
+
 
 
 function AfficherArtisan(req,res){
