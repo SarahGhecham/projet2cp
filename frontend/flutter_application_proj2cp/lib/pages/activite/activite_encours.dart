@@ -7,11 +7,13 @@ class Demande {
   final String name;
   final String orderTime;
   final String demandeImage;
+  final String status;
 
   Demande(
       {required this.name,
       required this.orderTime,
-      required this.demandeImage});
+      required this.demandeImage,
+      required this.status});
 }
 
 class DemandesEnCours extends StatefulWidget {
@@ -24,57 +26,59 @@ class _DemandesEnCoursState extends State<DemandesEnCours> {
     Demande(
         name: 'Peinture de Murs et Plafonds',
         orderTime: '04/04/2024, 09:00',
-        demandeImage: 'assets/images/prestations/penture_murs_plafonds.jpg'),
+        demandeImage: 'assets/images/prestations/penture_murs_plafonds.jpg',
+        status: 'accepte'),
     Demande(
         name: 'Peinture de Murs et Plafonds',
         orderTime: '04/04/2024, 09:00',
-        demandeImage: 'assets/images/prestations/penture_murs_plafonds.jpg'),
+        demandeImage: 'assets/images/prestations/penture_murs_plafonds.jpg',
+        status: 'confirme'),
     Demande(
         name: 'Peinture de Murs et Plafonds',
         orderTime: '04/04/2024, 09:00',
-        demandeImage: 'assets/images/prestations/penture_murs_plafonds.jpg'),
+        demandeImage: 'assets/images/prestations/penture_murs_plafonds.jpg',
+        status: 'accepte'),
     Demande(
         name: 'Peinture de Murs et Plafonds',
         orderTime: '04/04/2024, 09:00',
-        demandeImage: 'assets/images/prestations/penture_murs_plafonds.jpg'),
+        demandeImage: 'assets/images/prestations/penture_murs_plafonds.jpg',
+        status: 'confirm'),
     Demande(
         name: 'Peinture de Murs et Plafonds',
         orderTime: '04/04/2024, 09:00',
-        demandeImage: 'assets/images/prestations/penture_murs_plafonds.jpg'),
+        demandeImage: 'assets/images/prestations/penture_murs_plafonds.jpg',
+        status: 'confirme'),
     Demande(
         name: 'Peinture de Murs et Plafonds',
         orderTime: '04/04/2024, 09:00',
-        demandeImage: 'assets/images/prestations/penture_murs_plafonds.jpg'),
+        demandeImage: 'assets/images/prestations/penture_murs_plafonds.jpg',
+        status: 'accepte'),
     Demande(
         name: 'Peinture de Murs et Plafonds',
         orderTime: '04/04/2024, 09:00',
-        demandeImage: 'assets/images/prestations/penture_murs_plafonds.jpg'),
+        demandeImage: 'assets/images/prestations/penture_murs_plafonds.jpg',
+        status: 'confirme'),
     Demande(
         name: 'Peinture de Murs et Plafonds',
         orderTime: '04/04/2024, 09:00',
-        demandeImage: 'assets/images/prestations/penture_murs_plafonds.jpg'),
-    Demande(
-        name: 'Peinture de Murs et Plafonds',
-        orderTime: '04/04/2024, 09:00',
-        demandeImage: 'assets/images/prestations/penture_murs_plafonds.jpg'),
-    Demande(
-        name: 'Peinture de Murs et Plafonds',
-        orderTime: '04/04/2024, 09:00',
-        demandeImage: 'assets/images/prestations/penture_murs_plafonds.jpg'),
-    Demande(
-        name: 'Peinture de Murs et Plafonds',
-        orderTime: '04/04/2024, 09:00',
-        demandeImage: 'assets/images/prestations/penture_murs_plafonds.jpg'),
+        demandeImage: 'assets/images/prestations/penture_murs_plafonds.jpg',
+        status: 'confirme'),
   ];
-  bool _showOngoing = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView.builder(
-        padding: EdgeInsets.only(bottom: kBottomNavigationBarHeight + 70),
-        itemCount: _showOngoing ? demandesEnCours.length : 0,
+        padding: const EdgeInsets.only(bottom: kBottomNavigationBarHeight + 70),
+        itemCount: demandesEnCours.length,
         itemBuilder: (context, index) {
+          String iconAsset;
+          if (demandesEnCours[index].status == 'accepte') {
+            iconAsset = 'assets/icons/acceptee.png';
+          } else {
+            iconAsset = 'assets/icons/confirmee.png';
+          }
+
           return Container(
             decoration: BoxDecoration(
                 border: Border(
@@ -133,8 +137,12 @@ class _DemandesEnCoursState extends State<DemandesEnCours> {
                   ),
                   Positioned(
                     right: 16.0, // Adjust the padding here
-                    top: 16,
-                    child: Icon(Icons.arrow_forward), // Add the icon here
+                    top: 20,
+                    child: Image.asset(
+                      iconAsset,
+                      width: 20,
+                      height: 20,
+                    ), // Add the icon here
                   ),
                 ],
               ),

@@ -57,8 +57,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       onTap: () => _onItemTapped(0),
                       child: Image.asset(
                         _selectedIndex == 0
-                            ? 'assets/icons/home_select.png'
-                            : 'assets/icons/home.png',
+                            ? 'assets/images/home_filled.png'
+                            : 'assets/images/home.png',
                         width: 25,
                         height: 25,
                       ),
@@ -67,30 +67,30 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       onTap: () => _onItemTapped(1),
                       child: Image.asset(
                         _selectedIndex == 1
-                            ? 'assets/icons/activity_select.png'
-                            : 'assets/icons/activity.png',
-                        width: 30,
-                        height: 30,
+                            ? 'assets/images/activity.png'
+                            : 'assets/images/activity_notfilled.png',
+                        width: 27,
+                        height: 27,
                       ),
                     ),
                     GestureDetector(
                       onTap: () => _onItemTapped(2),
                       child: Image.asset(
                         _selectedIndex == 2
-                            ? 'assets/icons/messages_select.png'
-                            : 'assets/icons/messages.png',
-                        width: 30,
-                        height: 30,
+                            ? 'assets/images/chat_filled.png'
+                            : 'assets/images/chat_outline.png',
+                        width: 25,
+                        height: 25,
                       ),
                     ),
                     GestureDetector(
                       onTap: () => _onItemTapped(3),
                       child: Image.asset(
                         _selectedIndex == 3
-                            ? 'assets/icons/profile_select.png'
-                            : 'assets/icons/profile.png',
-                        width: 30,
-                        height: 30,
+                            ? 'assets/images/profile_filled.png'
+                            : 'assets/images/profile_notfilled.png',
+                        width: 35,
+                        height: 35,
                       ),
                     ),
                   ],
