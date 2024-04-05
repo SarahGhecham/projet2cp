@@ -56,7 +56,7 @@ async function calculateRouteDistance(coords1, coords2) {
 
 
 // Exemple d'utilisation :
-const clientAddress = 'Résidence Les Pins, Ben Aknoun';
+/*const clientAddress = 'Résidence Les Pins, Ben Aknoun';
 const artisanAddress = 'ENP,El Harrach';
 
 (async () => {
@@ -79,6 +79,13 @@ const artisanAddress = 'ENP,El Harrach';
         // Gérer les erreurs
         console.error('Error:', error);
     }
-})();
+})();*/
+
+module.exports = {
+    calculateRouteDistance,
+    geocode
+}
+
+
 
 

@@ -45,6 +45,7 @@ module.exports = (sequelize, DataTypes) => {
       },
     Points: DataTypes.INTEGER,
     Service_account: DataTypes.INTEGER ,
+    RayonKm: DataTypes.DECIMAL
   }, {
     sequelize,
     modelName: 'Artisan',

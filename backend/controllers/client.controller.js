@@ -9,6 +9,8 @@ const moment = require('moment');
 const bcrypt = require('bcryptjs');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
+const { geocode, calculateRouteDistance } = require('./maps');
+
 
 
 async function signUp(req, res) {
@@ -288,11 +290,31 @@ async function lancerdemande(req, res) {
         for (const artisanId of idsArtisansAssocies) {
             const artisan = await models.Artisan.findByPk(artisanId);
             if (artisan) {
-                const adresse = artisan.AdresseArtisan; // Supposons que l'attribut s'appelle 'adresse'
-                console.log(adresse);
+                const AdresseArtisan = artisan.AdresseArtisan; // Supposons que l'attribut s'appelle 'adresse'
+                console.log(AdresseArtisan);
+                const clientCoords = await geocode('ESI,oued smar');
+                const artisanCoords = await geocode(AdresseArtisan);
+                
+                // Afficher les coordonnées du client et de l'artisan
+                console.log('Client coordinates:', clientCoords);
+                console.log('Artisan coordinates:', artisanCoords);
 
-                // Vérifier si la fonction retourne vrai avec cette adresse
+                // Calculer la distance routière entre le client et l'artisan
+                const routeDistance = await calculateRouteDistance(clientCoords, artisanCoords);
+                console.log('Route distance between client and artisan:', routeDistance.toFixed(2), 'km');
+                await artisan.update({ RayonKm: 19.4 });
+                if(artisan.RayonKm<routeDistance)
+                {
                     artisansIds.push(artisan.id);
+                    try{
+                        const association = await models.ArtisanDemande.create({
+                            ArtisanId: artisan.id,
+                            DemandeId: nouvelleDemande.id
+                        });
+                    }catch{
+                        console.error('Une erreur s\'est produite lors de lassociation de la demande et lartisan:', error);
+                    }
+                }
             }
         }
         return res.status(201).json({
