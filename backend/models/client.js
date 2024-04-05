@@ -16,8 +16,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Client.init({
-    NomClient: DataTypes.STRING,
-    PrenomClient: DataTypes.STRING,
+    Username: DataTypes.STRING,
     MotdepasseClient: DataTypes.STRING,
     EmailClient: DataTypes.STRING,
     AdresseClient: DataTypes.STRING,
@@ -31,11 +30,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
     Points: DataTypes.INTEGER,
-    
-    photo: {
-      type: DataTypes.STRING,
-      allowNull: true
-    } ,
     Service_account: DataTypes.INTEGER
   }, {
     sequelize,
