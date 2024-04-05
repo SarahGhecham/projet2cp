@@ -9,6 +9,8 @@ const moment = require('moment');
 const bcrypt = require('bcryptjs');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
+const { geocode, calculateRouteDistance } = require('./maps');
+
 
 async function signUp(req, res) {
     try {
@@ -225,7 +227,7 @@ async function creerEvaluation(req, res) {
 
 
 
-async function lancerdemande(req, res) {
+/*async function lancerdemande(req, res) {
     const clientId = req.userId;
     const demandeNom = req.body.nom;
     const prestationId = req.body.prestationId;
@@ -262,7 +264,93 @@ async function lancerdemande(req, res) {
         console.error('Une erreur s\'est produite lors de la création de la demande :', error);
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
+}*/
+
+async function lancerdemande(req, res) {
+    // Attributs de la demande
+    const description = req.body.description;
+    const clientId = req.userId; // Supposons que req.userId contient l'ID du client
+    const nomPrestation = req.body.nomPrestation;
+    const urgente = req.body.urgente;
+
+    // Vérifier si clientId est défini
+    if (!clientId) {
+        return res.status(400).json({ message: `L'ID du client n'est pas défini.` });
+    }
+
+    try {
+        // Vérifier si la prestation existe
+        const prestation = await models.Prestation.findOne({ where: { NomPrestation: nomPrestation } });
+        if (!prestation) {
+            return res.status(404).json({ message: `La prestation avec le nom '${nomPrestation}' n'existe pas.` });
+        }
+
+        // Créer la demande avec le nom fourni
+        const nouvelleDemande = await models.Demande.create({
+            Description: description,
+            PrestationId: prestation.id,
+            ClientId: clientId,
+            Urgente: urgente
+        });
+
+        // Vérifier si la demande a été créée avec succès
+        if (!nouvelleDemande) {
+            return res.status(500).json({ message: `Impossible de créer la demande.` });
+        }
+       // Trouver tous les couples (PrestationId, ArtisanId) associés
+        const artisansAssocies = await models.ArtisanPrestation.findAll({
+            where: { PrestationId: prestation.id },
+        });
+
+        // Vérifier si des couples sont associés à la prestation
+        if (!artisansAssocies || artisansAssocies.length === 0) {
+            return res.status(404).json({ message: `Aucun artisan n'est associé à la prestation '${nomPrestation}'.` });
+        }
+        
+        const idsArtisansAssocies = artisansAssocies.map(assoc => assoc.ArtisanId);
+        // Récupérer les détails de chaque artisan associé
+        const artisansIds = [];
+        for (const artisanId of idsArtisansAssocies) {
+            const artisan = await models.Artisan.findByPk(artisanId);
+            if (artisan) {
+                const AdresseArtisan = artisan.AdresseArtisan; // Supposons que l'attribut s'appelle 'adresse'
+                console.log(AdresseArtisan);
+                const clientCoords = await geocode('ESI,oued smar');
+                const artisanCoords = await geocode(AdresseArtisan);
+                
+                // Afficher les coordonnées du client et de l'artisan
+                console.log('Client coordinates:', clientCoords);
+                console.log('Artisan coordinates:', artisanCoords);
+
+                // Calculer la distance routière entre le client et l'artisan
+                const routeDistance = await calculateRouteDistance(clientCoords, artisanCoords);
+                console.log('Route distance between client and artisan:', routeDistance.toFixed(2), 'km');
+                await artisan.update({ RayonKm: 19.4 });
+                if(artisan.RayonKm<routeDistance)
+                {
+                    artisansIds.push(artisan.id);
+                    try{
+                        const association = await models.ArtisanDemande.create({
+                            ArtisanId: artisan.id,
+                            DemandeId: nouvelleDemande.id
+                        });
+                    }catch{
+                        console.error('Une erreur s\'est produite lors de lassociation de la demande et lartisan:', error);
+                    }
+                }
+            }
+        }
+        return res.status(201).json({
+            message: `La demande a été créée avec succès et associée au client et à la prestation.`,
+            demande: nouvelleDemande,
+            artisansIds
+        });
+    } catch (error) {
+        console.error('Une erreur s\'est produite lors de la création de la demande :', error);
+        return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
+    }
 }
+
 
 
 function AfficherArtisan(req,res){
