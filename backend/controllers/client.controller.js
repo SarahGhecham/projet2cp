@@ -159,7 +159,7 @@ async function updateClient(req, res) {
     models.Client.update(updatedClient, { where: { id: id } })
         .then(result => {
             if (result[0] === 1) {
-                res.status(201).json({
+                res.status(200).json({
                     message: "Client updated successfully",
                     client: updatedClient
                 });
@@ -395,7 +395,7 @@ function AfficherProfil(req,res){
                 Service_account: result.Service_account ,
                 photo: result.photo
             };
-            res.status(201).json(clientInfo);
+            res.status(200).json(clientInfo);
         }
            
         else
