@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+const axios = require('axios');
 
 // Fonction pour géocoder une adresse et retourner ses coordonnées
 async function geocode(address) {
@@ -7,8 +7,8 @@ async function geocode(address) {
         const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=AIzaSyD_d366EANPIHugZe9YF5QVxHHa_Bzef_4`;
         
         // Effectuer la requête HTTP pour géocoder l'adresse
-        const response = await fetch(url);
-        const data = await response.json(); // Convertir la réponse en JSON
+        const response = await axios.get(url);
+        const data = response.data; // Convertir la réponse en JSON
         //console.log("Réponse de l'API Google Maps:", data);
 
         // Vérifier si des résultats ont été trouvés pour l'adresse
@@ -34,9 +34,8 @@ async function calculateRouteDistance(coords1, coords2) {
         const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${coords1.latitude},${coords1.longitude}&destination=${coords2.latitude},${coords2.longitude}&key=AIzaSyD_d366EANPIHugZe9YF5QVxHHa_Bzef_4`;
 
         // Effectuer la requête HTTP pour obtenir l'itinéraire
-        const response = await fetch(url);
-
-        const data = await response.json(); // Convertir la réponse en JSON
+        const response = await axios.get(url);
+        const data = response.data; // Convertir la réponse en JSON
         //console.log("Réponse de l'API Google Maps:", data);
 
         // Vérifier si des résultats ont été renvoyés et s'il n'y a pas d'erreur
@@ -57,7 +56,7 @@ async function calculateRouteDistance(coords1, coords2) {
 
 
 // Exemple d'utilisation :
-/*const clientAddress = 'Résidence Les Pins, Ben Aknoun';
+const clientAddress = 'Résidence Les Pins, Ben Aknoun';
 const artisanAddress = 'ENP,El Harrach';
 
 (async () => {
@@ -80,6 +79,6 @@ const artisanAddress = 'ENP,El Harrach';
         // Gérer les erreurs
         console.error('Error:', error);
     }
-})();*/
+})();
 
 
