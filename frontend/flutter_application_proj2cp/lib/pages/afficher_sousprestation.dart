@@ -19,24 +19,7 @@ class Prestation {
   });
 }
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Prestations',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: PrestationPage(),
-    );
-  }
-}
-
-class PrestationPage extends StatelessWidget {
+class SousPrestationPage extends StatelessWidget {
   // Données fictives pour les prestations
   final List<Prestation> prestations = [
     Prestation(
@@ -71,40 +54,24 @@ class PrestationPage extends StatelessWidget {
           Container(
             margin: EdgeInsets.only(top: 70),
             child: Row(
-              // Use a single Row for icon and title container
               children: [
                 IconButton(
                   icon: Icon(Icons.arrow_back),
                   onPressed: () {
-                    // Handle the back button press (e.g., navigate back)
                     Navigator.pop(context);
                   },
                 ),
-                SizedBox(width: 65), // Add spacing between icon and title
+                SizedBox(width: 105),
                 Align(
-                  // Wrap the container with Align for horizontal centering
                   alignment: Alignment.center,
-                  child: Container(
-                    height: 49,
-                    width: 169,
-                    // Container for beveled rectangle background
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 10), // Add padding
-                    decoration: BoxDecoration(
-                      borderRadius:
-                          BorderRadius.circular(9), // Set border radius
-                      color: Color(0xFFDCC8C5), // Background color
-                    ),
-                    child: Center(
-                      child: Text(
-                        // Title text inside the container
-                        'Peinture',
-                        style: TextStyle(
-                          color: Color(0xff05564B),
-                          fontSize: 21,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Lato',
-                        ),
+                  child: Center(
+                    child: Text(
+                      'Peinture',
+                      style: TextStyle(
+                        color: Color(0xff05564B),
+                        fontSize: 21,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Lato',
                       ),
                     ),
                   ),
