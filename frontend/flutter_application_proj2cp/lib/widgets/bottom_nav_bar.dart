@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
+import 'package:flutter_application_proj2cp/pages/activite/activite_client.dart';
+import 'package:flutter_application_proj2cp/pages/activite/activite_encours.dart';
 import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
 
 class BottomNavBar extends StatefulWidget {
@@ -15,7 +17,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
   // Define your page views
   final List<Widget> _pages = [
     HomeScreen(),
-    //ActivityScreen(),
+    Activite(),
+
     //MessagesScreen(),
     //ProfileScreen(),
   ];
