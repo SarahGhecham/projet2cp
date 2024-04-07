@@ -134,7 +134,7 @@ async function validateAddress(address, Cleapi) {
 
 
 async function updateClient(req, res) {
-    const id = req.userId;
+    const id = req.params.id;
 
     // Hash the new password if provided
     let hashedPassword = null;
@@ -148,6 +148,8 @@ async function updateClient(req, res) {
         EmailClient: req.body.EmailClient,
         AdresseClient: req.body.AdresseClient,
         NumeroTelClient: req.body.NumeroTelClient,
+        
+        
         //  any other client attributes you want to update
     }
    const fs = require('fs')
@@ -156,7 +158,7 @@ async function updateClient(req, res) {
     models.Client.update(updatedClient, { where: { id: id } })
         .then(result => {
             if (result[0] === 1) {
-                res.status(201).json({
+                res.status(200).json({
                     message: "Client updated successfully",
                     client: updatedClient
                 });
@@ -172,6 +174,9 @@ async function updateClient(req, res) {
         });
 }
 
+
+
+
 function updateClientImage(req, res) {
     const id = req.params.id; // Extract client ID from request parameters
 
@@ -179,9 +184,13 @@ function updateClientImage(req, res) {
     if (!req.file) {
         return res.status(400).json({ success: false, message: "You must upload an image." });
     }
+    
+    if (req.file.mimetype == 'image/jpeg') {
+        return res.status(400).json({ success: false, message: "Only JPEG images are supported." });}
+    
 
     // Construct the image URL for the client
-    const imageURL = `http://localhost:3000/imageClient/${req.file.filename}`;
+    const imageURL = `http://192.168.1.67:3000/imageClient/${req.file.filename}`;
 
     // Update the client's photo URL in the database
     models.Client.findByPk(id)
@@ -192,13 +201,14 @@ function updateClientImage(req, res) {
 
             // Update the client's photo URL
             client.photo = imageURL;
+            
 
             // Save the updated client
             return client.save();
         })
         .then(updatedClient => {
             // Return success message and the updated client object
-            res.status(201).json({
+            res.status(200).json({
                 success: true,
                 message: 'Client image updated successfully',
                 client: updatedClient,
@@ -208,7 +218,7 @@ function updateClientImage(req, res) {
         .catch(error => {
             res.status(500).json({ success: false, message: 'Something went wrong', error: error });
         });
-}
+} 
 async function creerEvaluation(req, res) {
     const evaluation = {
         Note: req.body.Note,
@@ -342,7 +352,7 @@ function AfficherProfil(req,res){
                 Service_account: result.Service_account ,
                 photo: result.photo
             };
-            res.status(201).json(clientInfo);
+            res.status(200).json(clientInfo);
         }
            
         else
