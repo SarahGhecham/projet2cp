@@ -108,8 +108,7 @@ class _LogInPageState extends State<LogInPage> {
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     hintText: "Email",
-                    hintStyle: TextStyle(
-                      fontFamily: "Poppins",
+                    hintStyle: GoogleFonts.poppins(
                       color: Color(0xFF777777),
                     ),
                     contentPadding: EdgeInsets.symmetric(
