@@ -41,11 +41,10 @@ async function AfficherTopPrestations(req, res) {
         const topPrestations = await models.Prestation.findAll({
             attributes: [
                 'id', 'NomPrestation',
-                //'NomPrestation'
                 [Sequelize.literal('(SELECT COUNT(*) FROM Demandes WHERE Demandes.PrestationId = Prestation.id)'), 'nombreDemandes']
             ],
             order: [[Sequelize.literal('nombreDemandes'), 'DESC']],
-            limit: 10,//nombre de prestations populaires a afficher
+            limit: 5,//nombre de prestations populaires a afficher
             include: [{ model: models.Demande, attributes: [] }]
         });
 
