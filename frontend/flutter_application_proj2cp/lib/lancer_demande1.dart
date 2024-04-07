@@ -82,7 +82,17 @@ class _Lancerdemande1PageState extends State<Lancerdemande1Page> {
                   color: Color(0xFFFF8787),
                 ),
                 child: InkWell(
-                  onTap: (){},
+                  onTap: (){
+                    setState(() {
+                      if (hour != 0 || min != 0) {
+                        min -= 30;
+                        if (min < 0) {
+                          hour--;
+                          min = 30;
+                        }
+                      }
+                    });
+                  },
                   child: Icon(
                     Icons.remove,
                     color: Colors.black,
@@ -99,7 +109,8 @@ class _Lancerdemande1PageState extends State<Lancerdemande1Page> {
                 ),
                 child: Center(
                   child: Text(
-                    hour.toString() + " : " + min.toString(), style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
+                    hour.toString() + " : " + (min == 0 ? "00" : min.toString()),
+                    style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -112,7 +123,18 @@ class _Lancerdemande1PageState extends State<Lancerdemande1Page> {
                   color: Color(0xFFFF8787),
                 ),
                 child: InkWell(
-                  onTap: (){},
+                  onTap: (){
+                    setState(() {
+                      if (hour < 8) {
+                        min += 30;
+                        if (min > 30) {
+                          hour++;
+                          min = 0;
+                        }
+                      }
+                    });
+                  },
+
                   child: Icon(
                     Icons.add,
                     color: Colors.black,
@@ -154,7 +176,7 @@ class _Lancerdemande1PageState extends State<Lancerdemande1Page> {
                   MaterialStateProperty.all<Color>(Color(0xFFDCC8C5)),
                 ),
               ),
-              SizedBox(width: 40),
+              SizedBox(width: 50),
               ElevatedButton(
                 onPressed: (){},
                 child: Text(
@@ -178,7 +200,7 @@ class _Lancerdemande1PageState extends State<Lancerdemande1Page> {
               ),
             ],
           ),
-          SizedBox(height: 80),
+          SizedBox(height: 90),
           Center(
             child: ElevatedButton(
               onPressed: (){},

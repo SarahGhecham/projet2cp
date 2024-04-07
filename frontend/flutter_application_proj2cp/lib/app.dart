@@ -20,7 +20,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Lancerdemande1Page(), // Use AppNavigator as the home widget
+      home: LogInPage(), // Use AppNavigator as the home widget
     );
   }
 }
