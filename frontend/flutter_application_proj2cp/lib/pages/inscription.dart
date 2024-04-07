@@ -44,6 +44,7 @@ class _SignUpPageState extends State<SignUpPage> {
         var token = responseData['token'];
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
+        print("trace");
         Navigator.push(
           context,
           MaterialPageRoute(

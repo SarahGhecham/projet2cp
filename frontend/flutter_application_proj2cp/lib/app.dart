@@ -20,11 +20,11 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: AppNavigator(), // Use AppNavigator as the home widget
+      home: details_prestationPage(), // Use AppNavigator as the home widget
     );
   }
 }
-
+/*
 class AppNavigator extends StatefulWidget {
   @override
   _AppNavigatorState createState() => _AppNavigatorState();
@@ -53,3 +53,4 @@ class _AppNavigatorState extends State<AppNavigator> {
   }
 }
 
+ */

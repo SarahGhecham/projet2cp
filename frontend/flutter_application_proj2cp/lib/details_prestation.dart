@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -32,35 +33,43 @@ class _details_prestationPageState extends State<details_prestationPage> {
           ],
         ),
       ),
-      body: Column(
-        children: [
-          SizedBox(height: 30),
-          Stack(
-            children: [
-              Positioned(
-                child: Container(
+      body: Center(
+        child: Column(
+          children: [
+            SizedBox(height: 30),
+            Stack(
+              children: [
+                Container(
                   height: 300,
                   width: 315,
                   child: Image.asset("assets/lavage_sol.png"),
                 ),
-              ),
-              Positioned(
-                top: 250,
-                right: 55,
-                child: Container(
-                  height: 400,
-                  width: 300,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Color(0xFFDCC8C5),
+              ],
+            ),
+            Stack(
+              children: [
+                FractionalTranslation(
+                  translation: const Offset(
+                    0,
+                    -0.05,
+                  ),
+                  child: Container(
+                    height: 400,
+                    width: 300,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Color(0xFFDCC8C5),
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-              )
-            ],
-          ),
-        ],
+              ],
+            )
+          ],
+        ),
       )
     );
   }
