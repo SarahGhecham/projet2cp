@@ -61,7 +61,7 @@ async function signUp(req, res) {
                                             };
                                             models.Client.create(client)
                                                 .then(result => {
-                                                    const token = jwt.sign({ userId: result.id, username: result.Username }, 'secret');
+                                                    const token = jwt.sign({ UserId: result.id, username: result.Username }, 'secret');
 
                                                     const transporter = nodemailer.createTransport({
                                                         service: 'gmail',
@@ -372,6 +372,7 @@ async function lancerdemande(req, res) {
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
+
 
 
 

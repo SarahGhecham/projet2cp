@@ -3,6 +3,8 @@ const models=require('../models');
 const bcryptjs=require('bcryptjs');
 //const upload = require('../helpers/image_uploader');
 const imageUploader = require('../helpers/image_uploader');
+const axios = require('axios');
+
 
 function Creeradmin(req,res){
  bcryptjs.genSalt(10, function (err, salt) {
@@ -29,7 +31,14 @@ function Creeradmin(req,res){
     });
 }
 
-function CreerArtisan(req, res) {
+async function CreerArtisan(req, res) {
+    const Cleapi = 'AIzaSyDRCkJohH9RkmMIgpoNB2KBlLF6YMOOmmk';
+        const address = req.body.AdresseArtisan;
+        const isAddressValid = await validateAddress(address, Cleapi);
+
+        if (!isAddressValid) {
+            return res.status(400).json({ message: "L'adresse saisie est invalide" });
+        }
     models.Client.findOne({
         where: { EmailClient: req.body.EmailArtisan }
     }).then(result => {
@@ -83,6 +92,17 @@ function CreerArtisan(req, res) {
         error: error
     });
 });
+}
+async function validateAddress(address, Cleapi) {
+    try {
+        const encodedAddress = encodeURIComponent(address);
+        const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${Cleapi}`);
+
+        return response.data.results.length > 0;
+    } catch (error) {
+        console.error("Une erreur s'est produite lors de la validation de l'adresse :", error);
+        throw error;
+    }
 }
 
 function AfficherArtisans(req,res){
@@ -223,25 +243,30 @@ function CreerPrestation(req, res) {
    
     const {
         NomPrestation,
-        Matériel,
-        DuréeMax,
-        DuréeMin,
+        Materiel,
+        DureeMin,
+        DureeMax,
         TarifId,
         DomaineId,
         Ecologique
     } = req.body;
-
+    if (!req.file) {
+        return res.status(400).json({ success: false, message: "Veuillez télécharger une image pour le domaine." });
+    }
+    const imageURL = `http://localhost:3000/imagePrestation/${req.file.filename}`; 
+    const imagePrestation = imageURL; 
     // Création de la prestation dans la base de données
      models.Prestation.create({
         NomPrestation,
-        Matériel,
-        DuréeMax,
-        DuréeMin,
+        Matériel:Materiel,
+        DuréeMin:DureeMin,
+        DuréeMax:DureeMax,
         TarifId,
         DomaineId,
-        Ecologique
+        Ecologique,
+        imagePrestation
     }).then(() => {
-        return res.status(200).json({ message: "Prestation créée avec succès." });
+        return res.status(200).json({ message: "Prestation créée avec succès." ,imageURL: imageURL});
     }).catch(error => {
         console.error("Une erreur s'est produite lors de la création de la prestation:", error);
         return res.status(500).json({ message: "Une erreur s'est produite lors de la création de la prestation." });

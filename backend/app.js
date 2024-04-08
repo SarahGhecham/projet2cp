@@ -21,4 +21,6 @@ app.use('/jours', jourRoutes);
 app.use('/artisanjour', artisanjourroute);
 app.use('/pageaccueil',pageaccueilRoute);
 app.use("/imageDomaine",express.static('uploads'));
+app.use("/imagePrestation",express.static('uploads'));
+
 module.exports = app;

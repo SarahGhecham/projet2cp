@@ -30,6 +30,9 @@ module.exports = {
     Ecologique: {
         type: Sequelize.BOOLEAN
       },
+    imagePrestation:{
+      type: Sequelize.STRING
+    },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
