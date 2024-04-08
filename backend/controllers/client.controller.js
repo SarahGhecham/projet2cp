@@ -61,7 +61,7 @@ async function signUp(req, res) {
                                             };
                                             models.Client.create(client)
                                                 .then(result => {
-                                                    const token = jwt.sign({ userId: result.id, username: result.Username }, 'secret');
+                                                    const token = jwt.sign({ UserId: result.id, username: result.Username }, 'secret');
 
                                                     const transporter = nodemailer.createTransport({
                                                         service: 'gmail',
@@ -280,7 +280,27 @@ async function lancerdemande(req, res) {
 
     try {
         // Vérifier si la prestation existe
-        const prestation = await models.Prestation.findOne({ where: { NomPrestation: nomPrestation } });
+        //const prestation = await models.Prestation.findOne({ where: { NomPrestation: nomPrestation } });
+        const prestation = await models.Prestation.findOne({ 
+            where: { NomPrestation: nomPrestation },
+            attributes: ['id', 'NomPrestation', 'Ecologique'] // Ajoutez 'Ecologique' à la liste des attributs à inclure
+        });
+        //console.log(prestation.Ecologique);
+        if (prestation.Ecologique) {
+            // Accéder au client avec clientId
+            const client = await models.Client.findByPk(clientId);
+        
+            // Vérifier si le client existe
+            if (!client) {
+                return res.status(404).json({ message: `Le client avec l'ID ${clientId} n'existe pas.` });
+            }
+        
+            // Incrémenter l'attribut "Point" du client
+            client.Points += 1; // Incrémentez selon vos règles métier
+        
+            // Enregistrer les modifications du client dans la base de données
+            await client.save();
+        }
         if (!prestation) {
             return res.status(404).json({ message: `La prestation avec le nom '${nomPrestation}' n'existe pas.` });
         }
@@ -308,11 +328,13 @@ async function lancerdemande(req, res) {
         }
         
         const idsArtisansAssocies = artisansAssocies.map(assoc => assoc.ArtisanId);
+        
         // Récupérer les détails de chaque artisan associé
         const artisansIds = [];
         for (const artisanId of idsArtisansAssocies) {
             const artisan = await models.Artisan.findByPk(artisanId);
-            if (artisan) {
+            if (artisan && (artisan.Disponibilite||!urgente)) {
+                //console.log("eho",artisan.Disponibilite);
                 const AdresseArtisan = artisan.AdresseArtisan; // Supposons que l'attribut s'appelle 'adresse'
                 console.log(AdresseArtisan);
                 const clientCoords = await geocode('ESI,oued smar');
@@ -350,6 +372,7 @@ async function lancerdemande(req, res) {
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
+
 
 
 
