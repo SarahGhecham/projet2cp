@@ -12,6 +12,7 @@ const artisanRoute = require('./routes/artisan');
 const jourRoutes = require('./routes/jour');
 const artisanjourroute = require('./routes/artisanjour');
 const pageaccueilRoute=require('./routes/pageaccueil');
+const messagesRouter = require('./routes/messages');
 
 app.use("/admins", adminRoute);
 app.use("/client", clientRoute);
@@ -22,5 +23,8 @@ app.use('/artisanjour', artisanjourroute);
 app.use('/pageaccueil',pageaccueilRoute);
 app.use("/imageDomaine",express.static('uploads'));
 app.use("/imagePrestation",express.static('uploads'));
+app.use('/messages', messagesRouter);
+
+
 
 module.exports = app;
