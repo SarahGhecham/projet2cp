@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:flutter_application_proj2cp/pages/connexion.dart';
 import 'package:flutter_application_proj2cp/pages/entree/pagesentree.dart';
+import 'package:flutter_application_proj2cp/pages/profile_screen.dart';
 import 'package:flutter_application_proj2cp/widgets/bottom_nav_bar.dart';
 
 import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
@@ -20,13 +21,13 @@ class App extends StatelessWidget {
       splitScreenMode: true,
       // Use builder only if you need to use library outside ScreenUtilInit context
       builder: (context, child) {
-        return const GetMaterialApp(
+        return GetMaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Beaver',
           /*theme: ThemeData(
             iconTheme: const IconThemeData(color: vertClair),
           ),*/
-          home: LogInPage(),
+          home: Profile(),
         );
       },
 
