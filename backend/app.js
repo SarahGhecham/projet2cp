@@ -11,6 +11,7 @@ const connexionRoute = require('./routes/connexion');
 const artisanRoute = require('./routes/artisan');
 const jourRoutes = require('./routes/jour');
 const artisanjourroute = require('./routes/artisanjour');
+const pageaccueilRoute=require('./routes/pageaccueil');
 
 app.use("/admins", adminRoute);
 app.use("/client", clientRoute);
@@ -18,9 +19,11 @@ app.use('/connexion', connexionRoute);
 app.use('/artisan', artisanRoute);
 app.use('/jours', jourRoutes);
 app.use('/artisanjour', artisanjourroute);
+app.use('/pageaccueil',pageaccueilRoute);
 app.use("/imageDomaine",express.static('uploads'));
 app.use("/imageArtisan",express.static('uploads'));
 app.use("/imageClient",express.static('uploads'));
 
+app.use("/imagePrestation",express.static('uploads'));
 
 module.exports = app;

@@ -93,10 +93,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: const [
                     ServiceOffreContainer(
                         image:
-                        'assets/images/servicesPopulaires/servicePopulaire1.png'),
+                            'assets/images/servicesPopulaires/servicePopulaire1.png'),
                     ServiceOffreContainer(
                         image:
-                        'assets/images/servicesPopulaires/servicePopulaire2.png'),
+                            'assets/images/servicesPopulaires/servicePopulaire2.png'),
                   ],
                 ),
               ),
@@ -122,15 +122,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: const [
                     ServiceOffreContainer(
                         image:
-                        'assets/images/offresSpecials/offreSpecial1.jpg'),
+                            'assets/images/offresSpecials/offreSpecial1.jpg'),
                     ServiceOffreContainer(
                         image:
-                        'assets/images/offresSpecials/offreSpecial2.jpg'),
+                            'assets/images/offresSpecials/offreSpecial2.jpg'),
                   ],
                 ),
               ),
               SizedBox(
-                height: 70,
+                height: 80,
               )
             ],
           ),

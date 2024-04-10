@@ -147,6 +147,8 @@ class _ProfileState extends State<Profile> {
     _userData['AdresseClient'] = _addressController.text.isNotEmpty
         ? _addressController.text
         : _userData['AdresseClient'];
+
+    _userData['profilePicturePath'] = _pickedImagePath;
   }
 
   @override

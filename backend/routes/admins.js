@@ -15,8 +15,8 @@ router.patch("/Desactiver/Artisan",adminControllers.DesactiverArtisan);
 router.delete("/:id",adminControllers.destroy);
 router.post("/AjouterDomaine",auth(),imageUploader.upload.single('imageDomaine'),adminControllers.AjouterDomaine);
 router.post("/CreerTarif",adminControllers.CreerTarif);
-router.post("/CreerPrestation",adminControllers.CreerPrestation);
-router.post("/AjouterPrestation",auth(), adminControllers.AjouterPrestation);
+router.post("/CreerPrestation",auth(),imageUploader.upload.single('imagePrestation'),adminControllers.CreerPrestation);
+router.post("/AjouterPrestation/:id",auth(), adminControllers.AjouterPrestation);
 
 
 module.exports=router;
