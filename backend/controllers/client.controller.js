@@ -10,13 +10,12 @@ const bcrypt = require('bcryptjs');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 
-
 async function signUp(req, res) {
     try {
         const requiredFields = ['Username', 'MotdepasseClient', 'EmailClient', 'AdresseClient', 'NumeroTelClient'];
         for (const field of requiredFields) {
             if (!req.body[field]) {
-                return res.status(400).json({ message: `Le champ '${field}' n'est pas remplis!` });
+                return res.status(400).json({ message: `Le champ '${field}' n'est pas rempli!` });
             }
         }
         const phonePattern = /^[0-9]{10}$/; 
@@ -24,12 +23,21 @@ async function signUp(req, res) {
             return res.status(400).json({ message: "Le numéro de téléphone n'a pas le bon format" });
         }
 
-        const apiKey = '2859b334b5cf4296976a534dbe5e69a7';
+        const Cleapi = 'AIzaSyDRCkJohH9RkmMIgpoNB2KBlLF6YMOOmmk';
+        const address = req.body.AdresseClient;
+
+        
+        const isAddressValid = await validateAddress(address, Cleapi);
+
+        if (!isAddressValid) {
+            return res.status(400).json({ message: "L'adresse saisie est invalide" });
+        }
+       // const apiKey = '2859b334b5cf4296976a534dbe5e69a7';
         const email = req.body.EmailClient;
 
-        const response = await axios.get(`https://api.zerobounce.net/v2/validate?api_key=${apiKey}&email=${email}`);
+        //const response = await axios.get(`https://api.zerobounce.net/v2/validate?api_key=${apiKey}&email=${email}`);
 
-        if (response.data.status === 'valid') {
+       // if (response.data.status === 'valid') {
             models.Client.findOne({ where: { EmailClient: email } })
                 .then(result => {
                     if (result) {
@@ -51,6 +59,8 @@ async function signUp(req, res) {
                                             };
                                             models.Client.create(client)
                                                 .then(result => {
+                                                    const token = jwt.sign({ userId: result.id, username: result.Username }, 'secret');
+
                                                     const transporter = nodemailer.createTransport({
                                                         service: 'gmail',
                                                         auth: {
@@ -83,10 +93,10 @@ L'équipe Beaver`
                                                         }
                                                     });
 
-                                                    res.status(201).json({ message: "Inscription client réussie", client: result });
+                                                    res.status(201).json({ message: "Inscription client réussie", client: result, token });
                                                 })
                                                 .catch(error => {
-                                                    res.status(500).json({ message: "Something went wrong", error: error });
+                                                    res.status(500).json({ message: "Une erreur s'est produite lors de la création du client", error: error });
                                                 });
                                         });
                                     });
@@ -100,20 +110,31 @@ L'équipe Beaver`
                 .catch(error => {
                     res.status(500).json({ message: "Something went wrong", error: error });
                 });
-        } else {
-            res.status(400).json({ message: "Email invalide" });
-        }
+       // } else {
+            //res.status(400).json({ message: "Email invalide" });
+       // }
     } catch (error) {
         console.error("Erreur lors de la validation de l'e-mail :", error);
         res.status(500).json({ message: "Erreur lors de la validation de l'e-mail", error: error });
     }
 }
 
+async function validateAddress(address, Cleapi) {
+    try {
+        const encodedAddress = encodeURIComponent(address);
+        const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${Cleapi}`);
+
+        return response.data.results.length > 0;
+    } catch (error) {
+        console.error("Une erreur s'est produite lors de la validation de l'adresse :", error);
+        throw error;
+    }
+}
 
 
 
 async function updateClient(req, res) {
-    const id = req.userId;
+    const id = req.params.id;
 
     // Hash the new password if provided
     let hashedPassword = null;
@@ -122,12 +143,13 @@ async function updateClient(req, res) {
     }
 
     const updatedClient = {
-        NomClient: req.body.NomClient,
-        PrenomClient: req.body.PrenomClient,
+       Username:req.body.Username ,
         MotdepasseClient: hashedPassword, // Hashed password
         EmailClient: req.body.EmailClient,
         AdresseClient: req.body.AdresseClient,
         NumeroTelClient: req.body.NumeroTelClient,
+        
+        
         //  any other client attributes you want to update
     }
    const fs = require('fs')
@@ -136,7 +158,7 @@ async function updateClient(req, res) {
     models.Client.update(updatedClient, { where: { id: id } })
         .then(result => {
             if (result[0] === 1) {
-                res.status(201).json({
+                res.status(200).json({
                     message: "Client updated successfully",
                     client: updatedClient
                 });
@@ -152,6 +174,51 @@ async function updateClient(req, res) {
         });
 }
 
+
+
+
+function updateClientImage(req, res) {
+    const id = req.params.id; // Extract client ID from request parameters
+
+    // Check if a file is uploaded
+    if (!req.file) {
+        return res.status(400).json({ success: false, message: "You must upload an image." });
+    }
+    
+    if (req.file.mimetype == 'image/jpeg') {
+        return res.status(400).json({ success: false, message: "Only JPEG images are supported." });}
+    
+
+    // Construct the image URL for the client
+    const imageURL = `http://192.168.1.67:3000/imageClient/${req.file.filename}`;
+
+    // Update the client's photo URL in the database
+    models.Client.findByPk(id)
+        .then(client => {
+            if (!client) {
+                return res.status(404).json({ message: 'Client not found' });
+            }
+
+            // Update the client's photo URL
+            client.photo = imageURL;
+            
+
+            // Save the updated client
+            return client.save();
+        })
+        .then(updatedClient => {
+            // Return success message and the updated client object
+            res.status(200).json({
+                success: true,
+                message: 'Client image updated successfully',
+                client: updatedClient,
+                imageURL: imageURL
+            });
+        })
+        .catch(error => {
+            res.status(500).json({ success: false, message: 'Something went wrong', error: error });
+        });
+} 
 async function creerEvaluation(req, res) {
     const evaluation = {
         Note: req.body.Note,
@@ -183,9 +250,11 @@ async function creerEvaluation(req, res) {
         // Créer un objet de date et heure pour la date et l'heure actuelles
         const nowDateTime = moment(`${maintenant.format('YYYY-MM-DD')} ${maintenant.format('HH:mm')}`, 'YYYY-MM-DD HH:mm');
         // Comparer maintenant avec l'heure de fin du rendez-vous
+        if (now == rdvDateFin) {
         if (nowDateTime.isBefore(rdvHeureFin)) {
             return res.status(400).json({ message: `L'heure actuelle est antérieure à la fin du rendez-vous.` });
         }
+    }
         if (isNaN(Note) || Note < 0 || Note > 5) {
             return res.status(400).json({ message: "La notation doit être un nombre décimal entre 0 et 5." });
         }
@@ -271,12 +340,11 @@ function AfficherArtisan(req,res){
 }
 
 function AfficherProfil(req,res){
-    const id=req.userId;
+    const id=req.params.id;
     models.Client.findByPk(id).then(result=>{
         if(result){
             const clientInfo = {
-                NomClient: result.NomClient,
-                PrenomClient: result.PrenomClient,
+                Username:result.Username ,
                 EmailClient: result.EmailClient,
                 AdresseClient: result.AdresseClient,
                 NumeroTelClient: result.NumeroTelClient,
@@ -284,7 +352,7 @@ function AfficherProfil(req,res){
                 Service_account: result.Service_account ,
                 photo: result.photo
             };
-            res.status(201).json(clientInfo);
+            res.status(200).json(clientInfo);
         }
            
         else
@@ -674,4 +742,5 @@ module.exports = {
     AfficherProfil,
     DetailsDemandeConfirmee,
     DetailsRDVTermine,
+    updateClientImage
 }
