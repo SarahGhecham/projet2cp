@@ -10,8 +10,12 @@ import 'package:flutter_application_proj2cp/lancer_demande1.dart';
 import 'package:flutter_application_proj2cp/lancer_demande2.dart';
 import 'package:flutter_application_proj2cp/lancer_demande3.dart';
 import 'package:flutter_application_proj2cp/details_prestation.dart';
+import 'package:flutter_application_proj2cp/demande_confirmé.dart';
+
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+
+
 
 
 
@@ -20,7 +24,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: details_prestationPage(), // Use AppNavigator as the home widget
+      home: Lancerdemande3Page(), // Use AppNavigator as the home widget
     );
   }
 }

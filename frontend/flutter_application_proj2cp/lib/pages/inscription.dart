@@ -346,7 +346,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         width: 25,
                         height: 25,
                       ),
-                      SizedBox(height: 5), // Adjust the height as needed
+                      SizedBox(height: 5),
                     ],
                   ),
                   SizedBox(width: 10),
