@@ -6,7 +6,7 @@ const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 const moment = require('moment');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs');git
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 
@@ -134,7 +134,7 @@ async function validateAddress(address, Cleapi) {
 
 
 async function updateClient(req, res) {
-    const id = req.params.id;
+    const id = req.userId;
 
     // Hash the new password if provided
     let hashedPassword = null;
@@ -178,7 +178,7 @@ async function updateClient(req, res) {
 
 
 function updateClientImage(req, res) {
-    const id = req.params.id; // Extract client ID from request parameters
+    const id = req.userId; // Extract client ID from request parameters
 
     // Check if a file is uploaded
     if (!req.file) {
@@ -190,7 +190,7 @@ function updateClientImage(req, res) {
     
 
     // Construct the image URL for the client
-    const imageURL = `http://192.168.1.67:3000/imageClient/${req.file.filename}`;
+    const imageURL = `http://localhost:3000/imageClient/${req.file.filename}`; // changer avec votre adressse ip/10.0.2.2(emulateur)
 
     // Update the client's photo URL in the database
     models.Client.findByPk(id)
@@ -340,7 +340,7 @@ function AfficherArtisan(req,res){
 }
 
 function AfficherProfil(req,res){
-    const id=req.params.id;
+    const id=req.userId;
     models.Client.findByPk(id).then(result=>{
         if(result){
             const clientInfo = {

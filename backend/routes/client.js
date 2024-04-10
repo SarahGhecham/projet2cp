@@ -7,16 +7,16 @@ const imageUploader = require("../helpers/image_uploader");
 const router = express.Router();
 router.post('/sign-up',clientController.signUp);
 router.post('/creerEvaluation',auth(),clientController.creerEvaluation);
-router.patch('/updateClient',clientController.updateClient);
+router.patch('/updateClient',auth(),clientController.updateClient);
 router.post('/updateClientImage' ,auth(),imageUploader.upload.single('photo'), clientController.updateClientImage);
 
 router.post('/lancerdemande',auth(),clientController.lancerdemande);
 router.post('/creerRDV',auth(),clientController.creerRDV);
 router.post('/confirmerRDV',auth(),clientController.confirmerRDV);
 router.post('/annulerRDV',auth(),clientController.annulerRDV);
-router.get('/AffcherArtisan/:id',clientController.AfficherArtisan);
-router.get('/Affichermonprofil',clientController.AfficherProfil)
-router.get('/test/:id',clientController.test);
+router.get('/AffcherArtisan',auth(),clientController.AfficherArtisan);
+router.get('/Affichermonprofil',auth(),clientController.AfficherProfil)
+router.get('/test',clientController.test);
 router.get('/AfficherActiviteTerminee',auth(),clientController.Activiteterminee);
 router.get('/AfficherActiviteEncours',auth(),clientController.ActiviteEncours);
 router.get('/AfficherPrestations',auth(),clientController.AfficherPrestations);
