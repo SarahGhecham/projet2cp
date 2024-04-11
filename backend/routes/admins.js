@@ -17,6 +17,7 @@ router.post("/AjouterDomaine",auth(),imageUploader.upload.single('imageDomaine')
 router.post("/CreerTarif",adminControllers.CreerTarif);
 router.post("/CreerPrestation",auth(),imageUploader.upload.single('imagePrestation'),adminControllers.CreerPrestation);
 router.post("/AjouterPrestation/:id",auth(), adminControllers.AjouterPrestation);
+router.get("/Obtenir/Statistiques",adminControllers.obtenirStatistiques);
 
 
 module.exports=router;

@@ -299,6 +299,28 @@ async function AjouterPrestation(req, res) {
     }
 }
 
+function obtenirStatistiques(req, res) {
+    Promise.all([
+        models.Client.count(), 
+        models.Artisan.count(),
+        models.Demande.count() 
+    ])
+    .then(([nombreClients, nombreArtisans, nombreDemandes]) => {
+        res.status(200).json({
+            nombreClients: nombreClients,
+            nombreArtisans: nombreArtisans,
+            nombreDemandes: nombreDemandes
+        });
+    })
+    .catch(error => {
+        res.status(500).json({
+            message: "Une erreur s'est produite lors de la récupération des statistiques.",
+            error: error
+        });
+    });
+}
+
+
 
 
 
@@ -315,6 +337,6 @@ module.exports={
     CreerTarif:CreerTarif,
     CreerPrestation:CreerPrestation,
     AjouterPrestation:AjouterPrestation,
-    
+    obtenirStatistiques:obtenirStatistiques
 
 }
