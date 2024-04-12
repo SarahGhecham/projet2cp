@@ -4,7 +4,7 @@ const { Sequelize } = require('sequelize');
 function AfficherDomaines(req,res){
     models.Domaine.findAll().then(result=>{
         if(result)
-          res.status(201).json(result)
+          res.status(200).json(result)
         else
         res.status(404).json({
             message:"pas de domaines"
