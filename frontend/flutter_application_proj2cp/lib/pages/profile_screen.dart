@@ -24,7 +24,7 @@ class _ProfileState extends State<Profile> {
 
   Future<void> _fetchUserData() async {
     final url = Uri.parse(
-        'http://192.168.1.67:3000/client/Affichermonprofil/1'); // Replace with your endpoint
+        'http://localhost:3000/client/Affichermonprofil/1'); // Replace with your endpoint
     try {
       final response = await http.get(url);
 
@@ -38,7 +38,8 @@ class _ProfileState extends State<Profile> {
             'AdresseClient': userDataJson['AdresseClient'] as String,
             'NumeroTelClient': userDataJson['NumeroTelClient'] as String,
             'Points': userDataJson['Points'],
-            'Service_account': userDataJson['Service_account']
+            'Service_account': userDataJson['Service_account'],
+            'photo': userDataJson['photo']
           };
         });
         print('_userData: $_userData'); // Debugging print
@@ -54,7 +55,9 @@ class _ProfileState extends State<Profile> {
 
   Future<void> updateClientImage(int id, File image) async {
     // Replace "http://localhost:3000" with your server URL
-    String baseUrl = "http://192.168.1.67:3000";
+    String baseUrl =
+        "http://localhost:3000"; // changer avec votre adressse ip/10.0.2.2(emulateur)
+    String idString = id.toString();
 
     // Construct the endpoint URL
     String endpoint = "$baseUrl/client/updateClientImage/$id";
@@ -64,7 +67,7 @@ class _ProfileState extends State<Profile> {
       var request = http.MultipartRequest('POST', Uri.parse(endpoint));
 
       // Attach the image file to the request
-      request.files.add(await http.MultipartFile.fromPath('image', image.path));
+      request.files.add(await http.MultipartFile.fromPath('photo', image.path));
 
       // Send the request
       var streamedResponse = await request.send();
@@ -94,7 +97,7 @@ class _ProfileState extends State<Profile> {
 
   Future<void> updateClient(Map<String, dynamic> updatedData) async {
     final url = Uri.parse(
-        'http://192.168.1.67:3000/client/updateClient/1'); // Replace with your endpoint
+        'http://localhost:3000/client/updateClient/1'); // changer avec votre adressse ip/10.0.2.2(emulateur)
     try {
       final response = await http.patch(
         url,
@@ -180,14 +183,16 @@ class _ProfileState extends State<Profile> {
           children: [
             Stack(
               children: [
-                Container(
-                  width: 390,
-                  height: 272,
-                  decoration: BoxDecoration(
-                    color: Color(0xFFDCC8C5).withOpacity(0.26),
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(25),
-                      bottomRight: Radius.circular(25),
+                Center(
+                  child: Container(
+                    width: 390,
+                    height: 272,
+                    decoration: BoxDecoration(
+                      color: Color(0xFFDCC8C5).withOpacity(0.26),
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(25),
+                        bottomRight: Radius.circular(25),
+                      ),
                     ),
                   ),
                 ),
@@ -222,8 +227,8 @@ class _ProfileState extends State<Profile> {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(14),
                               child: _userData['photo'] != null
-                                  ? Image.file(
-                                      File(_userData['photo']),
+                                  ? Image.network(
+                                      _userData['photo'],
                                       width: 168,
                                       height: 174,
                                       fit: BoxFit.cover,

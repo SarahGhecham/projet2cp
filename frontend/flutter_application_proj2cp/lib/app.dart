@@ -3,6 +3,7 @@ import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:flutter_application_proj2cp/pages/connexion.dart';
 import 'package:flutter_application_proj2cp/pages/entree/pagesentree.dart';
 import 'package:flutter_application_proj2cp/pages/profile_screen.dart';
+import 'package:flutter_application_proj2cp/pages/profile_screen.dart';
 import 'package:flutter_application_proj2cp/widgets/bottom_nav_bar.dart';
 
 import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
