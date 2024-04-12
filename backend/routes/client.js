@@ -19,7 +19,6 @@ router.get('/AfficherActiviteEncours',auth(),clientController.ActiviteEncours);
 router.get('/AfficherPrestations',auth(),clientController.AfficherPrestations);
 router.get('/DetailsDemandeConfirmee',auth(),clientController.DetailsDemandeConfirmee);
 router.get('/DetailsRDVTermine',auth(),clientController.DetailsRDVTermine);
-
 router.get('/demandes/:demandeId/artisans', clientController.getArtisansForDemand);
 
 
