@@ -14,6 +14,7 @@ router.post('/annulerRDV',auth(),clientController.annulerRDV);
 router.get('/AffcherArtisan/:id',clientController.AfficherArtisan);
 router.get('/Affichermonprofil',auth(),clientController.AfficherProfil)
 router.get('/test/:id',clientController.test);
+
 router.get('/AfficherActiviteTerminee',auth(),clientController.Activiteterminee);
 router.get('/AfficherActiviteEncours',auth(),clientController.ActiviteEncours);
 router.get('/AfficherPrestations',auth(),clientController.AfficherPrestations);
