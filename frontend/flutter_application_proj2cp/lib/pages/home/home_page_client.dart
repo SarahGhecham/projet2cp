@@ -42,8 +42,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
-        print(
-            'Fetched Image URLs: ${data.map((domaineJson) => domaineJson['imageDomaine']).toList()}');
+        //print(
+        // 'Fetched Image URLs: ${data.map((domaineJson) => domaineJson['imageDomaine']).toList()}');
 
         setState(() {
           domainWidgets = data
@@ -72,48 +72,68 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> fetchEcoServices() async {
+    final url =
+        Uri.parse('http://10.0.2.2:3000/pageaccueil/AfficherPrestationsEco');
     try {
-      final response = await http.get(
-          Uri.parse('http://10.0.2.2:3000/pageaccueil/AfficherPrestationsEco'));
+      final response = await http.get(url);
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-        print('Fetched Domaines: $data');
+        final List<dynamic> data = json.decode(response.body);
+        //print('Fetched Eco Services: $data');
+
         setState(() {
           ecoServiceWidgets = data
+              .map((serviceJson) {
+                final imageUrl = serviceJson['imagePrestation'] != null
+                    ? serviceJson['imagePrestation'] as String
+                    : '';
+                //print('Image URL: $imageUrl'); // Debugging statement
+                return Service(image: imageUrl);
+              })
               .map((service) => ServiceOffreContainer(
-                    image: service['image'],
+                    service: service,
                   ))
               .toList();
         });
       } else {
-        print('Failed to fetch eco services: ${response.reasonPhrase}');
+        print('Failed to fetch eco services: ${response.statusCode}');
+        print('Response Body: ${response.body}');
       }
     } catch (error) {
-      print('Failed to fetch eco services: $error');
+      print('Error fetching eco services: $error');
     }
   }
 
   Future<void> fetchTopPrestations() async {
+    final url =
+        Uri.parse('http://10.0.2.2:3000/pageaccueil/AfficherPrestationsTop');
     try {
-      final response = await http.get(
-          Uri.parse('http://10.0.2.2:3000/pageaccueil/AfficherPrestationsTop'));
+      final response = await http.get(url);
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
+        final List<dynamic> data = json.decode(response.body);
+        print('Fetched Top Prestations: $data');
+
         setState(() {
           topPrestationWidgets = data
-              .map((prestation) => ServiceOffreContainer(
-                    image: prestation[
-                        'image'], // Assuming image URL is provided in the response
+              .map((serviceJson) {
+                final imageUrl = serviceJson['imagePrestation'] != null
+                    ? serviceJson['imagePrestation'] as String
+                    : '';
+                print('Image URL: $imageUrl'); // Debugging statement
+                return Service(image: imageUrl);
+              })
+              .map((service) => ServiceOffreContainer(
+                    service: service,
                   ))
               .toList();
         });
       } else {
-        print('Failed to fetch top prestations: ${response.reasonPhrase}');
+        print('Failed to fetch top prestations: ${response.statusCode}');
+        print('Response Body: ${response.body}');
       }
     } catch (error) {
-      print('Failed to fetch top prestations: $error');
+      print('Error fetching top prestations: $error');
     }
   }
 

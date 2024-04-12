@@ -31,42 +31,43 @@ class _DomaineContainerState extends State<DomaineContainer> {
           width: 210,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Stack(
               children: [
-                Expanded(
-                  child: Stack(
-                    children: [
-                      Image.network(
-                        widget.domaine.image,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Center(
-                            child: Text('Error loading image'),
-                          );
-                        },
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        child: Container(
-                          color: creme,
-                          padding: EdgeInsets.symmetric(vertical: 8),
-                          child: Center(
-                            child: Text(
-                              widget.domaine.serviceName,
-                              style: GoogleFonts.poppins(
-                                color: kBlack,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 15,
-                              ),
-                            ),
-                          ),
+                // Image container with fixed aspect ratio
+                AspectRatio(
+                  aspectRatio: 9 / 9, // Adjust aspect ratio as needed
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.zero, // Remove border here
+                    child: Image.network(
+                      widget.domaine.image,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Center(
+                          child: Text('Error loading image'),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                // Container for service name (unchanged)
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    color: creme,
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Center(
+                      child: Text(
+                        widget.domaine.serviceName,
+                        style: GoogleFonts.poppins(
+                          color: kBlack,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 15,
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ],
