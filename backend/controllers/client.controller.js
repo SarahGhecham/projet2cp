@@ -10,6 +10,33 @@ const bcrypt = require('bcryptjs');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const { geocode, calculateRouteDistance } = require('./maps');
+async function getArtisansForDemand(req, res) {
+    const demandeId = req.params.demandeId;
+
+    try {
+        const demande = await models.Demande.findByPk(demandeId);
+        if (!demande) {
+            return res.status(404).json({ message: `Demande with ID ${demandeId} not found.` });
+        }
+        const acceptedRDV = await models.RDV.findOne({
+            where: {
+                DemandeId: demandeId,
+                accepte: true
+            }
+        });
+
+        if (!acceptedRDV) {
+            return res.status(404).json({ message: `No accepted RDV found for demande ID ${demandeId}.` });
+        }
+
+        const artisans = await acceptedRDV.getArtisans();
+
+        return res.status(200).json(artisans);
+    } catch (error) {
+        console.error('Error retrieving artisans for demande:', error);
+        return res.status(500).json({ message: 'Failed to retrieve artisans for demande', error: error.message });
+    }
+}
 
 
 async function signUp(req, res) {
@@ -808,4 +835,5 @@ module.exports = {
     AfficherProfil,
     DetailsDemandeConfirmee,
     DetailsRDVTermine,
+    getArtisansForDemand
 }

@@ -13,6 +13,8 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       RDV.belongsTo(models.Demande, { foreignKey: 'DemandeId'});
       RDV.hasOne(models.Evaluation, { foreignKey: 'RDVId' });
+      RDV.belongsToMany(models.Artisan, { through: 'artisanrdvs', foreignKey: 'RDVId' });
+
 
     }
   }
