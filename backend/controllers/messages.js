@@ -85,12 +85,25 @@ async function retrieveMessageHistory(req, res) {
     }
 }
 
-
+async function deleteMessage(req, res) {
+    try {
+        const { messageId } = req.params;
+        const message = await models.Message.findByPk(messageId);
+        if (!message) {
+            return res.status(404).json({ message: `Message with ID ${messageId} not found.` });
+        }
+        await message.destroy();
+        res.status(200).json({ message: 'Message deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting message:', error);
+        res.status(500).json({ message: 'Failed to delete message', error: error.message });
+    }
+}
 module.exports = {
     sendMessage,
     retrieveMessagesOfArtisan,
     retrieveMessagesOfClient,
     retrieveMessageHistory,
-    
+    deleteMessage
     
 };

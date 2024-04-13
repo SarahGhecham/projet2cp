@@ -104,10 +104,26 @@ async function getTerminatedConversations(req, res) {
         res.status(500).json({ message: 'Failed to retrieve terminated conversations', error: error.message });
     }
 }
+async function deleteConversation(req, res) {
+    try {
+        const { conversationId } = req.params;
+        const conversation = await models.Conversation.findByPk(conversationId);
+        if (!conversation) {
+            return res.status(404).json({ message: `Conversation with ID ${conversationId} not found.` });
+        }
+        // Perform deletion operation
+        await conversation.destroy();
+        res.status(200).json({ message: 'Conversation deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting conversation:', error);
+        res.status(500).json({ message: 'Failed to delete conversation', error: error.message });
+    }
+}
 
 module.exports = {
   createConversation,
   terminateConversation ,
   getOngoingConversations,
-  getTerminatedConversations
+  getTerminatedConversations,
+  deleteConversation
 };
