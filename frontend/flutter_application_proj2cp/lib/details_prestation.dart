@@ -1,12 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 
 class details_prestationPage extends StatefulWidget {
+  const details_prestationPage({super.key});
+
   @override
   State<details_prestationPage> createState() => _details_prestationPageState();
 }
@@ -23,12 +22,12 @@ class _details_prestationPageState extends State<details_prestationPage> {
         backgroundColor: Colors.white,
         title: Row(
           children: [
-            Container(
+            SizedBox(
               height: 18,
               width: 25,
               child: SvgPicture.asset("assets/fleche.svg"),
             ),
-            SizedBox(width: 130),
+            const SizedBox(width: 130),
             Text(
               "Details",
               style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
@@ -41,7 +40,7 @@ class _details_prestationPageState extends State<details_prestationPage> {
           Positioned(
             top: 20,
             left: 50,
-            child: Container(
+            child: SizedBox(
               height: 300,
               width: 315,
               child: Image.asset("assets/lavage_sol.png"),
@@ -56,34 +55,34 @@ class _details_prestationPageState extends State<details_prestationPage> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(
-                  color: Color(0xFFDCC8C5),
+                  color: const Color(0xFFDCC8C5),
                   width: 2,
                 ),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
                 children: [
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Container(
                     height: 50,
                     width: 270,
                     decoration: BoxDecoration(
-                      color: Color(0xFFDCC8C5),
+                      color: const Color(0xFFDCC8C5),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Center(
                       child: Text(
-                        prst, style: GoogleFonts.poppins(color: Color(0xFF05564B), fontSize: 18, fontWeight: FontWeight.bold),
+                        prst, style: GoogleFonts.poppins(color: const Color(0xFF05564B), fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
                     child: Row(
                       children: [
                         SvgPicture.asset("assets/clock.svg"),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Text(
                           avgtime, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
                         )
@@ -91,7 +90,7 @@ class _details_prestationPageState extends State<details_prestationPage> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Row(
                       children: [
                         Column(
@@ -99,10 +98,10 @@ class _details_prestationPageState extends State<details_prestationPage> {
                             SvgPicture.asset("assets/money.svg"),
                           ],
                         ),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Column(
                           children: [
-                            SizedBox(height: 5),
+                            const SizedBox(height: 5),
                             Text(
                               avgprice, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
                             ),
@@ -110,7 +109,7 @@ class _details_prestationPageState extends State<details_prestationPage> {
                         ),
                         Column(
                           children: [
-                            SizedBox(height: 5),
+                            const SizedBox(height: 5),
                             Text(
                               "/h", style: GoogleFonts.poppins(fontSize: 14),
                             ),
@@ -119,7 +118,7 @@ class _details_prestationPageState extends State<details_prestationPage> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 40),
+                  const SizedBox(height: 40),
                   Stack(
                     children: [
                       Positioned(
@@ -127,10 +126,10 @@ class _details_prestationPageState extends State<details_prestationPage> {
                           height: 150,
                           width: 270,
                           decoration: BoxDecoration(
-                            color: Color(0xFFDCC8C5).withOpacity(0.22),
+                            color: const Color(0xFFDCC8C5).withOpacity(0.22),
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: Color(0xFFDCC8C5),
+                              color: const Color(0xFFDCC8C5),
                               width: 2,
                             )
                           ),
@@ -147,17 +146,17 @@ class _details_prestationPageState extends State<details_prestationPage> {
                       Positioned(
                         left: 10,
                         child: Transform.translate(
-                          offset: Offset(0, -15),
+                          offset: const Offset(0, -15),
                           child: Container(
                             height: 35,
                             width: 110,
                             decoration: BoxDecoration(
-                              color: Color(0xFFDCC8C5),
+                              color: const Color(0xFFDCC8C5),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Center(
                               child: Text(
-                                "Description", style: GoogleFonts.poppins(color: Color(0xFF05564B), fontSize: 14, fontWeight: FontWeight.w600),
+                                "Description", style: GoogleFonts.poppins(color: const Color(0xFF05564B), fontSize: 14, fontWeight: FontWeight.w600),
                               ),
                             ),
                           ),
@@ -165,9 +164,19 @@ class _details_prestationPageState extends State<details_prestationPage> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
                   ElevatedButton(
                     onPressed: (){},
+                    style: ButtonStyle(
+                      minimumSize: MaterialStateProperty.all<Size>(const Size(180, 50)),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(const Color(0xFFFF8787)),
+                    ),
                     child: Text(
                       "Lancer demande",
                       style: GoogleFonts.poppins(
@@ -175,16 +184,6 @@ class _details_prestationPageState extends State<details_prestationPage> {
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
-                    ),
-                    style: ButtonStyle(
-                      minimumSize: MaterialStateProperty.all<Size>(Size(180, 50)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(Color(0xFFFF8787)),
                     ),
                   ),
                 ],

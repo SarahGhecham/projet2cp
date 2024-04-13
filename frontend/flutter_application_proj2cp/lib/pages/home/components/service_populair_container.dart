@@ -4,9 +4,9 @@ class ServiceOffreContainer extends StatelessWidget {
   final String image;
 
   const ServiceOffreContainer({
-    Key? key,
+    super.key,
     required this.image,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class ServiceOffreContainer extends StatelessWidget {
       onTap: () => {}, //afficher service populair
       child: Padding(
         padding: const EdgeInsets.all(9.0),
-        child: Container(
+        child: SizedBox(
             width: 210,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),

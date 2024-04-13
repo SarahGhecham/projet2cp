@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 
 class Lancerdemande1Page extends StatefulWidget {
+  const Lancerdemande1Page({super.key});
+
   @override
   State<Lancerdemande1Page> createState() => _Lancerdemande1PageState();
 }
@@ -23,28 +25,28 @@ class _Lancerdemande1PageState extends State<Lancerdemande1Page> {
          title: Row(
            mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height:180),
-            Container(
+            const SizedBox(height:180),
+            SizedBox(
               height: 18,
               width: 25,
               child: SvgPicture.asset("assets/fleche.svg"),
             ),
-            SizedBox(width: 50),
+            const SizedBox(width: 50),
             Container(
               width: 200,
               height: 11,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Color(0xFFD9D9D9), width: 1.5),
+                border: Border.all(color: const Color(0xFFD9D9D9), width: 1.5),
               ),
-              child: LinearProgressIndicator(
+              child: const LinearProgressIndicator(
                 value: 0.33,
                 backgroundColor: Colors.white,
                 valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF05564B)),
               ),
             ),
-            SizedBox(width: 50),
-            Container(
+            const SizedBox(width: 50),
+            SizedBox(
               height: 16,
               width: 20,
               child: SvgPicture.asset("assets/cancel.svg"),
@@ -55,29 +57,29 @@ class _Lancerdemande1PageState extends State<Lancerdemande1Page> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 50),
+          const SizedBox(height: 50),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 40),
+            padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Text(
               nomprest, style: GoogleFonts.poppins(fontSize :18),
             ),
           ),
-          SizedBox(height: 50),
+          const SizedBox(height: 50),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 40),
+            padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Text(
               "De combien d’heure de service avez vous besoin?",
               style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
             ),
           ),
-          SizedBox(height: 60),
+          const SizedBox(height: 60),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
                 height: 50,
                 width: 50,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   color: Color(0xFFFF8787),
                 ),
@@ -93,32 +95,32 @@ class _Lancerdemande1PageState extends State<Lancerdemande1Page> {
                       }
                     });
                   },
-                  child: Icon(
+                  child: const Icon(
                     Icons.remove,
                     color: Colors.black,
                   ),
                 ),
               ),
-              SizedBox(width: 30),
+              const SizedBox(width: 30),
               Container(
                 height: 78,
                 width: 132,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Color(0xFFDCC8C5),
+                  color: const Color(0xFFDCC8C5),
                 ),
                 child: Center(
                   child: Text(
-                    hour.toString() + " : " + (min == 0 ? "00" : min.toString()),
+                    "$hour : ${min == 0 ? "00" : min.toString()}",
                     style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
-              SizedBox(width: 30),
+              const SizedBox(width: 30),
               Container(
                 height: 50,
                 width: 50,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   color: Color(0xFFFF8787),
                 ),
@@ -135,7 +137,7 @@ class _Lancerdemande1PageState extends State<Lancerdemande1Page> {
                     });
                   },
 
-                  child: Icon(
+                  child: const Icon(
                     Icons.add,
                     color: Colors.black,
                   ),
@@ -143,20 +145,30 @@ class _Lancerdemande1PageState extends State<Lancerdemande1Page> {
               ),
             ],
           ),
-          SizedBox(height: 80),
+          const SizedBox(height: 80),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 40),
+            padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Text(
               "Est ce que votre demande est urgente ?",
               style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
             ),
           ),
-          SizedBox(height: 60),
+          const SizedBox(height: 60),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
                 onPressed: (){},
+                style: ButtonStyle(
+                  minimumSize: MaterialStateProperty.all<Size>(const Size(132, 69)),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  backgroundColor:
+                  MaterialStateProperty.all<Color>(const Color(0xFFDCC8C5)),
+                ),
                 child: Text(
                   "Non",
                   style: GoogleFonts.poppins(
@@ -165,20 +177,20 @@ class _Lancerdemande1PageState extends State<Lancerdemande1Page> {
                     fontSize: 20,
                   ),
                 ),
+              ),
+              const SizedBox(width: 50),
+              ElevatedButton(
+                onPressed: (){},
                 style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all<Size>(Size(132, 69)),
+                  minimumSize: MaterialStateProperty.all<Size>(const Size(132, 69)),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   backgroundColor:
-                  MaterialStateProperty.all<Color>(Color(0xFFDCC8C5)),
+                  MaterialStateProperty.all<Color>(const Color(0xFFFF8787)),
                 ),
-              ),
-              SizedBox(width: 50),
-              ElevatedButton(
-                onPressed: (){},
                 child: Text(
                   "Oui",
                   style: GoogleFonts.poppins(
@@ -187,23 +199,23 @@ class _Lancerdemande1PageState extends State<Lancerdemande1Page> {
                     fontSize: 20,
                   ),
                 ),
-                style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all<Size>(Size(132, 69)),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  backgroundColor:
-                  MaterialStateProperty.all<Color>(Color(0xFFFF8787)),
-                ),
               ),
             ],
           ),
-          SizedBox(height: 90),
+          const SizedBox(height: 90),
           Center(
             child: ElevatedButton(
               onPressed: (){},
+              style: ButtonStyle(
+                minimumSize: MaterialStateProperty.all<Size>(const Size(315, 55)),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                backgroundColor:
+                MaterialStateProperty.all<Color>(const Color(0xFF05564B)),
+              ),
               child: Text(
                 "Suivant",
                 style: GoogleFonts.poppins(
@@ -211,16 +223,6 @@ class _Lancerdemande1PageState extends State<Lancerdemande1Page> {
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
                 ),
-              ),
-              style: ButtonStyle(
-                minimumSize: MaterialStateProperty.all<Size>(Size(315, 55)),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                backgroundColor:
-                MaterialStateProperty.all<Color>(Color(0xFF05564B)),
               ),
             ),
           ),

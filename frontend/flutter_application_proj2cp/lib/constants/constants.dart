@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 const vertFonce = Color(0xff05564b);
 const vertClair = Color(0xffd6e3dc);

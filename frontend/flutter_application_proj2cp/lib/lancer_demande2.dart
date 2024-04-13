@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:table_calendar/table_calendar.dart';
 
 
 class Lancerdemande2Page extends StatefulWidget {
+  const Lancerdemande2Page({super.key});
+
   @override
   State<Lancerdemande2Page> createState() => _Lancerdemande2PageState();
 }
@@ -30,28 +31,28 @@ class _Lancerdemande2PageState extends State<Lancerdemande2Page> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height:180),
-            Container(
+            const SizedBox(height:180),
+            SizedBox(
               height: 18,
               width: 25,
               child: SvgPicture.asset("assets/fleche.svg"),
             ),
-            SizedBox(width: 50),
+            const SizedBox(width: 50),
             Container(
               width: 200,
               height: 11,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Color(0xFFD9D9D9), width: 1.5),
+                border: Border.all(color: const Color(0xFFD9D9D9), width: 1.5),
               ),
-              child: LinearProgressIndicator(
+              child: const LinearProgressIndicator(
                 value: 0.66,
                 backgroundColor: Colors.white,
                 valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF05564B)),
               ),
             ),
-            SizedBox(width: 50),
-            Container(
+            const SizedBox(width: 50),
+            SizedBox(
               height: 16,
               width: 20,
               child: SvgPicture.asset("assets/cancel.svg"),
@@ -63,29 +64,29 @@ class _Lancerdemande2PageState extends State<Lancerdemande2Page> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 50),
+            const SizedBox(height: 50),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 40),
+              padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Text(
                 nomprest, style: GoogleFonts.poppins(fontSize :18),
               ),
             ),
-            SizedBox(height: 50),
+            const SizedBox(height: 50),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 40),
+              padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Text(
                 "Quelle heure vous convient?",
                 style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
               ),
             ),
-            SizedBox(height: 60),
+            const SizedBox(height: 60),
             Center(
               child: Container(
                 height: 78,
                 width: 132,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Color(0xFFDCC8C5),
+                  color: const Color(0xFFDCC8C5),
                 ),
                 child: Center(
                   child: TextFormField(
@@ -102,34 +103,34 @@ class _Lancerdemande2PageState extends State<Lancerdemande2Page> {
                 ),
               ),
             ),
-            SizedBox(height: 80),
+            const SizedBox(height: 80),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 40),
+              padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Text(
                 "Quel jour vous convient?",
                 style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
               ),
             ),
-            SizedBox(height: 60),
+            const SizedBox(height: 60),
             Center(
               child: Container(
                 height: 350,
                 width: 335,
                 decoration: BoxDecoration(
-                  color: Color(0xFFD6E3DC),
+                  color: const Color(0xFFD6E3DC),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: TableCalendar(
                   locale: 'en_US',
                   calendarStyle: CalendarStyle(
                     defaultTextStyle: GoogleFonts.poppins(fontSize: 16, color: Colors.black,),
-                    selectedDecoration: BoxDecoration(
+                    selectedDecoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       color: Color(0xFFFF8787),
                     ),
                     todayDecoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Color(0xFFFF8787).withOpacity(0.22),
+                      color: const Color(0xFFFF8787).withOpacity(0.22),
                     ),
                   ),
                   headerStyle: HeaderStyle(formatButtonVisible: false, titleCentered: true, titleTextStyle: GoogleFonts.poppins(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold), ),
@@ -142,10 +143,20 @@ class _Lancerdemande2PageState extends State<Lancerdemande2Page> {
                 ),
               ),
             ),
-            SizedBox(height: 80),
+            const SizedBox(height: 80),
             Center(
               child: ElevatedButton(
                 onPressed: (){},
+                style: ButtonStyle(
+                  minimumSize: MaterialStateProperty.all<Size>(const Size(315, 55)),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  backgroundColor:
+                  MaterialStateProperty.all<Color>(const Color(0xFF05564B)),
+                ),
                 child: Text(
                   "Suivant",
                   style: GoogleFonts.poppins(
@@ -154,19 +165,9 @@ class _Lancerdemande2PageState extends State<Lancerdemande2Page> {
                     fontSize: 20,
                   ),
                 ),
-                style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all<Size>(Size(315, 55)),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  backgroundColor:
-                  MaterialStateProperty.all<Color>(Color(0xFF05564B)),
-                ),
               ),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
           ],
         ),
       ),

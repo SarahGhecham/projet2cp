@@ -3,7 +3,7 @@ import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
 
 class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({Key? key}) : super(key: key);
+  const BottomNavBar({super.key});
 
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
@@ -14,7 +14,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   // Define your page views
   final List<Widget> _pages = [
-    HomeScreen(),
+    const HomeScreen(),
     //ActivityScreen(),
     //MessagesScreen(),
     //ProfileScreen(),
@@ -43,9 +43,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
                 margin:
                     const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
                 
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: vertFonce,
-                  borderRadius: const BorderRadius.all(Radius.circular(27)),
+                  borderRadius: BorderRadius.all(Radius.circular(27)),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,

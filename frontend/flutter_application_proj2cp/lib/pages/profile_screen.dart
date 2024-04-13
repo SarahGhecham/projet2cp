@@ -1,10 +1,11 @@
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 class Profile extends StatefulWidget {
+  const Profile({super.key});
+
   @override
   _ProfileState createState() => _ProfileState();
 }
@@ -28,11 +29,11 @@ class _ProfileState extends State<Profile> {
   }
 
   final ImagePicker _imagePicker = ImagePicker();
-  var _pickedImagePath = null ; // var jsp si c ccorrect hna
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _surnameController = TextEditingController();
-  TextEditingController _gmailController = TextEditingController();
-  TextEditingController _addressController = TextEditingController();
+  var _pickedImagePath ; // var jsp si c ccorrect hna
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _surnameController = TextEditingController();
+  final TextEditingController _gmailController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
   void _toggleEditing(bool value) {
     setState(() {
       _isEditing = value;
@@ -70,7 +71,7 @@ void _saveChanges() {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Profile',
           style: TextStyle(
             fontSize: 24,
@@ -101,8 +102,8 @@ void _saveChanges() {
                   width: 390,
                   height: 272,
                   decoration: BoxDecoration(
-                    color: Color(0xFFDCC8C5).withOpacity(0.26),
-                    borderRadius: BorderRadius.only(
+                    color: const Color(0xFFDCC8C5).withOpacity(0.26),
+                    borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(25),
                       bottomRight: Radius.circular(25),
                     ),
@@ -117,7 +118,7 @@ void _saveChanges() {
                       ),
                       child: Align(
                         alignment: Alignment.center,
-                        child: Container(
+                        child: SizedBox(
                           width: 168,
                           height: 174,
                           child: GestureDetector(
@@ -197,16 +198,16 @@ void _saveChanges() {
                     ),
                   ),
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 Container(
                   width: 170,
                   height: 61,
-                  margin: EdgeInsets.only(left: 00, bottom: 00),
+                  margin: const EdgeInsets.only(left: 00, bottom: 00),
                   decoration: BoxDecoration(
-                    color: Color(0xFFD6E3DC),
+                    color: const Color(0xFFD6E3DC),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: Color(0xFFDCC8C5),
+                      color: const Color(0xFFDCC8C5),
                       width: 1,
                     ),
                   ),
@@ -216,7 +217,7 @@ void _saveChanges() {
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
+                          const Text(
                             'Service',
                             style: TextStyle(
                               color: Color(0xFFFF8787),
@@ -226,7 +227,7 @@ void _saveChanges() {
                           ),
                           Text(
                             _userData['services_count'].toString(),
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.black,
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
@@ -237,12 +238,12 @@ void _saveChanges() {
                       Container(
                         width: 1,
                         height: double.infinity,
-                        color: Color(0xFFDCC8C5),
+                        color: const Color(0xFFDCC8C5),
                       ),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
+                          const Text(
                             'Points',
                             style: TextStyle(
                               color: Color(0xFFFF8787),
@@ -252,7 +253,7 @@ void _saveChanges() {
                           ),
                           Text(
                             _userData['points'].toString(),
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.black,
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
@@ -268,7 +269,7 @@ void _saveChanges() {
            
             Column(
               children: [
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -276,10 +277,10 @@ void _saveChanges() {
                       width: 116,
                       height: 41,
                       decoration: BoxDecoration(
-                        color: Color(0xFFDCC8C5).withOpacity(0.22),
+                        color: const Color(0xFFDCC8C5).withOpacity(0.22),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: Color(0xFFDCC8C5),
+                          color: const Color(0xFFDCC8C5),
                           width: 1,
                         ),
                       ),
@@ -290,7 +291,7 @@ void _saveChanges() {
                                     const EdgeInsets.symmetric(horizontal: 8),
                                 child: TextFormField(
                                   controller: _nameController,
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     border: InputBorder.none,
                                     hintText: 'Enter name',
                                     hintStyle: TextStyle(color: Colors.grey),
@@ -310,7 +311,7 @@ void _saveChanges() {
                                         _userData['name'].isNotEmpty
                                     ? _userData['name']
                                     : ' name',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.black,
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
@@ -318,15 +319,15 @@ void _saveChanges() {
                               ),
                       ),
                     ),
-                    SizedBox(width: 40),
+                    const SizedBox(width: 40),
                     Container(
                       width: 116,
                       height: 41,
                       decoration: BoxDecoration(
-                        color: Color(0xFFDCC8C5).withOpacity(0.22),
+                        color: const Color(0xFFDCC8C5).withOpacity(0.22),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: Color(0xFFDCC8C5),
+                          color: const Color(0xFFDCC8C5),
                           width: 1,
                         ),
                       ),
@@ -337,12 +338,12 @@ void _saveChanges() {
                                     const EdgeInsets.symmetric(horizontal: 8),
                                 child: TextFormField(
                                   controller: _surnameController,
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     border: InputBorder.none,
                                     hintText: 'Enter surname',
                                     hintStyle: TextStyle(color: Colors.grey),
                                   ),
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
@@ -367,7 +368,7 @@ void _saveChanges() {
                     ),
                   ],
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
               ],
             ),
             Column(
@@ -379,10 +380,10 @@ void _saveChanges() {
                       width: 277,
                       height: 41,
                       decoration: BoxDecoration(
-                        color: Color(0xFFDCC8C5).withOpacity(0.22),
+                        color: const Color(0xFFDCC8C5).withOpacity(0.22),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: Color(0xFFDCC8C5),
+                          color: const Color(0xFFDCC8C5),
                           width: 1,
                         ),
                       ),
@@ -393,12 +394,12 @@ void _saveChanges() {
                                     const EdgeInsets.symmetric(horizontal: 8),
                                 child: TextFormField(
                                   controller: _gmailController,
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     border: InputBorder.none,
                                     hintText: 'Enter Gmail',
                                     hintStyle: TextStyle(color: Colors.grey),
                                   ),
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
@@ -423,7 +424,7 @@ void _saveChanges() {
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -431,10 +432,10 @@ void _saveChanges() {
                       width: 277,
                       height: 51,
                       decoration: BoxDecoration(
-                        color: Color(0xFFDCC8C5).withOpacity(0.22),
+                        color: const Color(0xFFDCC8C5).withOpacity(0.22),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: Color(0xFFDCC8C5),
+                          color: const Color(0xFFDCC8C5),
                           width: 1,
                         ),
                       ),
@@ -445,12 +446,12 @@ void _saveChanges() {
                                     const EdgeInsets.symmetric(horizontal: 8),
                                 child: TextFormField(
                                   controller: _addressController,
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     border: InputBorder.none,
                                     hintText: 'Enter Address',
                                     hintStyle: TextStyle(color: Colors.grey),
                                   ),
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
@@ -475,7 +476,7 @@ void _saveChanges() {
                     ),
                   ],
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
               ],
             ),
           ],

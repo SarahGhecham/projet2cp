@@ -22,8 +22,8 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             children: [
               //custom appBar
-              HomeHeader(),
-              BarRecherche(),
+              const HomeHeader(),
+              const BarRecherche(),
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 30, 20, 5),
                 child: Align(
@@ -42,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 250,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
                   children: const [
                     DomaineContainer(
                       image: 'assets/images/domaines/plomberie.jpg',
@@ -89,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 150,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
                   children: const [
                     ServiceOffreContainer(
                         image:
@@ -118,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 220,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
                   children: const [
                     ServiceOffreContainer(
                         image:
@@ -129,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 70,
               )
             ],

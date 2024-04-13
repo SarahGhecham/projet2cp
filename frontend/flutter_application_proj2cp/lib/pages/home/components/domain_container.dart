@@ -7,8 +7,7 @@ class DomaineContainer extends StatelessWidget {
   final String serviceName;
 
   const DomaineContainer(
-      {Key? key, required this.image, required this.serviceName})
-      : super(key: key);
+      {super.key, required this.image, required this.serviceName});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +15,7 @@ class DomaineContainer extends StatelessWidget {
       onTap: () => {}, //afficher prestations
       child: Padding(
         padding: const EdgeInsets.all(9.0),
-        child: Container(
+        child: SizedBox(
             width: 210,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
@@ -38,7 +37,7 @@ class DomaineContainer extends StatelessWidget {
                           right: 0,
                           child: Container(
                             color: creme,
-                            padding: EdgeInsets.symmetric(vertical: 8),
+                            padding: const EdgeInsets.symmetric(vertical: 8),
                             child: Center(
                               child: Text(
                                 serviceName,

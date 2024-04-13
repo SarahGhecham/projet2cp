@@ -6,12 +6,14 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class PageEntree extends StatefulWidget {
+  const PageEntree({super.key});
+
   @override
   _PageEntreeState createState() => _PageEntreeState();
 }
 
 class _PageEntreeState extends State<PageEntree> {
-  PageController _controller = PageController();
+  final PageController _controller = PageController();
 
   bool onLastPage = false;
   @override
@@ -26,14 +28,14 @@ class _PageEntreeState extends State<PageEntree> {
               onLastPage = (index == 2);
             });
           },
-          children: [
+          children: const [
             IntroPage1(),
             IntroPage2(),
             IntroPage3(),
           ],
         ),
         Container(
-            alignment: Alignment(0, 0.9),
+            alignment: const Alignment(0, 0.9),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -42,7 +44,7 @@ class _PageEntreeState extends State<PageEntree> {
                   height: 36,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xffd6e3dc),
+                        backgroundColor: const Color(0xffd6e3dc),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -57,7 +59,7 @@ class _PageEntreeState extends State<PageEntree> {
                       style: GoogleFonts.poppins(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xff05564b),
+                        color: const Color(0xff05564b),
                       ),
                     ),
                   ),
@@ -69,7 +71,7 @@ class _PageEntreeState extends State<PageEntree> {
                         height: 36,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xffd6e3dc),
+                              backgroundColor: const Color(0xffd6e3dc),
                               elevation: 0,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -79,7 +81,7 @@ class _PageEntreeState extends State<PageEntree> {
                           onPressed: () {
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (context) {
-                              return IntroPage1();
+                              return const IntroPage1();
                             }));
                           },
                           child: Text(
@@ -87,7 +89,7 @@ class _PageEntreeState extends State<PageEntree> {
                             style: GoogleFonts.poppins(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xff05564b),
+                              color: const Color(0xff05564b),
                             ),
                           ),
                         ),
@@ -97,7 +99,7 @@ class _PageEntreeState extends State<PageEntree> {
                         height: 36,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xffd6e3dc),
+                              backgroundColor: const Color(0xffd6e3dc),
                               elevation: 0,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -106,7 +108,7 @@ class _PageEntreeState extends State<PageEntree> {
                               ),
                           onPressed: () {
                             _controller.nextPage(
-                                duration: Duration(milliseconds: 500),
+                                duration: const Duration(milliseconds: 500),
                                 curve: Curves.easeInOut);
                           },
                           child: Text(
@@ -114,7 +116,7 @@ class _PageEntreeState extends State<PageEntree> {
                             style: GoogleFonts.poppins(
                               fontSize: 19,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xff05564b),
+                              color: const Color(0xff05564b),
                             ),
                           ),
                         ),

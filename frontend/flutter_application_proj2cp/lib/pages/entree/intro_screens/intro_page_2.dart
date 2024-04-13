@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class IntroPage2 extends StatelessWidget {
+  const IntroPage2({super.key});
+
   @override
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
@@ -47,7 +49,7 @@ class IntroPage2 extends StatelessWidget {
               style: GoogleFonts.lato(
                 fontSize: 35, // Adjust the font size as needed
                 fontWeight: FontWeight.w900,
-                color: Color(0xff05564b), // Adjust the text color as needed
+                color: const Color(0xff05564b), // Adjust the text color as needed
               ),
             ),
           ),
