@@ -1,14 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const messagesController = require('../controllers/messages');
+const messageController = require('../controllers/messages');
 
-router.post('/send', messagesController.sendMessage);
-
-router.get('/history',messagesController.historyMessages );
-
-router.get('/retrieve_msg_artisan',messagesController.retrieveMessagesofartisan );
-router.get('/retrieve_msg_client',messagesController.retrieveMessagesofclient); 
-router.get('/history',messagesController.historyMessages );
+// Message routes
+router.post('/send', messageController.sendMessage);
+router.get('/artisans/:conversationId', messageController.retrieveMessagesOfArtisan);
+router.get('/clients/:conversationId', messageController.retrieveMessagesOfClient);
+router.get('/history/:conversationId', messageController.retrieveMessageHistory);
 
 module.exports = router;
+
 
