@@ -3,7 +3,7 @@ async function sendMessage(req, res) {
     try {
         const { senderId, senderType, receiverId, receiverType, content, conversationId } = req.body;
 
-        // Check if the conversation exists
+        // We Check if the conversation exists
         const conversation = await models.Conversation.findByPk(conversationId);
         if (!conversation) {
             return res.status(404).json({ message: `Conversation with ID ${conversationId} not found. Create a new conversation, then you can start sending messages.` });
