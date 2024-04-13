@@ -12,11 +12,11 @@ class Lancerdemande3Page extends StatefulWidget {
 }
 
 class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
-
   var nomprest = "Lavage de sol";
   final TextEditingController _controller = TextEditingController();
-  List<dynamic> _predictions = [];
+  final TextEditingController _descriptionController = TextEditingController();
 
+  List<dynamic> _predictions = [];
 
   @override
   void dispose() {
@@ -36,6 +36,7 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
       _predictions = data['predictions'];
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,7 +46,7 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(height:180),
+            const SizedBox(height: 180),
             SizedBox(
               height: 18,
               width: 25,
@@ -82,7 +83,8 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Text(
-                nomprest, style: GoogleFonts.poppins(fontSize :18),
+                nomprest,
+                style: GoogleFonts.poppins(fontSize: 18),
               ),
             ),
             const SizedBox(height: 50),
@@ -90,7 +92,8 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Text(
                 "Votre adresse :",
-                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
+                style: GoogleFonts.poppins(
+                    fontSize: 18, fontWeight: FontWeight.w600),
               ),
             ),
             const SizedBox(height: 60),
@@ -117,25 +120,24 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
                   child: Column(
                     children: [
                       TextFormField(
-                        controller: _controller,
-                        keyboardType: TextInputType.text,
-                        decoration: InputDecoration(
-                          hintText: "Adresse",
-                          hintStyle: GoogleFonts.poppins(
-                            color: const Color(0xFF777777),
+                          controller: _controller,
+                          keyboardType: TextInputType.text,
+                          decoration: InputDecoration(
+                            hintText: "Adresse",
+                            hintStyle: GoogleFonts.poppins(
+                              color: const Color(0xFF777777),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 10.0,
+                              vertical: 10.0,
+                            ),
+                            border: InputBorder.none,
                           ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 10.0,
-                            vertical: 10.0,
-                          ),
-                          border: InputBorder.none,
-                        ),
-                        onChanged: (value) {
-                          if (value.isNotEmpty) {
-                            _searchPlaces(value);
-                          }
-                        }
-                      ),
+                          onChanged: (value) {
+                            if (value.isNotEmpty) {
+                              _searchPlaces(value);
+                            }
+                          }),
                       Expanded(
                         child: ListView.builder(
                           itemCount: _predictions.length,
@@ -160,7 +162,8 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Text(
                 "Ajouter une description à votre demande:",
-                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
+                style: GoogleFonts.poppins(
+                    fontSize: 18, fontWeight: FontWeight.w600),
               ),
             ),
             const SizedBox(height: 60),
@@ -177,7 +180,7 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: TextFormField(
-                  controller: _controller,
+                  controller: _descriptionController,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
                     hintText: "Description",
@@ -196,16 +199,17 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
             const SizedBox(height: 60),
             Center(
               child: ElevatedButton(
-                onPressed: (){},
+                onPressed: () {},
                 style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all<Size>(const Size(315, 55)),
+                  minimumSize:
+                      MaterialStateProperty.all<Size>(const Size(315, 55)),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   backgroundColor:
-                  MaterialStateProperty.all<Color>(const Color(0xFF05564B)),
+                      MaterialStateProperty.all<Color>(const Color(0xFF05564B)),
                 ),
                 child: Text(
                   "Suivant",
