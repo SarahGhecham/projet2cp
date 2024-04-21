@@ -6,7 +6,7 @@ const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 const moment = require('moment');
-const bcrypt = require('bcryptjs');git
+const bcrypt = require('bcryptjs');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const { geocode, calculateRouteDistance } = require('./maps');
@@ -136,7 +136,7 @@ async function validateAddress(address, Cleapi) {
 
 
 async function updateClient(req, res) {
-    const id = req.userId;
+    const id = req.params.id;
 
     // Hash the new password if provided
     let hashedPassword = null;
@@ -180,7 +180,7 @@ async function updateClient(req, res) {
 
 
 function updateClientImage(req, res) {
-    const id = req.userId; // Extract client ID from request parameters
+    const id = req.params.id; // Extract client ID from request parameters
 
     // Check if a file is uploaded
     if (!req.file) {
@@ -192,7 +192,7 @@ function updateClientImage(req, res) {
     
 
     // Construct the image URL for the client
-    const imageURL = `http://localhost:3000/imageClient/${req.file.filename}`; // changer avec votre adressse ip/10.0.2.2(emulateur)
+    const imageURL = `http://192.168.151.173:3000/imageClient/${req.file.filename}`; // changer avec votre adressse ip/10.0.2.2(emulateur)
 
     // Update the client's photo URL in the database
     models.Client.findByPk(id)
@@ -451,7 +451,7 @@ function AfficherArtisan(req,res){
 }
 
 function AfficherProfil(req,res){
-    const id=req.userId;
+    const id=req.params.id;
     models.Client.findByPk(id).then(result=>{
         if(result){
             const clientInfo = {
@@ -700,7 +700,7 @@ async function Activiteterminee(req, res) {
 
 
 function AfficherPrestations(req, res) {
-    const domaineId = req.body.domaineId; // Supposons que vous récupériez l'ID du domaine depuis les paramètres de l'URL
+    const domaineId = req.params.id; // Supposons que vous récupériez l'ID du domaine depuis les paramètres de l'URL
 
     models.Prestation.findAll({
         where: { DomaineId: domaineId },
