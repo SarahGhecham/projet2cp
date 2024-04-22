@@ -10,7 +10,69 @@ const bcrypt = require('bcryptjs');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const { geocode, calculateRouteDistance } = require('./maps');
+
 async function getArtisansForDemand(req, res) {
+    const demandeId = req.params.demandeId;
+
+    try {
+        // Find all ArtisanDemande entries where accepte=true and DemandeId matches
+        const artisandemandes = await models.ArtisanDemande.findAll({
+            where: {
+                DemandeId: demandeId,
+                accepte: true
+            }
+        });
+
+        // Check if any ArtisanDemande entries are found
+        if (!artisandemandes || artisandemandes.length === 0) {
+            return res.status(404).json({ message: `No artisans found for demande with ID ${demandeId} where accepte=true.` });
+        }
+
+        // Get all artisan IDs from the found ArtisanDemande entries
+        const artisanIds = artisandemandes.map(artdem => artdem.ArtisanId);
+
+        // Find all artisans with the retrieved IDs
+        const artisans = await models.Artisan.findAll({
+            where: { id: artisanIds },
+            include: [
+                {
+                    model: models.Demande,
+                    attributes: ['Description', 'Localisation'],
+                    where: { id: demandeId },
+                    include: {
+                        model: models.Prestation,
+                        attributes: ['imagePrestation']
+                    }
+                },
+                {
+                    model: models.RDV,
+                    attributes: ['HeureDebut', 'HeureFin']
+                }
+            ]
+        });
+
+        // Prepare the response data
+        const artisansData = artisans.map(artisan => ({
+            nom: artisan.NomArtisan,
+            prenom: artisan.PrenomArtisan,
+            photo: artisan.photo,
+            note: artisan.Note,
+            description: artisan.Demandes[0].Description,
+            localisation: artisan.Demandes[0].Localisation,
+            imagePrestation: artisan.Demandes[0].Prestation.imagePrestation,
+            heureDebut: artisan.RDVs[0].HeureDebut,
+            heureFin: artisan.RDVs[0].HeureFin
+        }));
+
+        return res.status(200).json(artisansData);
+    } catch (error) {
+        console.error('Error retrieving artisans for demande:', error);
+        return res.status(500).json({ message: 'Failed to retrieve artisans for demande', error: error.message });
+    }
+}
+
+
+/* async function getArtisansForDemand(req, res) {
     const demandeId = req.params.demandeId;
 
     try {
@@ -37,7 +99,7 @@ async function getArtisansForDemand(req, res) {
         return res.status(500).json({ message: 'Failed to retrieve artisans for demande', error: error.message });
     }
 }
-
+ */
 
 async function signUp(req, res) {
     try {

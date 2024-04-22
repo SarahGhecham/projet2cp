@@ -45,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: true // Default value for disponibilite
       },
-    Points: DataTypes.INTEGER,
+    Note: DataTypes.DECIMAL,
     Service_account: DataTypes.INTEGER ,
     RayonKm: DataTypes.DECIMAL
   }, {
