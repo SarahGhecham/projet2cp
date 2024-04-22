@@ -335,6 +335,7 @@ async function lancerdemande(req, res) {
         
         const AdresseClient=client.AdresseClient;
         const artisansIds = [];
+        const coordinates=[];
         for (const artisanId of idsArtisansAssocies) {
             const artisan = await models.Artisan.findByPk(artisanId);
             if (artisan && (artisan.Disponibilite||!urgente)) {
@@ -350,9 +351,10 @@ async function lancerdemande(req, res) {
                 const routeDistance = await calculateRouteDistance(clientCoords, artisanCoords);
                 console.log('Route distance between client and artisan:', routeDistance.toFixed(2), 'km');
                 //await artisan.update({ RayonKm: 19.4 });
-                if(artisan.RayonKm<routeDistance)
+                if(artisan.RayonKm>routeDistance)
                 {
                     artisansIds.push(artisan.id);
+                    coordinates.push(artisanCoords);
                     try{
                         const association = await models.ArtisanDemande.create({
                             ArtisanId: artisan.id,
@@ -364,18 +366,7 @@ async function lancerdemande(req, res) {
                 }
             }
         }
-        // Récupérer les coordonnées de l'adresse de chaque artisan
-        const coordinatesPromises = artisansIds.map(async (artisanId) => {
-            const artisan = await models.Artisan.findByPk(artisanId);
-            if (artisan) {
-                const AdresseArtisan = artisan.AdresseArtisan;
-                const artisanCoords = await geocode(AdresseArtisan);
-                return artisanCoords;
-            }
-        });
-
-        // Attendre la résolution de toutes les promesses
-        const coordinates = await Promise.all(coordinatesPromises);
+        
 
         return res.status(201).json({
             message: `La demande a été créée avec succès et associée au client et à la prestation.`,
