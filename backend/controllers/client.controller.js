@@ -10,7 +10,6 @@ const bcrypt = require('bcryptjs');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const { geocode, calculateRouteDistance } = require('./maps');
-
 async function getArtisansForDemand(req, res) {
     const demandeId = req.params.demandeId;
 
@@ -33,23 +32,19 @@ async function getArtisansForDemand(req, res) {
 
         // Find all artisans with the retrieved IDs
         const artisans = await models.Artisan.findAll({
-            where: { id: artisanIds },
-            include: [
-                {
-                    model: models.Demande,
-                    attributes: ['Description', 'Localisation'],
-                    where: { id: demandeId },
-                    include: {
-                        model: models.Prestation,
-                        attributes: ['imagePrestation']
-                    }
-                },
-                {
-                    model: models.RDV,
-                    attributes: ['HeureDebut', 'HeureFin']
-                }
-            ]
+            where: { id: artisanIds }
         });
+
+        // Find the demande associated with the given ID
+        const demande = await models.Demande.findByPk(demandeId);
+
+        // Find the RDV associated with the demande
+        const rdv = await models.RDV.findOne({
+            where: { DemandeId: demandeId }
+        });
+
+        // Find the prestation associated with the demande
+        const prestation = await demande.getPrestation();
 
         // Prepare the response data
         const artisansData = artisans.map(artisan => ({
@@ -57,11 +52,11 @@ async function getArtisansForDemand(req, res) {
             prenom: artisan.PrenomArtisan,
             photo: artisan.photo,
             note: artisan.Note,
-            description: artisan.Demandes[0].Description,
-            localisation: artisan.Demandes[0].Localisation,
-            imagePrestation: artisan.Demandes[0].Prestation.imagePrestation,
-            heureDebut: artisan.RDVs[0].HeureDebut,
-            heureFin: artisan.RDVs[0].HeureFin
+            description: demande.Description,
+            localisation: demande.Localisation, //  Localisation is an attribute of Demande
+            imagePrestation: prestation.imagePrestation, //  imagePrestation is an attribute of Prestation
+            dateDebut: rdv ? rdv.DateDebut : null,
+            heureDebut: rdv ? rdv.HeureDebut : null
         }));
 
         return res.status(200).json(artisansData);
