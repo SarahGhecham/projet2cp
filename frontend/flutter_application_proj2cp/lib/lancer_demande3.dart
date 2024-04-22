@@ -138,32 +138,52 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
                                 _showSuggestions = true; // Show suggestions when typing
                               });
                             }
+                            else{
+                              setState(() {
+                                _showSuggestions = false; //
+                              });
+                            }
                           }),
                     ),
                   ],
                 ),
               ],
             ),
+            SizedBox(height: 30),
             Visibility(
               visible: _showSuggestions,
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: _predictions.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(_predictions[index]["description"]),
-                    onTap: () {
-                      _controller.text = _predictions[index]["description"];
-                      setState(() {
-                        _showSuggestions = false;
-                      });
-                    },
-                  );
-                },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                child: ListView.separated(
+                  separatorBuilder: (BuildContext context, int index) {
+                    return Divider(
+                      color: Color(0xFFDCC8C5),
+                      thickness: 2.0,
+                    );
+                  },
+                  shrinkWrap: true,
+                  itemCount: _predictions.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(_predictions[index]["description"],
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                        ),
+                      ),
+
+                      onTap: () {
+                        _controller.text = _predictions[index]["description"];
+                        setState(() {
+                          _showSuggestions = false;
+                        });
+                      },
+                    );
+                  },
+                ),
               ),
             ),
 
-            const SizedBox(height: 80),
+            const SizedBox(height: 40),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Text(
