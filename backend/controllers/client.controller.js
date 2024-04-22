@@ -277,7 +277,8 @@ async function lancerdemande(req, res) {
     const clientId = req.userId; // Supposons que req.userId contient l'ID du client
     const nomPrestation = req.body.nomPrestation;
     const urgente = req.body.urgente;
-
+    const localisation=req.body.Localisation;
+    
 
     // Vérifier si clientId est défini
     if (!clientId) {
@@ -313,7 +314,8 @@ async function lancerdemande(req, res) {
             Description: description,
             PrestationId: prestation.id,
             ClientId: clientId,
-            Urgente: urgente
+            Urgente: urgente,
+            Localisation: localisation
         });
         // Vérifier si la demande a été créée avec succès
         if (!nouvelleDemande) {
@@ -333,14 +335,14 @@ async function lancerdemande(req, res) {
         
         const idsArtisansAssocies = artisansAssocies.map(assoc => assoc.ArtisanId);
         
-        const AdresseClient=client.AdresseClient;
         const artisansIds = [];
         const coordinates=[];
         for (const artisanId of idsArtisansAssocies) {
             const artisan = await models.Artisan.findByPk(artisanId);
             if (artisan && (artisan.Disponibilite||!urgente)) {
-                const AdresseArtisan = artisan.AdresseArtisan;
-                const clientCoords = await geocode(AdresseClient);
+                const AdresseArtisan = "ESI,oued smar";
+                console.log(localisation);
+                const clientCoords = await geocode(localisation);
                 const artisanCoords = await geocode(AdresseArtisan);
                 
                 // Afficher les coordonnées du client et de l'artisan
@@ -351,7 +353,7 @@ async function lancerdemande(req, res) {
                 const routeDistance = await calculateRouteDistance(clientCoords, artisanCoords);
                 console.log('Route distance between client and artisan:', routeDistance.toFixed(2), 'km');
                 //await artisan.update({ RayonKm: 19.4 });
-                if(artisan.RayonKm>routeDistance)
+                if(artisan.RayonKm>=routeDistance)
                 {
                     artisansIds.push(artisan.id);
                     coordinates.push(artisanCoords);
