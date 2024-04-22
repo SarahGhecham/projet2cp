@@ -47,7 +47,7 @@ async function consulterdemandes(req, res) {
 
 
 function AfficherProfil(req,res){
-    const id=req.userId;
+    const id=req.params.id;
     models.Artisan.findByPk(id).then(result=>{
         if(result){
             const artisanInfo = {
@@ -57,7 +57,8 @@ function AfficherProfil(req,res){
                 AdresseArtisan: result.AdresseArtisan,
                 NumeroTelArtisan: result.NumeroTelArtisan,
                 Disponibilite: result.Disponibilite,
-                photo: result.photo
+                photo: result.photo,
+                Note: result.Note
             };
             res.status(201).json(artisanInfo);
         }
@@ -114,6 +115,48 @@ async function updateartisan(req, res) {
         });
 }
 
+
+function updateArtisanImage(req, res) {
+    const id = req.params.id;
+
+    // Check if a file is uploaded
+    if (!req.file) {
+        return res.status(400).json({ success: false, message: "Please upload an image." });
+    }
+
+    // Construct the image URL for the artisan
+    const imageURL = `http://localhost:3000/imageArtisan/${req.file.filename}`;
+
+    // Update the artisan's photo URL in the database
+    models.Artisan.findByPk(id)
+        .then(artisan => {
+            if (!artisan) {
+                return res.status(404).json({ message: 'Artisan not found' });
+            }
+
+            // Update the artisan's photo URL
+            artisan.photo = imageURL;
+
+            // Saving the updated artisan
+            return artisan.save();
+        })
+        .then(updatedArtisan => {
+            // Success message and the updated artisan object
+            res.status(201).json({
+                success: true,
+                message: 'Artisan image updated successfully',
+                artisan: updatedArtisan,
+                imageURL: imageURL
+            });
+        })
+        .catch(error => {
+            res.status(500).json({ success: false, message: 'Something went wrong', error: error });
+        });
+}
+
+module.exports = {
+    updateArtisanImage: updateArtisanImage
+};
 
 async function accepterRDV(req, res) {
     const rdvId = req.body.rdvId; 
@@ -501,5 +544,6 @@ module.exports = {
     ActiviteEncours,
     DetailsDemandeConfirmee,
     DetailsRDVTermine,
-    consulterdemandes
+    consulterdemandes,
+    updateArtisanImage
 }

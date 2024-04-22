@@ -21,10 +21,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Demande.init({
-    nom: DataTypes.STRING,
+    Description: DataTypes.TEXT,
     PrestationId: DataTypes.INTEGER,
     ClientId: DataTypes.INTEGER,
-    Urgente:DataTypes.BOOLEAN
+    Urgente:DataTypes.BOOLEAN,
+    Localisation:DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Demande',

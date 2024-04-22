@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     TarifId: DataTypes.INTEGER,
     DomaineId: DataTypes.INTEGER,
     Ecologique: DataTypes.BOOLEAN,
+    imagePrestation: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'Prestation',
