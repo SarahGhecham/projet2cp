@@ -159,37 +159,57 @@ module.exports = {
 };
 
 async function accepterRDV(req, res) {
-    const rdvId = req.body.rdvId; 
+    const rdvId = req.body.rdvId;
+    const rdv = await models.RDV.findByPk(rdvId);
 
+    if (!rdv) {
+        return res.status(404).json({ message: `Le RDV avec l'ID ${rdvId} n'existe pas.` });
+    }
+
+    const demandeId = rdv.DemandeId;
     try {
-        const rdv = await models.RDV.findByPk(rdvId);
-        if (!rdv) {
-            return res.status(404).json({ message: `Le RDV avec l'ID ${rdvId} n'existe pas.` });
+        // Trouver la relation artisan-demande correspondant à la demande
+        const artisandemande = await models.ArtisanDemande.findOne({ where: { DemandeId: demandeId } });
+
+        if (!artisandemande) {
+            return res.status(404).json({ message: `La relation artisan-demande pour la demande avec l'ID ${demandeId} n'existe pas.` });
         }
 
-        rdv.accepte = true;
-        await rdv.save();
-        return res.status(200).json({ message: `Le RDV avec l'ID ${rdvId} a été accepté avec succès.`, rdv });
+        // Mettre à jour le champ "accepte" dans la table "artisandemandes"
+        artisandemande.accepte = true;
+        await artisandemande.save();
+
+        return res.status(200).json({ message: `La demande avec l'ID ${demandeId} a été acceptée avec succès.`, artisandemande });
     } catch (error) {
-        console.error("Erreur lors de l'acceptation du RDV :", error);
+        console.error("Erreur lors de l'acceptation de la demande :", error);
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
 
-async function annulerRDV(req, res) {
-    const rdvId = req.body.rdvId; 
+async function refuserRDV(req, res) {
+    const rdvId = req.body.rdvId;
+    const rdv = await models.RDV.findByPk(rdvId);
 
+    if (!rdv) {
+        return res.status(404).json({ message: `Le RDV avec l'ID ${rdvId} n'existe pas.` });
+    }
+
+    const demandeId = rdv.DemandeId;
     try {
-        const rdv = await models.RDV.findByPk(rdvId);
-        if (!rdv) {
-            return res.status(404).json({ message: `Le RDV avec l'ID ${rdvId} n'existe pas.` });
+        // Trouver la relation artisan-demande correspondant à la demande
+        const artisandemande = await models.ArtisanDemande.findOne({ where: { DemandeId: demandeId } });
+
+        if (!artisandemande) {
+            return res.status(404).json({ message: `La relation artisan-demande pour la demande avec l'ID ${demandeId} n'existe pas.` });
         }
 
-        rdv.annule = true;
-        await rdv.save();
-        return res.status(200).json({ message: `Le RDV avec l'ID ${rdvId} a été annulé avec succès.`, rdv });
+        // Mettre à jour le champ "accepte" dans la table "artisandemandes"
+        artisandemande.refuse = true;
+        await artisandemande.save();
+
+        return res.status(200).json({ message: `La demande avec l'ID ${demandeId} a été refusée avec succès.`, artisandemande });
     } catch (error) {
-        console.error("Erreur lors de l'annulation du RDV :", error);
+        console.error("Erreur lors du refus de la demande :", error);
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
@@ -535,7 +555,7 @@ async function DetailsRDVTermine(req, res) {
 module.exports = {
     updateartisan:updateartisan,
     accepterRDV:accepterRDV,
-    annulerRDV:annulerRDV,
+    refuserRDV:refuserRDV,
     //HistoriqueInterventions,
     associerDemandeArtisan,
     //AfficherEvaluations,

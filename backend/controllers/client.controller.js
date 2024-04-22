@@ -507,29 +507,37 @@ async function creerRDV(req,demandeId) {
 }
 
 async function confirmerRDV(req, res) {
-    const rdvId = req.body.rdvId; 
+    const rdvId = req.body.rdvId;
     const artisanId = req.body.artisanId;
+
     try {
-        const artisandemande = await models.ArtisanDemande.findOne({ where: { demandeId: rdvId, artisanId: artisanId } });
-        
-        if (!artisandemande) {
-            return res.status(404).json({ message: `La relation artisan-demande pour le RDV avec l'ID ${rdvId} et l'artisan avec l'ID ${artisanId} n'existe pas.` });
+        // Trouver l'ID de la demande à partir de rdvId
+        const rdv = await models.RDV.findByPk(rdvId);
+
+        if (!rdv) {
+            return res.status(404).json({ message: `Le RDV avec l'ID ${rdvId} n'existe pas.` });
         }
 
-        if (!artisandemande.accepte) {
-            return res.status(400).json({ message: `La relation artisan-demande pour le RDV avec l'ID ${rdvId} et l'artisan avec l'ID ${artisanId} n'a pas été acceptée.` });
+        const demandeId = rdv.DemandeId;
+
+        // Trouver la relation artisan-demande correspondant à la demande et à l'artisan
+        const artisandemande = await models.ArtisanDemande.findOne({ where: { DemandeId: demandeId, ArtisanId: artisanId } });
+
+        if (!artisandemande) {
+            return res.status(404).json({ message: `La relation artisan-demande pour la demande avec l'ID ${demandeId} et l'artisan avec l'ID ${artisanId} n'existe pas.` });
         }
 
         // Mettre à jour le champ "confirme" dans la table "artisandemandes"
         artisandemande.confirme = true;
         await artisandemande.save();
-        
-        return res.status(200).json({ message: `La relation artisan-demande pour le RDV avec l'ID ${rdvId} et l'artisan avec l'ID ${artisanId} a été confirmée avec succès.`, artisandemande });
+
+        return res.status(200).json({ message: `Le RDV avec l'ID ${rdvId} a été confirmé avec succès par l'artisan avec l'ID ${artisanId}.`, artisandemande });
     } catch (error) {
-        console.error("Erreur lors de la confirmation de la relation artisan-demande :", error);
+        console.error("Erreur lors de la confirmation du RDV :", error);
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
+
 
 
 async function annulerRDV(req, res) {
