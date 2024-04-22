@@ -14,6 +14,17 @@ async function getArtisansForDemand(req, res) {
     const demandeId = req.params.demandeId;
 
     try {
+        // Find the demande associated with the given ID
+        const demande = await models.Demande.findByPk(demandeId);
+
+        // Find the RDV associated with the demande
+        const rdv = await models.RDV.findOne({
+            where: { DemandeId: demandeId }
+        });
+
+        // Find the prestation associated with the demande
+        const prestation = await demande.getPrestation();
+
         // Find all ArtisanDemande entries where accepte=true and DemandeId matches
         const artisandemandes = await models.ArtisanDemande.findAll({
             where: {
@@ -35,37 +46,36 @@ async function getArtisansForDemand(req, res) {
             where: { id: artisanIds }
         });
 
-        // Find the demande associated with the given ID
-        const demande = await models.Demande.findByPk(demandeId);
-
-        // Find the RDV associated with the demande
-        const rdv = await models.RDV.findOne({
-            where: { DemandeId: demandeId }
-        });
-
-        // Find the prestation associated with the demande
-        const prestation = await demande.getPrestation();
-
         // Prepare the response data
         const artisansData = artisans.map(artisan => ({
             nom: artisan.NomArtisan,
             prenom: artisan.PrenomArtisan,
             photo: artisan.photo,
-            note: artisan.Note,
-            description: demande.Description,
-            localisation: demande.Localisation, //  Localisation is an attribute of Demande
-            imagePrestation: prestation.imagePrestation, //  imagePrestation is an attribute of Prestation
-            dateDebut: rdv ? rdv.DateDebut : null,
-            heureDebut: rdv ? rdv.HeureDebut : null
+            note: artisan.Note
         }));
 
-        return res.status(200).json(artisansData);
+        // Combine additional demande, prestation, and rdv attributes with artisansData
+        const combinedData = {
+            demande: {
+                description: demande.Description,
+                localisation: demande.Localisation
+            },
+            prestation: {
+                imagePrestation: prestation.imagePrestation
+            },
+            rdv: {
+                dateDebut: rdv ? rdv.DateDebut : null,
+                heureDebut: rdv ? rdv.HeureDebut : null
+            },
+            artisans: artisansData
+        };
+
+        return res.status(200).json(combinedData);
     } catch (error) {
         console.error('Error retrieving artisans for demande:', error);
         return res.status(500).json({ message: 'Failed to retrieve artisans for demande', error: error.message });
     }
 }
-
 
 /* async function getArtisansForDemand(req, res) {
     const demandeId = req.params.demandeId;
