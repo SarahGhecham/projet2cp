@@ -10,6 +10,8 @@ const bcrypt = require('bcryptjs');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const { geocode, calculateRouteDistance } = require('./maps');
+const { sequelize } = require('sequelize');
+
 
 
 async function signUp(req, res) {
@@ -276,7 +278,8 @@ async function lancerdemande(req, res) {
     const clientId = req.userId; // Supposons que req.userId contient l'ID du client
     const nomPrestation = req.body.nomPrestation;
     const urgente = req.body.urgente;
-
+    const localisation=req.body.Localisation;
+    
 
     // Vérifier si clientId est défini
     if (!clientId) {
@@ -312,7 +315,8 @@ async function lancerdemande(req, res) {
             Description: description,
             PrestationId: prestation.id,
             ClientId: clientId,
-            Urgente: urgente
+            Urgente: urgente,
+            Localisation: localisation
         });
         // Vérifier si la demande a été créée avec succès
         if (!nouvelleDemande) {
@@ -332,14 +336,14 @@ async function lancerdemande(req, res) {
         
         const idsArtisansAssocies = artisansAssocies.map(assoc => assoc.ArtisanId);
         
-        const AdresseClient=client.AdresseClient;
         const artisansIds = [];
         const coordinates=[];
         for (const artisanId of idsArtisansAssocies) {
             const artisan = await models.Artisan.findByPk(artisanId);
             if (artisan && (artisan.Disponibilite||!urgente)) {
                 const AdresseArtisan = artisan.AdresseArtisan;
-                const clientCoords = await geocode(AdresseClient);
+                console.log(localisation);
+                const clientCoords = await geocode(localisation);
                 const artisanCoords = await geocode(AdresseArtisan);
                 
                 // Afficher les coordonnées du client et de l'artisan
@@ -350,7 +354,7 @@ async function lancerdemande(req, res) {
                 const routeDistance = await calculateRouteDistance(clientCoords, artisanCoords);
                 console.log('Route distance between client and artisan:', routeDistance.toFixed(2), 'km');
                 //await artisan.update({ RayonKm: 19.4 });
-                if(artisan.RayonKm>routeDistance)
+                if(artisan.RayonKm>=routeDistance)
                 {
                     artisansIds.push(artisan.id);
                     coordinates.push(artisanCoords);
@@ -378,6 +382,7 @@ async function lancerdemande(req, res) {
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
+
 
 
 function AfficherArtisan(req,res){
@@ -505,13 +510,11 @@ async function creerRDV(req,demandeId) {
         return rdv;
 
 }
-
 async function confirmerRDV(req, res) {
     const rdvId = req.body.rdvId;
     const artisanId = req.body.artisanId;
 
     try {
-        // Trouver l'ID de la demande à partir de rdvId
         const rdv = await models.RDV.findByPk(rdvId);
 
         if (!rdv) {
@@ -520,18 +523,21 @@ async function confirmerRDV(req, res) {
 
         const demandeId = rdv.DemandeId;
 
-        // Trouver la relation artisan-demande correspondant à la demande et à l'artisan
-        const artisandemande = await models.ArtisanDemande.findOne({ where: { DemandeId: demandeId, ArtisanId: artisanId } });
+        // Supprimer les autres relations avec le même rdvId mais un artisanId différent
+        await models.ArtisanDemande.destroy({ where: { DemandeId: demandeId, ArtisanId: { [models.Sequelize.Op.ne]: artisanId } } });
 
-        if (!artisandemande) {
-            return res.status(404).json({ message: `La relation artisan-demande pour la demande avec l'ID ${demandeId} et l'artisan avec l'ID ${artisanId} n'existe pas.` });
+        // Mettre à jour la relation artisan-demande correspondant à l'artisan actuel
+        const [updatedRows, updatedArtisanDemande] = await models.ArtisanDemande.update(
+            { confirme: true }, // Les valeurs à mettre à jour
+            { where: { DemandeId: demandeId, ArtisanId: artisanId } } // Conditions de mise à jour
+        );
+
+        // Vérifier si la mise à jour a réussi
+        if (updatedRows > 0) {
+            return res.status(200).json({ message: `Le RDV avec l'ID ${rdvId} a été confirmé avec succès par l'artisan avec l'ID ${artisanId}.` });
+        } else {
+            return res.status(500).json({ message: 'Impossible de confirmer le RDV.' });
         }
-
-        // Mettre à jour le champ "confirme" dans la table "artisandemandes"
-        artisandemande.confirme = true;
-        await artisandemande.save();
-
-        return res.status(200).json({ message: `Le RDV avec l'ID ${rdvId} a été confirmé avec succès par l'artisan avec l'ID ${artisanId}.`, artisandemande });
     } catch (error) {
         console.error("Erreur lors de la confirmation du RDV :", error);
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
@@ -559,7 +565,6 @@ async function annulerRDV(req, res) {
     }
 }
 
-
 async function ActiviteEncours(req, res) {
     const clientId = req.userId;
 
@@ -574,26 +579,56 @@ async function ActiviteEncours(req, res) {
 
         const rdvs = await models.RDV.findAll({
             where: { DemandeId: demandeIds },
-            attributes: ['id', 'DemandeId', 'accepte', 'confirme', 'annule', 'DateFin', 'HeureFin'] // Sélectionner également les attributs d'acceptation, de confirmation, d'annulation, de date et d'heure de fin
+            attributes: ['id', 'DemandeId', 'annule', 'DateFin', 'HeureFin']
         });
 
-        const rendezVousEnCours = rdvs.filter(rdv => {
+        const rendezVousEnCours = await Promise.all(rdvs.map(async (rdv) => {
             const rdvDateFin = new Date(rdv.DateFin);
             const rdvHeureFin = new Date(`${rdv.DateFin}T${rdv.HeureFin}`);
-            return (!rdv.annule && !rdv.accepte) || (!rdv.annule && rdv.accepte && !rdv.confirme) || (!rdv.annule && rdv.accepte && rdv.confirme && (rdvDateFin > maintenant || (rdvDateFin.getTime() === maintenant.getTime() && rdvHeureFin > maintenant)));
-        });
+        
+            // Vérifier si le rendez-vous est annulé
+            if (rdv.annule) {
+                return null;
+            }
+        
+            // Vérifier si la date et l'heure de fin sont après la date et l'heure actuelles
+            if (rdvDateFin > maintenant || (rdvDateFin.getTime() === maintenant.getTime() && rdvHeureFin > maintenant)) {
+                // Vérifier si la relation avec l'artisan est acceptée et confirmée
+                const artisandemande = await models.ArtisanDemande.findOne({ where: { DemandeId: rdv.DemandeId } });
+                if (!artisandemande || !artisandemande.accepte || !artisandemande.confirme) {
+                    return null;
+                }
+                
+                return rdv;
+            } else {
+                return null;
+            }
+        }));
+        
 
         const rendezVousDetails = await Promise.all(rendezVousEnCours.map(async (rdv) => {
+            if (!rdv) {
+                return null; 
+            }
+
             const demande = await models.Demande.findByPk(rdv.DemandeId, {
+                attributes: [
+                    [models.sequelize.literal("DATE_FORMAT(`Demande`.`createdAt`, '%Y-%m-%d')"), 'date'], 
+            [models.sequelize.literal("DATE_FORMAT(`Demande`.`createdAt`, '%H:%i:%s')"), 'heure'] 
+                ],
                 include: [
-                    { model: models.Client },
-                    { model: models.Prestation }
+                    {
+                        model: models.Prestation,
+                        attributes: ['nomPrestation', 'imagePrestation'] 
+                    }
                 ]
             });
-            return { rdv, demande };
+            return { demande };
         }));
 
-        return res.status(200).json(rendezVousDetails);
+        const filteredRendezVousDetails = rendezVousDetails.filter(item => item !== null);
+
+        return res.status(200).json(filteredRendezVousDetails);
     } catch (error) {
         console.error('Une erreur s\'est produite lors de la récupération des rendez-vous en cours :', error);
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });

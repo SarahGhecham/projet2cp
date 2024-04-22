@@ -169,7 +169,7 @@ async function accepterRDV(req, res) {
     const demandeId = rdv.DemandeId;
     try {
         // Trouver la relation artisan-demande correspondant à la demande
-        const artisandemande = await models.ArtisanDemande.findOne({ where: { DemandeId: demandeId } });
+        let artisandemande = await models.ArtisanDemande.findOne({ where: { DemandeId: demandeId } });
 
         if (!artisandemande) {
             return res.status(404).json({ message: `La relation artisan-demande pour la demande avec l'ID ${demandeId} n'existe pas.` });
@@ -179,12 +179,16 @@ async function accepterRDV(req, res) {
         artisandemande.accepte = true;
         await artisandemande.save();
 
-        return res.status(200).json({ message: `La demande avec l'ID ${demandeId} a été acceptée avec succès.`, artisandemande });
+        // Recharger les données pour s'assurer que le champ "accepte" a bien été mis à jour
+        await artisandemande.reload();
+
+        return res.status(200).json({ message: `La demande avec l'ID ${demandeId} a été acceptée avec succès.` });
     } catch (error) {
         console.error("Erreur lors de l'acceptation de la demande :", error);
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
+
 
 async function refuserRDV(req, res) {
     const rdvId = req.body.rdvId;
