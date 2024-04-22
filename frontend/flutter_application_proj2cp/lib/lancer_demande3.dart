@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -17,17 +19,13 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
   final TextEditingController _descriptionController = TextEditingController();
 
   List<dynamic> _predictions = [];
-
+  bool _showSuggestions = true;
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   void _searchPlaces(String input) async {
     const apiKey = 'AIzaSyD_d366EANPIHugZe9YF5QVxHHa_Bzef_4';
     final url =
-        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=(cities)&key=$apiKey';
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=(cities)&key=$apiKey&language=fr';
 
     final response = await http.get(Uri.parse(url));
     final data = json.decode(response.body);
@@ -106,20 +104,20 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
                   child: SvgPicture.asset("assets/pin_light.svg"),
                 ),
                 const SizedBox(width: 10),
-                Container(
-                  width: 250,
-                  height: 41,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFDCC8C5).withOpacity(0.22),
-                    border: Border.all(
-                      color: const Color(0xFFDCC8C5),
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    children: [
-                      TextFormField(
+                Column(
+                  children: [
+                    Container(
+                      width: 280,
+                      height: 45,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFDCC8C5).withOpacity(0.22),
+                        border: Border.all(
+                          color: const Color(0xFFDCC8C5),
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: TextFormField(
                           controller: _controller,
                           keyboardType: TextInputType.text,
                           decoration: InputDecoration(
@@ -136,27 +134,35 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
                           onChanged: (value) {
                             if (value.isNotEmpty) {
                               _searchPlaces(value);
+                              setState(() {
+                                _showSuggestions = true; // Show suggestions when typing
+                              });
                             }
                           }),
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: _predictions.length,
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              title: Text(_predictions[index]["description"]),
-                              onTap: () {
-                                // Do something with selected place
-                                print(_predictions[index]["description"]);
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
+            Visibility(
+              visible: _showSuggestions,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: _predictions.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(_predictions[index]["description"]),
+                    onTap: () {
+                      _controller.text = _predictions[index]["description"];
+                      setState(() {
+                        _showSuggestions = false;
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
+
             const SizedBox(height: 80),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 40),

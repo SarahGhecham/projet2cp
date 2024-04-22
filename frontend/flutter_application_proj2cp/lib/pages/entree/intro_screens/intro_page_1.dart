@@ -64,7 +64,7 @@ class IntroPage1 extends StatelessWidget {
             top: 210,
             left: 110, // Adjust the bottom position as needed
             child: Image.asset(
-              'assets/logo.png',
+              'assets/logo1.png',
               width: 300, // Adjust the width as needed
               height: 300, // Adjust the height as needed
             ),
