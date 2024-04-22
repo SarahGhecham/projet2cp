@@ -15,6 +15,15 @@ module.exports = {
       ArtisanId: {
         type: Sequelize.INTEGER
       },
+      accepte: {
+        type: Sequelize.BOOLEAN
+      },
+      confirme: {
+        type: Sequelize.BOOLEAN
+      },
+      refuse: {
+        type: Sequelize.BOOLEAN
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

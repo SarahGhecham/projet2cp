@@ -270,7 +270,6 @@ async function creerEvaluation(req, res) {
 }
 
 
-
 async function lancerdemande(req, res) {
     // Attributs de la demande
     const description = req.body.description;
@@ -335,6 +334,7 @@ async function lancerdemande(req, res) {
         
         const AdresseClient=client.AdresseClient;
         const artisansIds = [];
+        const coordinates=[];
         for (const artisanId of idsArtisansAssocies) {
             const artisan = await models.Artisan.findByPk(artisanId);
             if (artisan && (artisan.Disponibilite||!urgente)) {
@@ -350,9 +350,10 @@ async function lancerdemande(req, res) {
                 const routeDistance = await calculateRouteDistance(clientCoords, artisanCoords);
                 console.log('Route distance between client and artisan:', routeDistance.toFixed(2), 'km');
                 //await artisan.update({ RayonKm: 19.4 });
-                if(artisan.RayonKm<routeDistance)
+                if(artisan.RayonKm>routeDistance)
                 {
                     artisansIds.push(artisan.id);
+                    coordinates.push(artisanCoords);
                     try{
                         const association = await models.ArtisanDemande.create({
                             ArtisanId: artisan.id,
@@ -364,18 +365,7 @@ async function lancerdemande(req, res) {
                 }
             }
         }
-        // Récupérer les coordonnées de l'adresse de chaque artisan
-        const coordinatesPromises = artisansIds.map(async (artisanId) => {
-            const artisan = await models.Artisan.findByPk(artisanId);
-            if (artisan) {
-                const AdresseArtisan = artisan.AdresseArtisan;
-                const artisanCoords = await geocode(AdresseArtisan);
-                return artisanCoords;
-            }
-        });
-
-        // Attendre la résolution de toutes les promesses
-        const coordinates = await Promise.all(coordinatesPromises);
+        
 
         return res.status(201).json({
             message: `La demande a été créée avec succès et associée au client et à la prestation.`,
@@ -388,7 +378,6 @@ async function lancerdemande(req, res) {
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
-
 
 
 function AfficherArtisan(req,res){
@@ -510,8 +499,6 @@ async function creerRDV(req,demandeId) {
             DateFin: dateDebut, // La date de fin est la même que la date de début
             HeureDebut: heureDebut,
             HeureFin: heureFinFormatee,
-            accepte: false,
-            confirme: false,
             annule: false,
             DemandeId: demandeId
         });
@@ -521,25 +508,29 @@ async function creerRDV(req,demandeId) {
 
 async function confirmerRDV(req, res) {
     const rdvId = req.body.rdvId; 
-
+    const artisanId = req.body.artisanId;
     try {
-        const rdv = await models.RDV.findByPk(rdvId);      
-        if (!rdv) {
-            return res.status(404).json({ message: `Le RDV avec l'ID ${rdvId} n'existe pas.` });
+        const artisandemande = await models.ArtisanDemande.findOne({ where: { demandeId: rdvId, artisanId: artisanId } });
+        
+        if (!artisandemande) {
+            return res.status(404).json({ message: `La relation artisan-demande pour le RDV avec l'ID ${rdvId} et l'artisan avec l'ID ${artisanId} n'existe pas.` });
         }
 
-        if (!rdv.accepte) {
-            return res.status(400).json({ message: `Le RDV avec l'ID ${rdvId} n'a pas été accepté.` });
+        if (!artisandemande.accepte) {
+            return res.status(400).json({ message: `La relation artisan-demande pour le RDV avec l'ID ${rdvId} et l'artisan avec l'ID ${artisanId} n'a pas été acceptée.` });
         }
 
-        rdv.confirme = true;
-        await rdv.save();
-        return res.status(200).json({ message: `Le RDV avec l'ID ${rdvId} a été confirmé avec succès.`, rdv });
+        // Mettre à jour le champ "confirme" dans la table "artisandemandes"
+        artisandemande.confirme = true;
+        await artisandemande.save();
+        
+        return res.status(200).json({ message: `La relation artisan-demande pour le RDV avec l'ID ${rdvId} et l'artisan avec l'ID ${artisanId} a été confirmée avec succès.`, artisandemande });
     } catch (error) {
-        console.error("Erreur lors de la confirmation du RDV :", error);
+        console.error("Erreur lors de la confirmation de la relation artisan-demande :", error);
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
+
 
 async function annulerRDV(req, res) {
     const rdvId = req.body.rdvId; 
