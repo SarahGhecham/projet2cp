@@ -1,6 +1,6 @@
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:convert';
@@ -8,6 +8,8 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 
 class Profile extends StatefulWidget {
+  const Profile({super.key});
+
   @override
   _ProfileState createState() => _ProfileState();
 }
@@ -126,6 +128,7 @@ class _ProfileState extends State<Profile> {
   TextEditingController _numeroController = TextEditingController();
   TextEditingController _gmailController = TextEditingController();
   TextEditingController _addressController = TextEditingController();
+
   void _toggleEditing(bool value) {
     setState(() {
       _isEditing = value;
@@ -156,7 +159,7 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Profile',
           style: TextStyle(
             fontSize: 24,
@@ -205,7 +208,7 @@ class _ProfileState extends State<Profile> {
                       ),
                       child: Align(
                         alignment: Alignment.center,
-                        child: Container(
+                        child: SizedBox(
                           width: 168,
                           height: 174,
                           child: GestureDetector(
@@ -284,16 +287,16 @@ class _ProfileState extends State<Profile> {
                     ),
                   ),
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 Container(
                   width: 170,
                   height: 61,
-                  margin: EdgeInsets.only(left: 00, bottom: 00),
+                  margin: const EdgeInsets.only(left: 00, bottom: 00),
                   decoration: BoxDecoration(
-                    color: Color(0xFFD6E3DC),
+                    color: const Color(0xFFD6E3DC),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: Color(0xFFDCC8C5),
+                      color: const Color(0xFFDCC8C5),
                       width: 1,
                     ),
                   ),
@@ -324,12 +327,12 @@ class _ProfileState extends State<Profile> {
                       Container(
                         width: 1,
                         height: double.infinity,
-                        color: Color(0xFFDCC8C5),
+                        color: const Color(0xFFDCC8C5),
                       ),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
+                          const Text(
                             'Points',
                             style: TextStyle(
                               color: Color(0xFFFF8787),
@@ -354,7 +357,7 @@ class _ProfileState extends State<Profile> {
             ),
             Column(
               children: [
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -362,10 +365,10 @@ class _ProfileState extends State<Profile> {
                       width: 116,
                       height: 41,
                       decoration: BoxDecoration(
-                        color: Color(0xFFDCC8C5).withOpacity(0.22),
+                        color: const Color(0xFFDCC8C5).withOpacity(0.22),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: Color(0xFFDCC8C5),
+                          color: const Color(0xFFDCC8C5),
                           width: 1,
                         ),
                       ),
@@ -407,15 +410,15 @@ class _ProfileState extends State<Profile> {
                               ),
                       ),
                     ),
-                    SizedBox(width: 40),
+                    const SizedBox(width: 40),
                     Container(
                       width: 116,
                       height: 41,
                       decoration: BoxDecoration(
-                        color: Color(0xFFDCC8C5).withOpacity(0.22),
+                        color: const Color(0xFFDCC8C5).withOpacity(0.22),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: Color(0xFFDCC8C5),
+                          color: const Color(0xFFDCC8C5),
                           width: 1,
                         ),
                       ),
@@ -431,7 +434,7 @@ class _ProfileState extends State<Profile> {
                                     hintText: 'Entrer num Tel',
                                     hintStyle: TextStyle(color: Colors.grey),
                                   ),
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
@@ -457,7 +460,7 @@ class _ProfileState extends State<Profile> {
                     ),
                   ],
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
               ],
             ),
             Column(
@@ -469,10 +472,10 @@ class _ProfileState extends State<Profile> {
                       width: 277,
                       height: 41,
                       decoration: BoxDecoration(
-                        color: Color(0xFFDCC8C5).withOpacity(0.22),
+                        color: const Color(0xFFDCC8C5).withOpacity(0.22),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: Color(0xFFDCC8C5),
+                          color: const Color(0xFFDCC8C5),
                           width: 1,
                         ),
                       ),
@@ -483,12 +486,12 @@ class _ProfileState extends State<Profile> {
                                     const EdgeInsets.symmetric(horizontal: 8),
                                 child: TextFormField(
                                   controller: _gmailController,
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     border: InputBorder.none,
                                     hintText: 'Entrer email ',
                                     hintStyle: TextStyle(color: Colors.grey),
                                   ),
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
@@ -521,10 +524,10 @@ class _ProfileState extends State<Profile> {
                       width: 277,
                       height: 51,
                       decoration: BoxDecoration(
-                        color: Color(0xFFDCC8C5).withOpacity(0.22),
+                        color: const Color(0xFFDCC8C5).withOpacity(0.22),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: Color(0xFFDCC8C5),
+                          color: const Color(0xFFDCC8C5),
                           width: 1,
                         ),
                       ),
@@ -535,12 +538,12 @@ class _ProfileState extends State<Profile> {
                                     const EdgeInsets.symmetric(horizontal: 8),
                                 child: TextFormField(
                                   controller: _addressController,
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     border: InputBorder.none,
                                     hintText: 'Entrer Adresse',
                                     hintStyle: TextStyle(color: Colors.grey),
                                   ),
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
@@ -565,7 +568,7 @@ class _ProfileState extends State<Profile> {
                     ),
                   ],
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
               ],
             ),
           ],

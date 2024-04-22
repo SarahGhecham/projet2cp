@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class IntroPage1 extends StatelessWidget {
+  const IntroPage1({super.key});
+
   @override
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
@@ -30,7 +32,7 @@ class IntroPage1 extends StatelessWidget {
               style: GoogleFonts.lato(
                 fontSize: 50, // Adjust the font size as needed
                 fontWeight: FontWeight.w900,
-                color: Color(0xffd6e3dc), // Adjust the text color as needed
+                color: const Color(0xffd6e3dc), // Adjust the text color as needed
               ),
             ),
           ),
@@ -43,7 +45,7 @@ class IntroPage1 extends StatelessWidget {
               style: GoogleFonts.lato(
                 fontSize: 50, // Adjust the font size as needed
                 fontWeight: FontWeight.w900,
-                color: Color(0xffd6e3dc), // Adjust the text color as needed
+                color: const Color(0xffd6e3dc), // Adjust the text color as needed
               ),
             ),
           ),
@@ -62,7 +64,7 @@ class IntroPage1 extends StatelessWidget {
             top: 210,
             left: 110, // Adjust the bottom position as needed
             child: Image.asset(
-              'assets/logo.png',
+              'assets/logo1.png',
               width: 300, // Adjust the width as needed
               height: 300, // Adjust the height as needed
             ),
