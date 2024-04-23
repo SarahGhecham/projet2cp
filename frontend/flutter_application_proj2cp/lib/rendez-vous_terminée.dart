@@ -4,14 +4,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 
-class demande_confirmePage extends StatefulWidget {
-  const demande_confirmePage({super.key});
+class RDV_confirmePage extends StatefulWidget {
+  const RDV_confirmePage({super.key});
 
   @override
-  State<demande_confirmePage> createState() => _demande_confirmePageState();
+  State<RDV_confirmePage> createState() => _RDV_confirmePageState();
 }
 
-class _demande_confirmePageState extends State<demande_confirmePage> {
+class _RDV_confirmePageState extends State<RDV_confirmePage> {
   var nomartisan = "Karim Mouloud";
   var note = "4.7";
   var telephone = "07 71253705";
@@ -159,7 +159,7 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
           SizedBox(height: 20),
           Center(
             child: Container(
-              height: 400,
+              height: 450,
               width: 300,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
@@ -231,7 +231,36 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 50),
+                    SizedBox(height: 10),
+                    Row(
+                      children: [
+                        SizedBox(width: 10),
+                        SvgPicture.asset("assets/calendar.svg"),
+                        SizedBox(width: 15),
+                        Text(
+                          date,
+                          style: GoogleFonts.poppins(fontSize: 15),
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          heure,
+                          style: GoogleFonts.poppins(color: Color(0xFF777777), fontSize: 15),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    Row(
+                      children: [
+                        SizedBox(width: 10),
+                        SvgPicture.asset("assets/note.svg"),
+                        SizedBox(width: 15),
+                        Text(
+                          note,
+                          style: GoogleFonts.poppins(fontSize: 15),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 30),
                     Stack(
                       children: [
                         Positioned(
@@ -282,33 +311,7 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Align(
-              alignment: Alignment.bottomRight,
-              child: ElevatedButton(
-                onPressed: (){},
-                style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all<Size>(const Size(100, 30)),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  backgroundColor:
-                  MaterialStateProperty.all<Color>(const Color(0xFFE52E22)),
-                ),
-                child: Text(
-                  "Annuler",
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-            ),
-          ),
+
         ],
       ),
     );

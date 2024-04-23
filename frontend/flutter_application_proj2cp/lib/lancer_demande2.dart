@@ -114,14 +114,14 @@ class _Lancerdemande2PageState extends State<Lancerdemande2Page> {
             const SizedBox(height: 60),
             Center(
               child: Container(
-                height: 350,
+                height: 400,
                 width: 335,
                 decoration: BoxDecoration(
                   color: const Color(0xFFD6E3DC),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: TableCalendar(
-                  locale: 'en_US',
+                  locale: 'fr_FR',
                   calendarStyle: CalendarStyle(
                     defaultTextStyle: GoogleFonts.poppins(fontSize: 16, color: Colors.black,),
                     selectedDecoration: const BoxDecoration(
