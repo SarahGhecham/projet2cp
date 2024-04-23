@@ -22,7 +22,6 @@ module.exports = (sequelize, DataTypes) => {
       });
       Artisan.belongsToMany(models.Prestation, { through: 'ArtisanPrestations' });
       Artisan.belongsToMany(models.Demande, { through: 'ArtisanDemandes' });
-      Artisan.belongsToMany(models.RDV, { through: 'artisanrdvs', foreignKey: 'artisanId' });
 
     }
   }
