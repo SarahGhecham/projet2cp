@@ -1,75 +1,62 @@
-// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, prefer_const_literals_to_create_immutables
-
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
-// Modèle de prestation
-class demande {
-  final String name;
-  final String description;
-  final String imageUrl;
-  final double note;
-
-  demande({
-    required this.name,
-    required this.description,
-    required this.imageUrl,
-    required this.note,
-  });
+class Mademande extends StatefulWidget {
+  @override
+  _MademandePageState createState() => _MademandePageState();
 }
 
-class mademandePage extends StatelessWidget {
-  // Données fictives pour les prestations
-  final List<demande> demandes = [
-    demande(
-      name: 'Islam Djennad ',
-      description: 'Description de la prestation 1',
-      imageUrl:
-          'https://media.istockphoto.com/id/134248179/fr/photo/construction-travaillant-putting-pl%C3%A2tre-sur-un-mur.jpg?s=612x612&w=0&k=20&c=dNwrcFueXuo1O_9k24gClYJ9erbB2D6MglFkWzX1AcM=',
-      note: 4.2,
-    ),
-    demande(
-      name: 'Islam Djennad ',
-      description: 'Description de la prestation 1',
-      imageUrl:
-          'https://media.istockphoto.com/id/134248179/fr/photo/construction-travaillant-putting-pl%C3%A2tre-sur-un-mur.jpg?s=612x612&w=0&k=20&c=dNwrcFueXuo1O_9k24gClYJ9erbB2D6MglFkWzX1AcM=',
-      note: 4.2,
-    ),
-    demande(
-      name: 'Islam Djennad ',
-      description: 'Description de la prestation 1',
-      imageUrl:
-          'https://media.istockphoto.com/id/134248179/fr/photo/construction-travaillant-putting-pl%C3%A2tre-sur-un-mur.jpg?s=612x612&w=0&k=20&c=dNwrcFueXuo1O_9k24gClYJ9erbB2D6MglFkWzX1AcM=',
-      note: 3.7,
-    ),
-    demande(
-      name: 'Islam Djennad ',
-      description: 'Description de la prestation 1',
-      imageUrl:
-          'https://media.istockphoto.com/id/134248179/fr/photo/construction-travaillant-putting-pl%C3%A2tre-sur-un-mur.jpg?s=612x612&w=0&k=20&c=dNwrcFueXuo1O_9k24gClYJ9erbB2D6MglFkWzX1AcM=',
-      note: 4.2,
-    ),
-    demande(
-      name: 'Islam Djennad ',
-      description: 'Description de la prestation 1',
-      imageUrl:
-          'https://media.istockphoto.com/id/134248179/fr/photo/construction-travaillant-putting-pl%C3%A2tre-sur-un-mur.jpg?s=612x612&w=0&k=20&c=dNwrcFueXuo1O_9k24gClYJ9erbB2D6MglFkWzX1AcM=',
-      note: 4.2,
-    ),
-    demande(
-      name: 'Mouloud Karim',
-      description: 'Description de la prestation 2',
-      imageUrl: 'https://via.placeholder.com/150',
-      note: 4.7,
-    ),
-    demande(
-      name: 'Ghiles Fernan',
-      description: 'Description de la prestation 3',
-      imageUrl: 'https://via.placeholder.com/150',
-      note: 3.9,
-    ),
-  ];
+class _MademandePageState extends State<Mademande> {
+  List<dynamic> artisans = [];
 
+  String description = '';
+  String localisation = '';
+  String imagePrestation = '';
+  String Date = '';
+  String Heure = '';
+  String dateDebut = '';
+  DateTime dateDebut1 = DateTime(0, 0, 0, 0, 0);
   @override
+  void initState() {
+    super.initState();
+    fetchArtisansData();
+  }
+
+  Future<void> fetchArtisansData() async {
+    int demandeId = 36;
+    final String apiUrl =
+        'http://192.168.151.173:3000/client/demandes/$demandeId/artisans';
+
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> responseData = json.decode(response.body);
+
+        setState(() {
+          artisans = responseData['artisans'];
+          description = responseData['demande']?['description'] ?? 'null';
+          localisation = responseData['demande']?['localisation'] ?? 'null';
+          imagePrestation =
+              responseData['prestation']?['imagePrestation'] ?? 'null';
+          dateDebut = responseData['rdv']?['dateDebut'];
+          dateDebut1 = DateTime.parse(dateDebut);
+          Date =
+              '${dateDebut1.year}-${dateDebut1.month.toString().padLeft(2, '0')}-${dateDebut1.day.toString().padLeft(2, '0')}';
+
+          Heure =
+              '${dateDebut1.hour.toString().padLeft(2, '0')}:${dateDebut1.minute.toString().padLeft(2, '0')}';
+        });
+      } else {
+        throw Exception('Failed to load artisans');
+      }
+    } catch (error) {
+      print('Error fetching artisans: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,7 +75,6 @@ class mademandePage extends StatelessWidget {
                 SizedBox(width: 81),
                 Center(
                   child: Text(
-                    // Title text inside the container
                     'Ma demande',
                     style: TextStyle(
                       color: Colors.black,
@@ -98,17 +84,6 @@ class mademandePage extends StatelessWidget {
                     ),
                   ),
                 ),
-                /* RotatedBox(
-      quarterTurns:
-          3, // Rotate the icon 90 degrees counter-clockwise
-      child: IconButton(
-        icon: Icon(Icons.more_vert), // Three horizontal points icon
-        onPressed: () {
-          // Handle settings button press
-          // Implement your settings functionality here
-        },
-      ),
-    ),*/
               ],
             ),
           ),
@@ -121,7 +96,7 @@ class mademandePage extends StatelessWidget {
                     children: [
                       Container(
                         margin: EdgeInsets.only(left: 35.0, top: 15.0),
-                        width: 211,
+                        width: 218,
                         height: 59,
                         child: Opacity(
                           opacity: 0.8,
@@ -144,7 +119,7 @@ class mademandePage extends StatelessWidget {
                                     ),
                                     SizedBox(width: 8),
                                     Text(
-                                      "14/12/2024 16 h",
+                                      "$Date $Heure",
                                       style: TextStyle(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w600,
@@ -164,7 +139,7 @@ class mademandePage extends StatelessWidget {
                                     ),
                                     SizedBox(width: 8),
                                     Text(
-                                      "cite 500 logts bejaia",
+                                      "${localisation ?? 'null'} ",
                                       style: TextStyle(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w600,
@@ -190,10 +165,19 @@ class mademandePage extends StatelessWidget {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
-                          child: Image.network(
-                            demandes[0].imageUrl,
-                            fit: BoxFit.cover,
-                          ),
+                          child: imagePrestation != null
+                              ? Image.network(
+                                  imagePrestation,
+                                  fit: BoxFit.cover,
+                                )
+                              : Container(
+                                  color: Colors.grey,
+                                  child: Icon(
+                                    Icons.image,
+                                    size: 40,
+                                    color: Colors.white,
+                                  ),
+                                ),
                         ),
                       ),
                     ],
@@ -229,18 +213,74 @@ class mademandePage extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        "Some text inside the container",
+                        "${description ?? 'null'} ",
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 13,
                           color: Colors.black,
                         ),
                       ),
                     ),
                   ),
+                  SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 40.0),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Artisans qui ont accepté',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              fontFamily: 'Lato',
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 50),
+                      GestureDetector(
+                          onTap: () {
+                            // Fonction de rappel pour gérer l'action de clic
+                            // Mettre ici le code pour annuler la demande
+                          },
+                          child: Container(
+                            height: 16,
+                            width: 107,
+                            decoration: BoxDecoration(
+                              color: Color(0xffE52E22)
+                                  .withOpacity(0.83), // Couleur de fond rouge
+                              borderRadius: BorderRadius.circular(
+                                  8), // Bordure arrondie pour le conteneur
+                            ),
+                            child: Row(
+                              children: [
+                                SizedBox(width: 2),
+                                Icon(
+                                  Icons.close,
+                                  color: Colors.white,
+                                  size: 12,
+                                ),
+                                SizedBox(width: 4),
+                                Text(
+                                  "Annuler demande",
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: 'Lato',
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ))
+                    ],
+                  ),
                   ListView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
-                    itemCount: demandes.length,
+                    itemCount: artisans.length,
                     itemBuilder: (context, index) {
                       bool isFirstItem = index == 0;
                       return Container(
@@ -267,10 +307,20 @@ class mademandePage extends StatelessWidget {
                                   ),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(45),
-                                    child: Image.network(
-                                      demandes[index].imageUrl,
-                                      fit: BoxFit.cover,
-                                    ),
+                                    child: artisans.isNotEmpty &&
+                                            artisans[index]['photo'] != null
+                                        ? Image.network(
+                                            artisans[index]['photo'],
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Container(
+                                            color: Colors.grey,
+                                            child: Icon(
+                                              Icons.person,
+                                              size: 40,
+                                              color: Colors.white,
+                                            ),
+                                          ),
                                   ),
                                 ),
                                 SizedBox(width: 10),
@@ -283,9 +333,15 @@ class mademandePage extends StatelessWidget {
                                           child: Row(
                                             children: [
                                               Text(
-                                                demandes[index].name,
+                                                (artisans[index]['nom'] !=
+                                                            null &&
+                                                        artisans[index]
+                                                                ['prenom'] !=
+                                                            null)
+                                                    ? '${artisans[index]['nom']}   ${artisans[index]['prenom']}'
+                                                    : '',
                                                 style: TextStyle(
-                                                  fontSize: 14,
+                                                  fontSize: 12,
                                                   fontWeight: FontWeight.w600,
                                                   fontFamily: 'Lato',
                                                 ),
@@ -298,7 +354,7 @@ class mademandePage extends StatelessWidget {
                                                 padding:
                                                     EdgeInsets.only(top: 8),
                                                 child: Text(
-                                                  '${demandes[index].note}  ',
+                                                  '${artisans.isNotEmpty ? artisans[index]['note'] : ''}  ', // Change this to your points field
                                                   style: TextStyle(
                                                     fontSize: 8,
                                                     fontWeight: FontWeight.w600,
@@ -317,55 +373,38 @@ class mademandePage extends StatelessWidget {
                             ),
                             Positioned(
                               bottom: 15,
-                              right: 15,
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 50,
-                                    height: 17,
-                                    margin: EdgeInsets.only(right: 5),
-                                    decoration: BoxDecoration(
-                                      color: Colors.green,
-                                      borderRadius: BorderRadius.circular(2),
-                                    ),
-                                    child: InkWell(
-                                      onTap: () {},
-                                      child: Center(
-                                        child: Text(
-                                          'Accepter',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 8,
-                                            fontWeight: FontWeight.w600,
-                                            fontFamily: 'Lato',
-                                          ),
-                                        ),
-                                      ),
+                              right: 35,
+                              child: Container(
+                                height: 17,
+                                width: 60,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal:
+                                        10), // Ajoute un espace supplémentaire autour du bouton
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(3),
+                                  color: Colors.green,
+                                ),
+                                child: TextButton(
+                                  onPressed: () {
+                                    // Ajoutez votre logique onTap ici
+                                  },
+                                  style: ButtonStyle(
+                                    padding: MaterialStateProperty
+                                        .all<EdgeInsets>(EdgeInsets
+                                            .zero), // Supprime le remplissage du bouton
+                                  ),
+                                  child: Text(
+                                    'Confirmer',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize:
+                                          8, // Ajustez la taille de la police selon vos besoins
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: 'Lato',
                                     ),
                                   ),
-                                  Container(
-                                    width: 50,
-                                    height: 17,
-                                    decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      borderRadius: BorderRadius.circular(2),
-                                    ),
-                                    child: InkWell(
-                                      onTap: () {},
-                                      child: Center(
-                                        child: Text(
-                                          'Refuser',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 8,
-                                            fontWeight: FontWeight.w600,
-                                            fontFamily: 'Lato',
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
                             ),
                           ],
@@ -382,3 +421,4 @@ class mademandePage extends StatelessWidget {
     );
   }
 }
+
