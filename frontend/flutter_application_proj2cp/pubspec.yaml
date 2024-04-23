@@ -30,7 +30,6 @@ dependencies:
   intl: ^0.17.0
   flutter_typeahead: ^4.0.0
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
