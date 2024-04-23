@@ -6,6 +6,7 @@ class Domaine {
   final String image;
   final String serviceName;
 
+
   Domaine({required this.image, required this.serviceName});
 }
 

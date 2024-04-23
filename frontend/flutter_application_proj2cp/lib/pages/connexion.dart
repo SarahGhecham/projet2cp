@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -6,9 +5,11 @@ import 'package:flutter_application_proj2cp/pages/inscription.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class LogInPage extends StatefulWidget {
-  const LogInPage({Key? key}) : super(key: key);
+  const LogInPage({super.key});
   @override
   State<LogInPage> createState() => _LogInPageState();
 }
@@ -31,14 +32,16 @@ class _LogInPageState extends State<LogInPage> {
       );
 
       if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
+        var responseData = json.decode(response.body);
+        var token = responseData['token'];
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', token);
 
-        final token = responseData['token'];
 
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => HomeScreen(),
+            builder: (context) => const HomeScreen(),
           ),
         );
       } else {
@@ -46,12 +49,12 @@ class _LogInPageState extends State<LogInPage> {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Authentication Failed'),
-            content: Text('Invalid username or password. Please try again.'),
+            title: const Text('Authentication Failed'),
+            content: const Text('Invalid username or password. Please try again.'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           ),
@@ -70,31 +73,31 @@ class _LogInPageState extends State<LogInPage> {
         child: Center(
           child: Column(
             children: <Widget>[
-              SizedBox(height: 100),
-              Container(
+              const SizedBox(height: 100),
+              SizedBox(
                 height: 100,
                 width: 300,
-                child: Image.asset("assets/logo.png"),
+                child: Image.asset("assets/logo1.png"),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               Center(
                 child: Text(
                   "Connexion",
                   style: GoogleFonts.poppins(
-                    color: Color(0xFF05564B),
+                    color: const Color(0xFF05564B),
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
                 ),
               ),
-              SizedBox(height: 50),
+              const SizedBox(height: 50),
               Container(
                 width: 277,
                 height: 41,
                 decoration: BoxDecoration(
-                  color: Color(0xFFDCC8C5).withOpacity(0.22),
+                  color: const Color(0xFFDCC8C5).withOpacity(0.22),
                   border: Border.all(
-                    color: Color(0xFFDCC8C5),
+                    color: const Color(0xFFDCC8C5),
                     width: 2,
                   ),
                   borderRadius: BorderRadius.circular(10),
@@ -104,11 +107,10 @@ class _LogInPageState extends State<LogInPage> {
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     hintText: "Email",
-                    hintStyle: TextStyle(
-                      fontFamily: "Poppins",
-                      color: Color(0xFF777777),
+                    hintStyle: GoogleFonts.poppins(
+                      color: const Color(0xFF777777),
                     ),
-                    contentPadding: EdgeInsets.symmetric(
+                    contentPadding: const EdgeInsets.symmetric(
                       vertical: 10.0,
                       horizontal: 16.0,
                     ),
@@ -116,14 +118,14 @@ class _LogInPageState extends State<LogInPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               Container(
                 width: 277,
                 height: 41,
                 decoration: BoxDecoration(
-                  color: Color(0xFFDCC8C5).withOpacity(0.22),
+                  color: const Color(0xFFDCC8C5).withOpacity(0.22),
                   border: Border.all(
-                    color: Color(0xFFDCC8C5),
+                    color: const Color(0xFFDCC8C5),
                     width: 2,
                   ),
                   borderRadius: BorderRadius.circular(10),
@@ -135,9 +137,9 @@ class _LogInPageState extends State<LogInPage> {
                   decoration: InputDecoration(
                     hintText: "Mot de passe",
                     hintStyle: GoogleFonts.poppins(
-                      color: Color(0xFF777777),
+                      color: const Color(0xFF777777),
                     ),
-                    contentPadding: EdgeInsets.symmetric(
+                    contentPadding: const EdgeInsets.symmetric(
                       vertical: 10.0,
                       horizontal: 16.0,
                     ),
@@ -145,9 +147,19 @@ class _LogInPageState extends State<LogInPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: _authenticateUser,
+                style: ButtonStyle(
+                  minimumSize: MaterialStateProperty.all<Size>(const Size(100, 37)),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(const Color(0xFFFF8787)),
+                ),
                 child: Text(
                   "Connexion",
                   style: GoogleFonts.poppins(
@@ -155,30 +167,20 @@ class _LogInPageState extends State<LogInPage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all<Size>(Size(100, 37)),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Color(0xFFFF8787)),
-                ),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       width: 150,
                       child: Divider(
                         color: Color(0xFFDDDDDD),
                         thickness: 1.0,
                       ),
                     ),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     Text(
                       "or",
                       style: GoogleFonts.poppins(
@@ -186,8 +188,8 @@ class _LogInPageState extends State<LogInPage> {
                         fontSize: 16,
                       ),
                     ),
-                    SizedBox(width: 10),
-                    SizedBox(
+                    const SizedBox(width: 10),
+                    const SizedBox(
                       width: 150,
                       child: Divider(
                         color: Color(0xFFDDDDDD),
@@ -197,7 +199,7 @@ class _LogInPageState extends State<LogInPage> {
                   ],
                 ),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -209,10 +211,10 @@ class _LogInPageState extends State<LogInPage> {
                         width: 30,
                         height: 30,
                       ),
-                      SizedBox(height: 5), // Adjust the height as needed
+                      const SizedBox(height: 5), // Adjust the height as needed
                     ],
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -226,7 +228,7 @@ class _LogInPageState extends State<LogInPage> {
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 30,
               ),
               Row(
@@ -240,10 +242,10 @@ class _LogInPageState extends State<LogInPage> {
                         width: 25,
                         height: 25,
                       ),
-                      SizedBox(height: 5), // Adjust the height as needed
+                      const SizedBox(height: 5), // Adjust the height as needed
                     ],
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -257,14 +259,14 @@ class _LogInPageState extends State<LogInPage> {
                   ),
                 ],
               ),
-              SizedBox(height: 70),
+              const SizedBox(height: 70),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     "Vous n’avez pas de compte client ?",
                     style: GoogleFonts.poppins(
-                      color: Color(0xFF777777),
+                      color: const Color(0xFF777777),
                       fontSize: 16,
                     ),
                   ),
@@ -273,12 +275,12 @@ class _LogInPageState extends State<LogInPage> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => SignUpPage()));
+                                builder: (context) => const SignUpPage()));
                       },
                       child: Text(
                         "S'inscrire",
                         style: GoogleFonts.poppins(
-                          color: Color(0xFF05564B),
+                          color: const Color(0xFF05564B),
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
