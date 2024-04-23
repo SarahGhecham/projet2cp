@@ -18,7 +18,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Lancerdemande2Page(), // Use AppNavigator as the home widget
+      home: RDV_confirmePage(), // Use AppNavigator as the home widget
     );
   }
 }

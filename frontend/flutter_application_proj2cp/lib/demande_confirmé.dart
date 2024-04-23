@@ -58,7 +58,21 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start, // Align children to the start
                   children: [
-                    Image.asset("assets/peinture.png"),
+                    Container(
+                      width: 80, // Adjust the width as needed
+                      height: 80, // Adjust the height as needed
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0), // Adjust the border radius as needed
+                        color: Colors.grey[200], // Set container background color
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0), // Match the container's border radius
+                        child: Image.asset(
+                          'assets/prestation_peinture.jpg', // Replace 'your_image.jpg' with your image path
+                          fit: BoxFit.cover, // Ensure the image covers the entire container
+                        ),
+                      ),
+                    ),
                     const SizedBox(width: 20),
                     Expanded(
                       child: Column(
@@ -111,7 +125,17 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
               child: Row(
                 children: [
                   SizedBox(width: 15),
-                  Image.asset("assets/artisan.png"),
+                  Container(
+                      height: 50,
+                      width: 50,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          image: AssetImage("assets/artisan.jpg"),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                  ),
                   SizedBox(width: 15), // Add spacing between image and column
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start, // Align children to start

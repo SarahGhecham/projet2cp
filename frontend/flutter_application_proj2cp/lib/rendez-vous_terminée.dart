@@ -18,7 +18,7 @@ class _RDV_confirmePageState extends State<RDV_confirmePage> {
   var date = "merc 13 jan";
   var heure = "13h";
   var adresse = "Cite 289 logements Jijel N113";
-  var prix = "500da - 1000da";
+  var prix = "1000da";
   var prestation = "Peinture de mûrs";
   @override
   Widget build(BuildContext context){
@@ -58,7 +58,21 @@ class _RDV_confirmePageState extends State<RDV_confirmePage> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start, // Align children to the start
                   children: [
-                    Image.asset("assets/peinture.png"),
+                    Container(
+                      width: 80, // Adjust the width as needed
+                      height: 80, // Adjust the height as needed
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0), // Adjust the border radius as needed
+                        color: Colors.grey[200], // Set container background color
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0), // Match the container's border radius
+                        child: Image.asset(
+                          'assets/prestation_peinture.jpg', // Replace 'your_image.jpg' with your image path
+                          fit: BoxFit.cover, // Ensure the image covers the entire container
+                        ),
+                      ),
+                    ),
                     const SizedBox(width: 20),
                     Expanded(
                       child: Column(
@@ -111,7 +125,17 @@ class _RDV_confirmePageState extends State<RDV_confirmePage> {
               child: Row(
                 children: [
                   SizedBox(width: 15),
-                  Image.asset("assets/artisan.png"),
+                  Container(
+                    height: 50,
+                    width: 50,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        image: AssetImage("assets/artisan.jpg"),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
                   SizedBox(width: 15), // Add spacing between image and column
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start, // Align children to start
@@ -159,7 +183,7 @@ class _RDV_confirmePageState extends State<RDV_confirmePage> {
           SizedBox(height: 20),
           Center(
             child: Container(
-              height: 450,
+              height: 430,
               width: 300,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
@@ -211,11 +235,6 @@ class _RDV_confirmePageState extends State<RDV_confirmePage> {
                           prix,
                           style: GoogleFonts.poppins(fontSize: 15),
                         ),
-                        SizedBox(width: 10),
-                        Text(
-                          "/h",
-                          style: GoogleFonts.poppins(color: Color(0xFF777777), fontSize: 15),
-                        ),
                       ],
                     ),
                     SizedBox(height: 20),
@@ -235,23 +254,6 @@ class _RDV_confirmePageState extends State<RDV_confirmePage> {
                     Row(
                       children: [
                         SizedBox(width: 10),
-                        SvgPicture.asset("assets/calendar.svg"),
-                        SizedBox(width: 15),
-                        Text(
-                          date,
-                          style: GoogleFonts.poppins(fontSize: 15),
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          heure,
-                          style: GoogleFonts.poppins(color: Color(0xFF777777), fontSize: 15),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      children: [
-                        SizedBox(width: 10),
                         SvgPicture.asset("assets/note.svg"),
                         SizedBox(width: 15),
                         Text(
@@ -260,7 +262,7 @@ class _RDV_confirmePageState extends State<RDV_confirmePage> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 30),
+                    SizedBox(height: 40),
                     Stack(
                       children: [
                         Positioned(
