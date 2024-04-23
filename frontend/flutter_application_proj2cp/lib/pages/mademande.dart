@@ -167,7 +167,7 @@ class _MademandePageState extends State<Mademande> {
                           borderRadius: BorderRadius.circular(10),
                           child: imagePrestation != null
                               ? Image.network(
-                                   imagePrestation,
+                                  imagePrestation,
                                   fit: BoxFit.cover,
                                 )
                               : Container(
@@ -220,6 +220,62 @@ class _MademandePageState extends State<Mademande> {
                         ),
                       ),
                     ),
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 40.0),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Artisans qui ont accepté',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              fontFamily: 'Lato',
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 50),
+                      GestureDetector(
+                          onTap: () {
+                            // Fonction de rappel pour gérer l'action de clic
+                            // Mettre ici le code pour annuler la demande
+                          },
+                          child: Container(
+                            height: 16,
+                            width: 107,
+                            decoration: BoxDecoration(
+                              color: Color(0xffE52E22)
+                                  .withOpacity(0.83), // Couleur de fond rouge
+                              borderRadius: BorderRadius.circular(
+                                  8), // Bordure arrondie pour le conteneur
+                            ),
+                            child: Row(
+                              children: [
+                                SizedBox(width: 2),
+                                Icon(
+                                  Icons.close,
+                                  color: Colors.white,
+                                  size: 12,
+                                ),
+                                SizedBox(width: 4),
+                                Text(
+                                  "Annuler demande",
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: 'Lato',
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ))
+                    ],
                   ),
                   ListView.builder(
                     shrinkWrap: true,
@@ -317,55 +373,38 @@ class _MademandePageState extends State<Mademande> {
                             ),
                             Positioned(
                               bottom: 15,
-                              right: 15,
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 50,
-                                    height: 17,
-                                    margin: EdgeInsets.only(right: 5),
-                                    decoration: BoxDecoration(
-                                      color: Colors.green,
-                                      borderRadius: BorderRadius.circular(2),
-                                    ),
-                                    child: InkWell(
-                                      onTap: () {},
-                                      child: Center(
-                                        child: Text(
-                                          'Accepter',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 8,
-                                            fontWeight: FontWeight.w600,
-                                            fontFamily: 'Lato',
-                                          ),
-                                        ),
-                                      ),
+                              right: 35,
+                              child: Container(
+                                height: 17,
+                                width: 60,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal:
+                                        10), // Ajoute un espace supplémentaire autour du bouton
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(3),
+                                  color: Colors.green,
+                                ),
+                                child: TextButton(
+                                  onPressed: () {
+                                    // Ajoutez votre logique onTap ici
+                                  },
+                                  style: ButtonStyle(
+                                    padding: MaterialStateProperty
+                                        .all<EdgeInsets>(EdgeInsets
+                                            .zero), // Supprime le remplissage du bouton
+                                  ),
+                                  child: Text(
+                                    'Confirmer',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize:
+                                          8, // Ajustez la taille de la police selon vos besoins
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: 'Lato',
                                     ),
                                   ),
-                                  Container(
-                                    width: 50,
-                                    height: 17,
-                                    decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      borderRadius: BorderRadius.circular(2),
-                                    ),
-                                    child: InkWell(
-                                      onTap: () {},
-                                      child: Center(
-                                        child: Text(
-                                          'Refuser',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 8,
-                                            fontWeight: FontWeight.w600,
-                                            fontFamily: 'Lato',
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
                             ),
                           ],
