@@ -48,6 +48,7 @@ async function getArtisansForDemand(req, res) {
 
         // Prepare the response data
         const artisansData = artisans.map(artisan => ({
+            id: artisan.id,
             nom: artisan.NomArtisan,
             prenom: artisan.PrenomArtisan,
             photo: artisan.photo,
@@ -57,13 +58,16 @@ async function getArtisansForDemand(req, res) {
         // Combine additional demande, prestation, and rdv attributes with artisansData
         const combinedData = {
             demande: {
+                id: demande.id,
                 description: demande.Description,
                 localisation: demande.Localisation
             },
             prestation: {
+                id: prestation.id,
                 imagePrestation: prestation.imagePrestation
             },
             rdv: {
+                id: rdv.id,
                 dateDebut: rdv ? rdv.DateDebut : null,
                 heureDebut: rdv ? rdv.HeureDebut : null
             },
@@ -76,6 +80,7 @@ async function getArtisansForDemand(req, res) {
         return res.status(500).json({ message: 'Failed to retrieve artisans for demande', error: error.message });
     }
 }
+
 
 /* async function getArtisansForDemand(req, res) {
     const demandeId = req.params.demandeId;
