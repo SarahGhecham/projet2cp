@@ -6,6 +6,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -20,6 +21,22 @@ class _ProfileState extends State<Profile> {
     super.initState();
     _isEditing = false;
     _fetchUserData();
+  }
+
+  List<dynamic> _predictions = [];
+  bool _showSuggestions = true;
+  @override
+  void _searchPlaces(String input) async {
+    const apiKey = 'AIzaSyD_d366EANPIHugZe9YF5QVxHHa_Bzef_4';
+    final url =
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=(cities)&key=$apiKey&language=fr';
+
+    final response = await http.get(Uri.parse(url));
+    final data = json.decode(response.body);
+
+    setState(() {
+      _predictions = data['predictions'];
+    });
   }
 
   Future<void> _fetchUserData() async {
@@ -104,9 +121,7 @@ class _ProfileState extends State<Profile> {
 
       if (response.statusCode == 200) {
         print('User data updated successfully');
-        // Optionally, you might want to fetch and update the user data after it's been updated.
-        // Uncomment the line below if you want to do that.
-        // await _fetchUserData();
+        
       } else {
         print('Failed to update user data');
         print('Response Status Code: ${response.statusCode}');
@@ -530,6 +545,7 @@ class _ProfileState extends State<Profile> {
                                     const EdgeInsets.symmetric(horizontal: 8),
                                 child: TextFormField(
                                   controller: _addressController,
+                                  keyboardType: TextInputType.text,
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
                                     hintText: 'Entrer Adresse',
@@ -540,6 +556,20 @@ class _ProfileState extends State<Profile> {
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                   ),
+                                  onChanged: (value) {
+                                    if (value.isNotEmpty) {
+                                      _searchPlaces(value);
+                                      setState(() {
+                                        _showSuggestions =
+                                            true; // Afficher les suggestions lors de la saisie
+                                      });
+                                    } else {
+                                      setState(() {
+                                        _showSuggestions =
+                                            false; // Masquer les suggestions
+                                      });
+                                    }
+                                  },
                                 ),
                               )
                             : Text(
@@ -560,7 +590,40 @@ class _ProfileState extends State<Profile> {
                     ),
                   ],
                 ),
-                SizedBox(height: 30),
+                Visibility(
+                  visible: _showSuggestions,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 40.0,
+                        right: 40.0,
+                        bottom:
+                            100.0), // Adjust bottom padding to make space for keyboard
+                    child: ListView.separated(
+                      separatorBuilder: (BuildContext context, int index) {
+                        return Divider(
+                          color: Color(0xFFDCC8C5),
+                          thickness: 2.0,
+                        );
+                      },
+                      shrinkWrap: true,
+                      itemCount: _predictions.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(
+                            _predictions[index]["description"],
+                          ),
+                          onTap: () {
+                            _addressController.text =
+                                _predictions[index]["description"];
+                            setState(() {
+                              _showSuggestions = false;
+                            });
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
               ],
             ),
           ],
@@ -568,4 +631,6 @@ class _ProfileState extends State<Profile> {
       ),
     );
   }
+}
+
 }
