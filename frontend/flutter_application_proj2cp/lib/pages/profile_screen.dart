@@ -1,15 +1,14 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class Profile extends StatefulWidget {
-  const Profile({super.key});
-
   @override
   _ProfileState createState() => _ProfileState();
 }
@@ -24,9 +23,25 @@ class _ProfileState extends State<Profile> {
     _fetchUserData();
   }
 
+  List<dynamic> _predictions = [];
+  bool _showSuggestions = true;
+  @override
+  void _searchPlaces(String input) async {
+    const apiKey = 'AIzaSyD_d366EANPIHugZe9YF5QVxHHa_Bzef_4';
+    final url =
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=(cities)&key=$apiKey&language=fr';
+
+    final response = await http.get(Uri.parse(url));
+    final data = json.decode(response.body);
+
+    setState(() {
+      _predictions = data['predictions'];
+    });
+  }
+
   Future<void> _fetchUserData() async {
     final url = Uri.parse(
-        'http://localhost:3000/client/Affichermonprofil/1'); // Replace with your endpoint
+        'http://192.168.1.67:3000/client/Affichermonprofil/1'); // Replace with your endpoint
     try {
       final response = await http.get(url);
 
@@ -40,8 +55,7 @@ class _ProfileState extends State<Profile> {
             'AdresseClient': userDataJson['AdresseClient'] as String,
             'NumeroTelClient': userDataJson['NumeroTelClient'] as String,
             'Points': userDataJson['Points'],
-            'Service_account': userDataJson['Service_account'],
-            'photo': userDataJson['photo']
+            'Service_account': userDataJson['Service_account']
           };
         });
         print('_userData: $_userData'); // Debugging print
@@ -57,9 +71,7 @@ class _ProfileState extends State<Profile> {
 
   Future<void> updateClientImage(int id, File image) async {
     // Replace "http://localhost:3000" with your server URL
-    String baseUrl =
-        "http://localhost:3000"; // changer avec votre adressse ip/10.0.2.2(emulateur)
-    String idString = id.toString();
+    String baseUrl = "http://192.168.1.67:3000";
 
     // Construct the endpoint URL
     String endpoint = "$baseUrl/client/updateClientImage/$id";
@@ -69,7 +81,7 @@ class _ProfileState extends State<Profile> {
       var request = http.MultipartRequest('POST', Uri.parse(endpoint));
 
       // Attach the image file to the request
-      request.files.add(await http.MultipartFile.fromPath('photo', image.path));
+      request.files.add(await http.MultipartFile.fromPath('image', image.path));
 
       // Send the request
       var streamedResponse = await request.send();
@@ -99,7 +111,7 @@ class _ProfileState extends State<Profile> {
 
   Future<void> updateClient(Map<String, dynamic> updatedData) async {
     final url = Uri.parse(
-        'http://localhost:3000/client/updateClient/1'); // changer avec votre adressse ip/10.0.2.2(emulateur)
+        'http://192.168.1.67:3000/client/updateClient/1'); // Replace with your endpoint
     try {
       final response = await http.patch(
         url,
@@ -109,9 +121,7 @@ class _ProfileState extends State<Profile> {
 
       if (response.statusCode == 200) {
         print('User data updated successfully');
-        // Optionally, you might want to fetch and update the user data after it's been updated.
-        // Uncomment the line below if you want to do that.
-        // await _fetchUserData();
+        
       } else {
         print('Failed to update user data');
         print('Response Status Code: ${response.statusCode}');
@@ -128,7 +138,6 @@ class _ProfileState extends State<Profile> {
   TextEditingController _numeroController = TextEditingController();
   TextEditingController _gmailController = TextEditingController();
   TextEditingController _addressController = TextEditingController();
-
   void _toggleEditing(bool value) {
     setState(() {
       _isEditing = value;
@@ -159,7 +168,7 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Profile',
           style: TextStyle(
             fontSize: 24,
@@ -186,16 +195,14 @@ class _ProfileState extends State<Profile> {
           children: [
             Stack(
               children: [
-                Center(
-                  child: Container(
-                    width: 390,
-                    height: 272,
-                    decoration: BoxDecoration(
-                      color: Color(0xFFDCC8C5).withOpacity(0.26),
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(25),
-                        bottomRight: Radius.circular(25),
-                      ),
+                Container(
+                  width: 390,
+                  height: 272,
+                  decoration: BoxDecoration(
+                    color: Color(0xFFDCC8C5).withOpacity(0.26),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(25),
+                      bottomRight: Radius.circular(25),
                     ),
                   ),
                 ),
@@ -208,7 +215,7 @@ class _ProfileState extends State<Profile> {
                       ),
                       child: Align(
                         alignment: Alignment.center,
-                        child: SizedBox(
+                        child: Container(
                           width: 168,
                           height: 174,
                           child: GestureDetector(
@@ -230,8 +237,8 @@ class _ProfileState extends State<Profile> {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(14),
                               child: _userData['photo'] != null
-                                  ? Image.network(
-                                      _userData['photo'],
+                                  ? Image.file(
+                                      File(_userData['photo']),
                                       width: 168,
                                       height: 174,
                                       fit: BoxFit.cover,
@@ -287,16 +294,16 @@ class _ProfileState extends State<Profile> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
+                SizedBox(height: 30),
                 Container(
                   width: 170,
                   height: 61,
-                  margin: const EdgeInsets.only(left: 00, bottom: 00),
+                  margin: EdgeInsets.only(left: 00, bottom: 00),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFD6E3DC),
+                    color: Color(0xFFD6E3DC),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: const Color(0xFFDCC8C5),
+                      color: Color(0xFFDCC8C5),
                       width: 1,
                     ),
                   ),
@@ -327,12 +334,12 @@ class _ProfileState extends State<Profile> {
                       Container(
                         width: 1,
                         height: double.infinity,
-                        color: const Color(0xFFDCC8C5),
+                        color: Color(0xFFDCC8C5),
                       ),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
+                          Text(
                             'Points',
                             style: TextStyle(
                               color: Color(0xFFFF8787),
@@ -357,7 +364,7 @@ class _ProfileState extends State<Profile> {
             ),
             Column(
               children: [
-                const SizedBox(height: 30),
+                SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -365,10 +372,10 @@ class _ProfileState extends State<Profile> {
                       width: 116,
                       height: 41,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFDCC8C5).withOpacity(0.22),
+                        color: Color(0xFFDCC8C5).withOpacity(0.22),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: const Color(0xFFDCC8C5),
+                          color: Color(0xFFDCC8C5),
                           width: 1,
                         ),
                       ),
@@ -410,15 +417,15 @@ class _ProfileState extends State<Profile> {
                               ),
                       ),
                     ),
-                    const SizedBox(width: 40),
+                    SizedBox(width: 40),
                     Container(
                       width: 116,
                       height: 41,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFDCC8C5).withOpacity(0.22),
+                        color: Color(0xFFDCC8C5).withOpacity(0.22),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: const Color(0xFFDCC8C5),
+                          color: Color(0xFFDCC8C5),
                           width: 1,
                         ),
                       ),
@@ -434,7 +441,7 @@ class _ProfileState extends State<Profile> {
                                     hintText: 'Entrer num Tel',
                                     hintStyle: TextStyle(color: Colors.grey),
                                   ),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
@@ -460,7 +467,7 @@ class _ProfileState extends State<Profile> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 30),
+                SizedBox(height: 30),
               ],
             ),
             Column(
@@ -472,10 +479,10 @@ class _ProfileState extends State<Profile> {
                       width: 277,
                       height: 41,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFDCC8C5).withOpacity(0.22),
+                        color: Color(0xFFDCC8C5).withOpacity(0.22),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: const Color(0xFFDCC8C5),
+                          color: Color(0xFFDCC8C5),
                           width: 1,
                         ),
                       ),
@@ -486,12 +493,12 @@ class _ProfileState extends State<Profile> {
                                     const EdgeInsets.symmetric(horizontal: 8),
                                 child: TextFormField(
                                   controller: _gmailController,
-                                  decoration: const InputDecoration(
+                                  decoration: InputDecoration(
                                     border: InputBorder.none,
                                     hintText: 'Entrer email ',
                                     hintStyle: TextStyle(color: Colors.grey),
                                   ),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
@@ -524,10 +531,10 @@ class _ProfileState extends State<Profile> {
                       width: 277,
                       height: 51,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFDCC8C5).withOpacity(0.22),
+                        color: Color(0xFFDCC8C5).withOpacity(0.22),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: const Color(0xFFDCC8C5),
+                          color: Color(0xFFDCC8C5),
                           width: 1,
                         ),
                       ),
@@ -538,16 +545,31 @@ class _ProfileState extends State<Profile> {
                                     const EdgeInsets.symmetric(horizontal: 8),
                                 child: TextFormField(
                                   controller: _addressController,
-                                  decoration: const InputDecoration(
+                                  keyboardType: TextInputType.text,
+                                  decoration: InputDecoration(
                                     border: InputBorder.none,
                                     hintText: 'Entrer Adresse',
                                     hintStyle: TextStyle(color: Colors.grey),
                                   ),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                   ),
+                                  onChanged: (value) {
+                                    if (value.isNotEmpty) {
+                                      _searchPlaces(value);
+                                      setState(() {
+                                        _showSuggestions =
+                                            true; // Afficher les suggestions lors de la saisie
+                                      });
+                                    } else {
+                                      setState(() {
+                                        _showSuggestions =
+                                            false; // Masquer les suggestions
+                                      });
+                                    }
+                                  },
                                 ),
                               )
                             : Text(
@@ -568,7 +590,40 @@ class _ProfileState extends State<Profile> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 30),
+                Visibility(
+                  visible: _showSuggestions,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 40.0,
+                        right: 40.0,
+                        bottom:
+                            100.0), // Adjust bottom padding to make space for keyboard
+                    child: ListView.separated(
+                      separatorBuilder: (BuildContext context, int index) {
+                        return Divider(
+                          color: Color(0xFFDCC8C5),
+                          thickness: 2.0,
+                        );
+                      },
+                      shrinkWrap: true,
+                      itemCount: _predictions.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(
+                            _predictions[index]["description"],
+                          ),
+                          onTap: () {
+                            _addressController.text =
+                                _predictions[index]["description"];
+                            setState(() {
+                              _showSuggestions = false;
+                            });
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
               ],
             ),
           ],
