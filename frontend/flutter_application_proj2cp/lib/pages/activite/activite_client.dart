@@ -16,6 +16,8 @@ class _ActiviteState extends State<Activite> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false, // Add this line
+
         title: Center(
           child: Padding(
             padding: EdgeInsets.only(top: 30),

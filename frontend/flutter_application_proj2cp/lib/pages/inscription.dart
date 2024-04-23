@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_proj2cp/widgets/bottom_nav_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -34,7 +34,6 @@ class _SignUpPageState extends State<SignUpPage> {
           'EmailClient': email,
           'AdresseClient': location,
           'NumeroTelClient': telephone,
-
         }),
         headers: {'Content-Type': 'application/json'},
       );
@@ -43,7 +42,7 @@ class _SignUpPageState extends State<SignUpPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => HomeScreen(),
+            builder: (context) => BottomNavBar(),
           ),
         );
       } else {

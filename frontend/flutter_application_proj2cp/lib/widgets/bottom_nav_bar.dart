@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:flutter_application_proj2cp/pages/activite/activite_client.dart';
-import 'package:flutter_application_proj2cp/pages/activite/activite_encours.dart';
+import 'package:flutter_application_proj2cp/pages/afficher_prestation.dart';
+
 import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
+import 'package:flutter_application_proj2cp/pages/profile_screen.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({Key? key}) : super(key: key);
@@ -18,9 +20,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
   final List<Widget> _pages = [
     HomeScreen(),
     Activite(),
-
-    //MessagesScreen(),
-    //ProfileScreen(),
+    PrestationPage(),
+    Profile(),
   ];
 
   void _onItemTapped(int index) {

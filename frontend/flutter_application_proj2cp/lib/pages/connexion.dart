@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
+import 'package:flutter_application_proj2cp/widgets/bottom_nav_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_application_proj2cp/pages/inscription.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LogInPage extends StatefulWidget {
   const LogInPage({Key? key}) : super(key: key);
@@ -34,11 +36,12 @@ class _LogInPageState extends State<LogInPage> {
         final responseData = json.decode(response.body);
 
         final token = responseData['token'];
-
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('token', token);
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => HomeScreen(),
+            builder: (context) => BottomNavBar(),
           ),
         );
       } else {
