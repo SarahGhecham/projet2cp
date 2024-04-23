@@ -278,6 +278,12 @@ async function lancerdemande(req, res) {
     const nomPrestation = req.body.nomPrestation;
     const urgente = req.body.urgente;
     const localisation=req.body.Localisation;
+    const fullUrl = req.headers.host + req.url;
+    
+    // Récupérer uniquement la partie de l'hôte de l'URL
+    const host = req.headers.host.split(':')[0]; // Pour supprimer le port le cas échéant
+    
+    console.log('Hôte détecté :', host);
     
 
     // Vérifier si clientId est défini
