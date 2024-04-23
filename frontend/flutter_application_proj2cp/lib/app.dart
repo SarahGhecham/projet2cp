@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
+import 'package:flutter_application_proj2cp/pages/ajouter_domaine.dart';
 import 'package:flutter_application_proj2cp/pages/connexion.dart';
 import 'package:flutter_application_proj2cp/pages/entree/pagesentree.dart';
 import 'package:flutter_application_proj2cp/pages/profile_screen.dart';
@@ -9,9 +10,12 @@ import 'package:flutter_application_proj2cp/widgets/bottom_nav_bar.dart';
 import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:flutter_application_proj2cp/widgets/bottom_nav_bar.dart';
+import 'package:flutter_application_proj2cp/lancer_demande3.dart';
+import 'package:flutter_application_proj2cp/demande_confirmé.dart';
 
 class App extends StatelessWidget {
-  const App({Key? key}) : super(key: key);
+  const App({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -38,3 +42,33 @@ class App extends StatelessWidget {
     );
   }
 }
+/*
+class AppNavigator extends StatefulWidget {
+  @override
+  _AppNavigatorState createState() => _AppNavigatorState();
+}
+
+class _AppNavigatorState extends State<AppNavigator> {
+  bool _isLoggedIn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+    setState(() {
+      _isLoggedIn = token != null;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _isLoggedIn ? HomeScreen() : LogInPage();
+  }
+}
+
+ */
