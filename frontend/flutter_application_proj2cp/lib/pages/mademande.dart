@@ -18,6 +18,41 @@ class _MademandePageState extends State<Mademande> {
   String Heure = '';
   String dateDebut = '';
   DateTime dateDebut1 = DateTime(0, 0, 0, 0, 0);
+  Future<void> sendPostRequest() async {
+  // Remplacez 'votre_url_backend/confirmerRDV' par l'URL de votre endpoint backend
+  String url = 'http://192.168.100.7:3000/client/confirmerRDV';
+
+  // Remplacez 'votre_token_jwt' par votre token JWT
+  String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjksIkVtYWlsIjoiZW1haWxmaWN0aWYiLCJpYXQiOjE3MTExMTQyOTJ9.16B5UsfYcOMBfrx4jjcXRwqcRkFqI0MpJfko5QoWNuQ';
+
+
+  // Créez les en-têtes de la requête avec le token JWT
+  Map<String, String> headers = {
+    'Authorization': 'Bearer $token',
+    'Content-Type': 'application/json', // Spécifiez le type de contenu JSON
+  };
+  Map<String, dynamic> data = {
+  'rdvId': 36,
+  };
+
+String jsonData = jsonEncode(data);
+  // Envoyez la requête POST avec les en-têtes
+  try {
+    var response = await http.post(Uri.parse(url), headers: headers,body: jsonData);
+
+    // Vérifiez le code de statut de la réponse
+    if (response.statusCode == 200) {
+      // Réussite de la requête
+      print('Requête POST réussie');
+    } else {
+      // Échec de la requête
+      print('Échec de la requête POST avec le code de statut: ${response.statusCode}');
+    }
+  } catch (error) {
+    // Gestion des erreurs
+    print('Erreur lors de l\'envoi de la requête POST: $error');
+  }
+}
   @override
   void initState() {
     super.initState();
@@ -34,7 +69,6 @@ class _MademandePageState extends State<Mademande> {
 
       if (response.statusCode == 200) {
         Map<String, dynamic> responseData = json.decode(response.body);
-        print("ok");
 
         setState(() {
           artisans = responseData['artisans'];
@@ -386,9 +420,10 @@ class _MademandePageState extends State<Mademande> {
                                   color: Colors.green,
                                 ),
                                 child: TextButton(
-                                  onPressed: () {
-                                    // Ajoutez votre logique onTap ici
-                                  },
+                            onPressed: () {
+                                                // Ajoutez votre logique onTap ico
+                                        sendPostRequest();
+                            },
                                   style: ButtonStyle(
                                     padding: MaterialStateProperty
                                         .all<EdgeInsets>(EdgeInsets
