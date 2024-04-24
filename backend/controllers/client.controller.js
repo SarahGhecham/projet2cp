@@ -558,6 +558,11 @@ async function annulerRDV(req, res) {
        
         rdv.annule = true;
         await rdv.save();
+        const demandeId = rdv.DemandeId;
+
+        // Supprimer les autres relations avec le même rdvId mais un artisanId différent
+        await models.ArtisanDemande.destroy({ where: { DemandeId: demandeId} });
+        
         return res.status(200).json({ message: `Le RDV avec l'ID ${rdvId} a été annulé avec succès.`, rdv });
     } catch (error) {
         console.error("Erreur lors de l'annulation du RDV :", error);
