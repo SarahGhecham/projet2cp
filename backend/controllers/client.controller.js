@@ -348,7 +348,7 @@ async function lancerdemande(req, res) {
             const artisan = await models.Artisan.findByPk(artisanId);
             if (artisan && (artisan.Disponibilite||!urgente)) {
                 const AdresseArtisan = artisan.AdresseArtisan;
-                const AdresseArtisan = "ESI,oued smar";
+                //const AdresseArtisan = "ESI,oued smar";
                 console.log(localisation);
                 const clientCoords = await geocode(localisation);
                 const artisanCoords = await geocode(AdresseArtisan);
