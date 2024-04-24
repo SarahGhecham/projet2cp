@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_application_proj2cp/lancer_demande2Web.dart';
+import 'package:flutter_application_proj2cp/Web/lancer_demande2Web.dart';
 
 class Lancerdemande1PageWeb extends StatefulWidget {
   const Lancerdemande1PageWeb({Key? key}) : super(key: key);
