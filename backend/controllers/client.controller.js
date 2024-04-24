@@ -803,78 +803,66 @@ async function annulerRDV(req, res) {
   }
 }
 
-
 async function ActiviteEncours(req, res) {
     const clientId = req.params.id;
 
-
     try {
         const maintenant = new Date();
-
 
         const demandes = await models.Demande.findAll({
             where: { ClientId: clientId }
         });
 
-
         const demandeIds = demandes.map(demande => demande.id);
-
 
         const rdvs = await models.RDV.findAll({
             where: { DemandeId: demandeIds },
             attributes: ['id', 'DemandeId', 'annule', 'DateFin', 'HeureFin']
         });
 
-
         const rendezVousEnCours = await Promise.all(rdvs.map(async (rdv) => {
             const rdvDateFin = new Date(rdv.DateFin);
             const rdvHeureFin = new Date(`${rdv.DateFin}T${rdv.HeureFin}`);
-       
+        
             if (rdv.annule) {
                 return null;
             }
-       
+        
             if (rdvDateFin > maintenant || (rdvDateFin.getTime() === maintenant.getTime() && rdvHeureFin > maintenant)) {
                 const artisandemande = await models.ArtisanDemande.findOne({ where: { DemandeId: rdv.DemandeId } });
-                if (!artisandemande || !artisandemande.accepte || !artisandemande.confirme) {
+                if (!artisandemande || !artisandemande.accepte ) {
                     return null;
                 }
-               
-                return rdv;
+                return { rdv, artisandemande };
             } else {
                 return null;
             }
-           
-
-
         }));
-       
+        
 
-
-        const rendezVousDetails = await Promise.all(rendezVousEnCours.map(async (rdv) => {
-            if (!rdv) {
-                return null;
+        const rendezVousDetails = await Promise.all(rendezVousEnCours.map(async (rdvArtisan) => {
+            if (!rdvArtisan) {
+                return null; 
             }
 
-
-            const demande = await models.Demande.findByPk(rdv.DemandeId, {
+            const demande = await models.Demande.findByPk(rdvArtisan.rdv.DemandeId, {
                 attributes: ['id',
-                    [models.sequelize.literal("DATE_FORMAT(`Demande`.`createdAt`, '%Y-%m-%d')"), 'date'],
-            [models.sequelize.literal("DATE_FORMAT(`Demande`.`createdAt`, '%H:%i:%s')"), 'heure']
+                    [models.sequelize.literal("DATE_FORMAT(`Demande`.`createdAt`, '%Y-%m-%d')"), 'date'], 
+            [models.sequelize.literal("DATE_FORMAT(`Demande`.`createdAt`, '%H:%i:%s')"), 'heure'] 
                 ],
                 include: [
                     {
                         model: models.Prestation,
-                        attributes: ['nomPrestation', 'imagePrestation']
+                        attributes: ['nomPrestation', 'imagePrestation'] 
                     }
+                    
                 ]
             });
-            return { demande, rdv };
+
+            return { demande, rdv: rdvArtisan.rdv, confirme: rdvArtisan.artisandemande.confirme };
         }));
 
-
         const filteredRendezVousDetails = rendezVousDetails.filter(item => item !== null);
-
 
         return res.status(200).json(filteredRendezVousDetails);
     } catch (error) {
@@ -882,6 +870,7 @@ async function ActiviteEncours(req, res) {
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
+
 
 
 async function ActiviteTerminee(req, res) {
