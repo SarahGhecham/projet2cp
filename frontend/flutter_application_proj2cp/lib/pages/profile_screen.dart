@@ -4,14 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:convert';
-<<<<<<< HEAD
-import 'package:http/http.dart ' as http;
-import 'package:path/path.dart ' as path;
-=======
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:flutter_typeahead/flutter_typeahead.dart';
->>>>>>> b0b53cbf6a8cf9306ea5c01659caebffba2bfc45
 
 class Profile extends StatefulWidget {
   @override
@@ -21,7 +16,6 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   Map<String, dynamic> _userData = {};
   bool _isEditing = false;
-
   @override
   void initState() {
     super.initState();
@@ -47,11 +41,7 @@ class _ProfileState extends State<Profile> {
 
   Future<void> _fetchUserData() async {
     final url = Uri.parse(
-<<<<<<< HEAD
-        'http://192.168.151.173:3000/client/Affichermonprofil/1'); // Replace with your endpoint
-=======
         'http://192.168.1.67:3000/client/Affichermonprofil/1'); // Replace with your endpoint
->>>>>>> b0b53cbf6a8cf9306ea5c01659caebffba2bfc45
     try {
       final response = await http.get(url);
 
@@ -81,13 +71,7 @@ class _ProfileState extends State<Profile> {
 
   Future<void> updateClientImage(int id, File image) async {
     // Replace "http://localhost:3000" with your server URL
-<<<<<<< HEAD
-    String baseUrl =
-        "http://192.168.151.173:3000"; // changer avec votre adressse ip/10.0.2.2(emulateur)
-    String idString = id.toString();
-=======
     String baseUrl = "http://192.168.1.67:3000";
->>>>>>> b0b53cbf6a8cf9306ea5c01659caebffba2bfc45
 
     // Construct the endpoint URL
     String endpoint = "$baseUrl/client/updateClientImage/$id";
@@ -111,7 +95,6 @@ class _ProfileState extends State<Profile> {
         if (data['success'] == true) {
           // Client image updated successfully
           print('Client image updated successfully');
-          await _fetchUserData();
         } else {
           // Image upload failed
           print('Failed to update client image: ${data['message']}');
@@ -128,11 +111,7 @@ class _ProfileState extends State<Profile> {
 
   Future<void> updateClient(Map<String, dynamic> updatedData) async {
     final url = Uri.parse(
-<<<<<<< HEAD
-        'http://192.168.151.173:3000/client/updateClient/1'); // changer avec votre adressse ip/10.0.2.2(emulateur)
-=======
         'http://192.168.1.67:3000/client/updateClient/1'); // Replace with your endpoint
->>>>>>> b0b53cbf6a8cf9306ea5c01659caebffba2bfc45
     try {
       final response = await http.patch(
         url,
@@ -142,7 +121,6 @@ class _ProfileState extends State<Profile> {
 
       if (response.statusCode == 200) {
         print('User data updated successfully');
-        
       } else {
         print('Failed to update user data');
         print('Response Status Code: ${response.statusCode}');
@@ -162,13 +140,6 @@ class _ProfileState extends State<Profile> {
   void _toggleEditing(bool value) {
     setState(() {
       _isEditing = value;
-      if (_isEditing) {
-        // Initialize text controllers with current user data
-        _UsernameController.text = _userData['Username'];
-        _numeroController.text = _userData['NumeroTelClient'];
-        _gmailController.text = _userData['EmailClient'];
-        _addressController.text = _userData['AdresseClient'];
-      }
     });
   }
 
@@ -187,6 +158,8 @@ class _ProfileState extends State<Profile> {
     _userData['AdresseClient'] = _addressController.text.isNotEmpty
         ? _addressController.text
         : _userData['AdresseClient'];
+
+    _userData['profilePicturePath'] = _pickedImagePath;
   }
 
   @override
@@ -366,7 +339,7 @@ class _ProfileState extends State<Profile> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            '  Points ',
+                            'Points',
                             style: TextStyle(
                               color: Color(0xFFFF8787),
                               fontSize: 12,
@@ -412,7 +385,6 @@ class _ProfileState extends State<Profile> {
                                     const EdgeInsets.symmetric(horizontal: 8),
                                 child: TextFormField(
                                   controller: _UsernameController,
-                                  textAlign: TextAlign.center,
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
                                     hintText: 'Entrer Username',
@@ -424,7 +396,7 @@ class _ProfileState extends State<Profile> {
                                         ? Colors.black
                                         : Colors.grey,
                                     fontSize: 12,
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               )
@@ -439,7 +411,7 @@ class _ProfileState extends State<Profile> {
                                       ? Colors.black
                                       : Colors.grey,
                                   fontSize: 12,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                       ),
@@ -463,7 +435,6 @@ class _ProfileState extends State<Profile> {
                                     const EdgeInsets.symmetric(horizontal: 8),
                                 child: TextFormField(
                                   controller: _numeroController,
-                                  textAlign: TextAlign.center,
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
                                     hintText: 'Entrer num Tel',
@@ -472,7 +443,7 @@ class _ProfileState extends State<Profile> {
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 12,
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               )
@@ -488,7 +459,7 @@ class _ProfileState extends State<Profile> {
                                       ? Colors.black
                                       : Colors.grey,
                                   fontSize: 12,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                       ),
@@ -521,7 +492,6 @@ class _ProfileState extends State<Profile> {
                                     const EdgeInsets.symmetric(horizontal: 8),
                                 child: TextFormField(
                                   controller: _gmailController,
-                                  textAlign: TextAlign.center,
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
                                     hintText: 'Entrer email ',
@@ -530,7 +500,7 @@ class _ProfileState extends State<Profile> {
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 12,
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               )
@@ -545,7 +515,7 @@ class _ProfileState extends State<Profile> {
                                       ? Colors.black
                                       : Colors.grey,
                                   fontSize: 12,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                       ),
@@ -574,11 +544,7 @@ class _ProfileState extends State<Profile> {
                                     const EdgeInsets.symmetric(horizontal: 8),
                                 child: TextFormField(
                                   controller: _addressController,
-<<<<<<< HEAD
-                                  textAlign: TextAlign.center,
-=======
                                   keyboardType: TextInputType.text,
->>>>>>> b0b53cbf6a8cf9306ea5c01659caebffba2bfc45
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
                                     hintText: 'Entrer Adresse',
@@ -587,7 +553,7 @@ class _ProfileState extends State<Profile> {
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 12,
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                   onChanged: (value) {
                                     if (value.isNotEmpty) {
@@ -616,7 +582,7 @@ class _ProfileState extends State<Profile> {
                                       ? Colors.black
                                       : Colors.grey,
                                   fontSize: 12,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                       ),
