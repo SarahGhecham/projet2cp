@@ -597,7 +597,7 @@ async function ActiviteEncours(req, res) {
         
             if (rdvDateFin > maintenant || (rdvDateFin.getTime() === maintenant.getTime() && rdvHeureFin > maintenant)) {
                 const artisandemande = await models.ArtisanDemande.findOne({ where: { DemandeId: rdv.DemandeId } });
-                if (!artisandemande || !artisandemande.accepte || !artisandemande.confirme) {
+                if (!artisandemande || !artisandemande.accepte ) {
                     return null;
                 }
                 
