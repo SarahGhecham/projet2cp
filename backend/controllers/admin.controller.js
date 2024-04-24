@@ -255,7 +255,6 @@ function CreerPrestation(req, res) {
     }
     const imageURL = `http://localhost:3000/imagePrestation/${req.file.filename}`; 
     const imagePrestation = imageURL; 
-    // Création de la prestation dans la base de données
      models.Prestation.create({
         NomPrestation,
         Matériel:Materiel,

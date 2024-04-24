@@ -10,6 +10,8 @@ const bcrypt = require('bcryptjs');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const { geocode, calculateRouteDistance } = require('./maps');
+const { sequelize } = require('sequelize');
+
 
 
 async function signUp(req, res) {
@@ -270,7 +272,6 @@ async function creerEvaluation(req, res) {
 }
 
 
-
 async function lancerdemande(req, res) {
     // Attributs de la demande
     const description = req.body.description;
@@ -346,6 +347,7 @@ async function lancerdemande(req, res) {
         for (const artisanId of idsArtisansAssocies) {
             const artisan = await models.Artisan.findByPk(artisanId);
             if (artisan && (artisan.Disponibilite||!urgente)) {
+                const AdresseArtisan = artisan.AdresseArtisan;
                 const AdresseArtisan = "ESI,oued smar";
                 console.log(localisation);
                 const clientCoords = await geocode(localisation);
@@ -513,36 +515,47 @@ async function creerRDV(req,demandeId) {
             DateFin: dateDebut, // La date de fin est la même que la date de début
             HeureDebut: heureDebut,
             HeureFin: heureFinFormatee,
-            accepte: false,
-            confirme: false,
             annule: false,
             DemandeId: demandeId
         });
         return rdv;
 
 }
-
 async function confirmerRDV(req, res) {
-    const rdvId = req.body.rdvId; 
+    const rdvId = req.body.rdvId;
+    const artisanId = req.body.artisanId;
 
     try {
-        const rdv = await models.RDV.findByPk(rdvId);      
+        const rdv = await models.RDV.findByPk(rdvId);
+
         if (!rdv) {
             return res.status(404).json({ message: `Le RDV avec l'ID ${rdvId} n'existe pas.` });
         }
 
-        if (!rdv.accepte) {
-            return res.status(400).json({ message: `Le RDV avec l'ID ${rdvId} n'a pas été accepté.` });
-        }
+        const demandeId = rdv.DemandeId;
 
-        rdv.confirme = true;
-        await rdv.save();
-        return res.status(200).json({ message: `Le RDV avec l'ID ${rdvId} a été confirmé avec succès.`, rdv });
+        // Supprimer les autres relations avec le même rdvId mais un artisanId différent
+        await models.ArtisanDemande.destroy({ where: { DemandeId: demandeId, ArtisanId: { [models.Sequelize.Op.ne]: artisanId } } });
+
+        // Mettre à jour la relation artisan-demande correspondant à l'artisan actuel
+        const [updatedRows, updatedArtisanDemande] = await models.ArtisanDemande.update(
+            { confirme: true }, // Les valeurs à mettre à jour
+            { where: { DemandeId: demandeId, ArtisanId: artisanId } } // Conditions de mise à jour
+        );
+
+        // Vérifier si la mise à jour a réussi
+        if (updatedRows > 0) {
+            return res.status(200).json({ message: `Le RDV avec l'ID ${rdvId} a été confirmé avec succès par l'artisan avec l'ID ${artisanId}.` });
+        } else {
+            return res.status(500).json({ message: 'Impossible de confirmer le RDV.' });
+        }
     } catch (error) {
         console.error("Erreur lors de la confirmation du RDV :", error);
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
+
+
 
 async function annulerRDV(req, res) {
     const rdvId = req.body.rdvId; 
@@ -556,15 +569,89 @@ async function annulerRDV(req, res) {
        
         rdv.annule = true;
         await rdv.save();
+        const demandeId = rdv.DemandeId;
+
+        // Supprimer les autres relations avec le même rdvId mais un artisanId différent
+        await models.ArtisanDemande.destroy({ where: { DemandeId: demandeId} });
+        
         return res.status(200).json({ message: `Le RDV avec l'ID ${rdvId} a été annulé avec succès.`, rdv });
     } catch (error) {
         console.error("Erreur lors de l'annulation du RDV :", error);
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
-
-
 async function ActiviteEncours(req, res) {
+    const clientId = req.params.id;
+
+    try {
+        const maintenant = new Date();
+
+        const demandes = await models.Demande.findAll({
+            where: { ClientId: clientId }
+        });
+
+        const demandeIds = demandes.map(demande => demande.id);
+
+        const rdvs = await models.RDV.findAll({
+            where: { DemandeId: demandeIds },
+            attributes: ['id', 'DemandeId', 'annule', 'DateFin', 'HeureFin']
+        });
+
+        const rendezVousEnCours = await Promise.all(rdvs.map(async (rdv) => {
+            const rdvDateFin = new Date(rdv.DateFin);
+            const rdvHeureFin = new Date(`${rdv.DateFin}T${rdv.HeureFin}`);
+        
+            if (rdv.annule) {
+                return null;
+            }
+        
+            if (rdvDateFin > maintenant || (rdvDateFin.getTime() === maintenant.getTime() && rdvHeureFin > maintenant)) {
+                const artisandemande = await models.ArtisanDemande.findOne({ where: { DemandeId: rdv.DemandeId } });
+                if (!artisandemande || !artisandemande.accepte ) {
+                    return null;
+                }
+                return { rdv, artisandemande };
+            } else {
+                return null;
+            }
+        }));
+        
+
+        const rendezVousDetails = await Promise.all(rendezVousEnCours.map(async (rdvArtisan) => {
+            if (!rdvArtisan) {
+                return null; 
+            }
+
+            const demande = await models.Demande.findByPk(rdvArtisan.rdv.DemandeId, {
+                attributes: ['id',
+                    [models.sequelize.literal("DATE_FORMAT(`Demande`.`createdAt`, '%Y-%m-%d')"), 'date'], 
+            [models.sequelize.literal("DATE_FORMAT(`Demande`.`createdAt`, '%H:%i:%s')"), 'heure'] 
+                ],
+                include: [
+                    {
+                        model: models.Prestation,
+                        attributes: ['nomPrestation', 'imagePrestation'] 
+                    }
+                    
+                ]
+            });
+
+            return { demande, rdv: rdvArtisan.rdv, confirme: rdvArtisan.artisandemande.confirme };
+        }));
+
+        const filteredRendezVousDetails = rendezVousDetails.filter(item => item !== null);
+
+        return res.status(200).json(filteredRendezVousDetails);
+    } catch (error) {
+        console.error('Une erreur s\'est produite lors de la récupération des rendez-vous en cours :', error);
+        return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
+    }
+}
+
+
+
+
+async function ActiviteTerminee(req, res) {
     const clientId = req.userId;
 
     try {
@@ -578,26 +665,59 @@ async function ActiviteEncours(req, res) {
 
         const rdvs = await models.RDV.findAll({
             where: { DemandeId: demandeIds },
-            attributes: ['id', 'DemandeId', 'accepte', 'confirme', 'annule', 'DateFin', 'HeureFin'] // Sélectionner également les attributs d'acceptation, de confirmation, d'annulation, de date et d'heure de fin
+            attributes: ['id', 'DemandeId', 'annule', 'DateFin', 'HeureFin']
         });
 
-        const rendezVousEnCours = rdvs.filter(rdv => {
+        const rendezVousEnCours = await Promise.all(rdvs.map(async (rdv) => {
             const rdvDateFin = new Date(rdv.DateFin);
             const rdvHeureFin = new Date(`${rdv.DateFin}T${rdv.HeureFin}`);
-            return (!rdv.annule && !rdv.accepte) || (!rdv.annule && rdv.accepte && !rdv.confirme) || (!rdv.annule && rdv.accepte && rdv.confirme && (rdvDateFin > maintenant || (rdvDateFin.getTime() === maintenant.getTime() && rdvHeureFin > maintenant)));
-        });
+        
+            if (rdv.annule) {
+                return null;
+            }
+        
+            if (rdvDateFin < maintenant || (rdvDateFin.getTime() === maintenant.getTime() && rdvHeureFin < maintenant)) {
+                const artisandemande = await models.ArtisanDemande.findOne({ where: { DemandeId: rdv.DemandeId } });
+                if (!artisandemande || !artisandemande.accepte || !artisandemande.confirme) {
+                    return null;
+                }
+                
+                return rdv;
+            } else {
+                return null;
+            }
+        }));
+        
 
         const rendezVousDetails = await Promise.all(rendezVousEnCours.map(async (rdv) => {
+            if (!rdv) {
+                return null; 
+            }
+
             const demande = await models.Demande.findByPk(rdv.DemandeId, {
+                attributes: ['id'],
                 include: [
-                    { model: models.Client },
-                    { model: models.Prestation }
+                    {
+                        model: models.Prestation,
+                        attributes: ['nomPrestation', 'imagePrestation'] 
+                    },
+                    {
+                        model: models.Artisan, // Inclure les détails de l'artisan
+                        attributes: ['id','NomArtisan', 'PrenomArtisan','Note'],
+                        through: { attributes: [] } 
+
+                    }
                 ]
             });
-            return { rdv, demande };
+
+            // Ajoutez les détails de l'artisan à la demande
+            const artisan = demande.Artisan;
+            return { demande,rdv, artisan };
         }));
 
-        return res.status(200).json(rendezVousDetails);
+        const filteredRendezVousDetails = rendezVousDetails.filter(item => item !== null);
+
+        return res.status(200).json(filteredRendezVousDetails);
     } catch (error) {
         console.error('Une erreur s\'est produite lors de la récupération des rendez-vous en cours :', error);
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
@@ -605,65 +725,6 @@ async function ActiviteEncours(req, res) {
 }
 
 
-
-async function Activiteterminee(req, res) {
-    const clientId = req.userId; 
-
-    try {
-        // Récupérer la date et l'heure actuelles
-        const maintenant = new Date();
-
-        // Recherchez les demandes du client avec leurs détails associés
-        const demandesAvecDetails = await models.Demande.findAll({
-            where: { ClientId: clientId },
-            include: [
-                {
-                    model: models.Client // Inclure les détails du client
-                },
-                {
-                    model: models.Prestation // Inclure les détails de la prestation
-                },
-                {
-                    model: models.RDV, // Inclure les détails du rendez-vous
-                    where: { 
-                        accepte: true, // Rendez-vous accepté
-                        confirme: true, // Rendez-vous confirmé
-                        annule: false, // Rendez-vous non annulé
-                        [Op.and]: [
-                            { DateFin: { [Op.lt]: maintenant } }, // Date de fin du RDV inférieure à maintenant
-                            { HeureFin: { [Op.lt]: maintenant.getHours() + ":" + maintenant.getMinutes() } } // Heure de fin du RDV inférieure à maintenant
-                        ]
-                    }
-                }
-            ]
-        });
-
-        // Si aucune demande n'est trouvée, renvoyer une réponse appropriée
-        if (demandesAvecDetails.length === 0) {
-            return res.status(404).json({ message: "Aucune demande terminée trouvée pour ce client." });
-        }
-
-        // Récupérer les détails des artisans pour chaque demande
-        await Promise.all(demandesAvecDetails.map(async (demande) => {
-            // Récupérer les détails de l'artisan associé à la demande
-            const artisanDemande = await models.ArtisanDemande.findOne({
-                where: { DemandeId: demande.id }
-            });
-            const artisan = await models.Artisan.findByPk(artisanDemande.ArtisanId, {
-                attributes: ['NomArtisan', 'PrenomArtisan']
-            });
-
-            // Ajouter les détails de l'artisan à la demande
-            demande.dataValues.Artisan = artisan;
-        }));
-
-        // Envoyer les détails des demandes avec leurs détails associés et les artisans associés en réponse
-        return res.status(200).json(demandesAvecDetails);
-    } catch (error) {
-        console.error("Une erreur s'est produite lors de la récupération des demandes avec les détails associés :", error);
-        return res.status(500).json({ message: "Une erreur s'est produite lors du traitement de votre demande." });
-    }
-}
 
 
 function AfficherPrestations(req, res) {
@@ -693,6 +754,8 @@ async function DetailsDemandeConfirmee(req, res) {
         const rdv = await models.RDV.findByPk(rdvId, {
             include: [
                 { model: models.Demande, include: [models.Prestation],
+                    attributes: ['Description','Localisation']  
+
                  }
             ]
         });
@@ -705,16 +768,19 @@ async function DetailsDemandeConfirmee(req, res) {
             return res.status(400).json({ message: `Le RDV avec l'ID ${rdvId} a été annulé.` });
         }
         
-        if (!rdv.confirme) {
-            return res.status(400).json({ message: `Le RDV avec l'ID ${rdvId} n'a pas été confirmé.` });
-        }
 
         const artisanDemande = await models.ArtisanDemande.findOne({
-            where: { DemandeId: rdv.DemandeId }
+            where: { 
+                DemandeId: rdv.DemandeId,
+             }
         });
 
         if (!artisanDemande) {
             return res.status(404).json({ message: `Aucun artisan n'est associé à la demande de RDV avec l'ID ${rdvId}.` });
+        }
+        if(!artisanDemande.confirme){
+            return res.status(404).json({ message: `le rdv ${rdvId} n'a pas été confirmé.` });
+
         }
 
         const artisan = await models.Artisan.findByPk(artisanDemande.ArtisanId, {
@@ -725,6 +791,10 @@ async function DetailsDemandeConfirmee(req, res) {
             DateDebut: rdv.DateDebut,
             HeureDebut: rdv.HeureDebut
         };
+        const demandeAffich ={
+            Description: rdv.Demande.Description,
+            Localisation: rdv.Demande.Localisation
+        }
         const prestation={
             Nom: rdv.Demande.Prestation.NomPrestation,
             Materiel: rdv.Demande.Prestation.Maéeriel,
@@ -732,7 +802,7 @@ async function DetailsDemandeConfirmee(req, res) {
             DurreMin: rdv.Demande.Prestation.DuréeMin,
             Ecologique: rdv.Demande.Prestation.Ecologique
         }
-        return res.status(200).json({ artisan, rdv: rdvAffich, prestation });
+        return res.status(200).json({ artisan, rdvAffich, prestation,demandeAffich });
     } catch (error) {
         console.error("Erreur lors de la récupération des détails de la demande confirmée :", error);
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
@@ -745,7 +815,11 @@ async function DetailsRDVTermine(req, res) {
     try {
         const rdv = await models.RDV.findByPk(rdvId, {
             include: [
-                { model: models.Demande, include: [models.Prestation] }
+                { 
+                    model: models.Demande, 
+                    include: [models.Prestation],
+                    attributes: ['Description','Localisation']  
+                }
             ]
         });
 
@@ -757,9 +831,6 @@ async function DetailsRDVTermine(req, res) {
             return res.status(400).json({ message: `Le RDV avec l'ID ${rdvId} a été annulé.` });
         }
         
-        if (!rdv.confirme) {
-            return res.status(400).json({ message: `Le RDV avec l'ID ${rdvId} n'a pas été confirmé.` });
-        }
 
         const now = new Date();
         const rdvDateFin = new Date(rdv.DateFin);
@@ -776,6 +847,10 @@ async function DetailsRDVTermine(req, res) {
         if (!artisanDemande) {
             return res.status(404).json({ message: `Aucun artisan n'est associé à la demande de RDV avec l'ID ${rdvId}.` });
         }
+        if(!artisanDemande.confirme){
+            return res.status(404).json({ message: `le rdv ${rdvId} n'a pas été confirmé.` });
+
+        }
 
         const artisan = await models.Artisan.findByPk(artisanDemande.ArtisanId, {
             attributes: ['NomArtisan', 'PrenomArtisan']
@@ -785,18 +860,23 @@ async function DetailsRDVTermine(req, res) {
             DateDebut: rdv.DateDebut,
             HeureDebut: rdv.HeureDebut,
             DateFin: rdv.DateFin,
-            HeureFin: rdv.HeureFin
+            HeureFin: rdv.HeureFin,
         };
+        const demandeAffich ={
+            Description: rdv.Demande.Description,
+            Localisation: rdv.Demande.Localisation
+        }
 
         const prestation = {
             Nom: rdv.Demande.Prestation.NomPrestation,
             Materiel: rdv.Demande.Prestation.Matériel,
             DureeMax: rdv.Demande.Prestation.DuréeMax,
             DureeMin: rdv.Demande.Prestation.DuréeMin,
-            Ecologique: rdv.Demande.Prestation.Ecologique
+            Ecologique: rdv.Demande.Prestation.Ecologique,
+
         };
 
-        return res.status(200).json({ artisan, rdv: rdvAffich, prestation });
+        return res.status(200).json({ artisan,rdvAffich, prestation,demandeAffich });
     } catch (error) {
         console.error("Erreur lors de la récupération des détails du RDV terminé :", error);
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
@@ -814,7 +894,7 @@ module.exports = {
     AfficherArtisan:AfficherArtisan,
     creerEvaluation:creerEvaluation,
     //test,
-    Activiteterminee,
+    ActiviteTerminee,
     ActiviteEncours,
     AfficherPrestations,
     AfficherProfil,
