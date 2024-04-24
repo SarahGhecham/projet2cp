@@ -57,7 +57,8 @@ function AfficherProfil(req,res){
                 AdresseArtisan: result.AdresseArtisan,
                 NumeroTelArtisan: result.NumeroTelArtisan,
                 Disponibilite: result.Disponibilite,
-                photo: result.photo
+                photo: result.photo,
+                Note: result.Note
             };
             res.status(201).json(artisanInfo);
         }

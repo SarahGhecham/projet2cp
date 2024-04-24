@@ -13,6 +13,7 @@ class ServiceOffreContainer extends StatefulWidget {
     required this.service,
   }) : super(key: key);
 
+
   @override
   State<ServiceOffreContainer> createState() => _ServiceOffreContainerState();
 }
@@ -25,7 +26,7 @@ class _ServiceOffreContainerState extends State<ServiceOffreContainer> {
       onTap: () => {}, //afficher service populair
       child: Padding(
         padding: const EdgeInsets.all(9.0),
-        child: Container(
+        child: SizedBox(
             width: 210,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment

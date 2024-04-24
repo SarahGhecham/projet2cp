@@ -26,4 +26,5 @@ app.use("/imageClient",express.static('uploads'));
 
 app.use("/imagePrestation",express.static('uploads'));
 
+
 module.exports = app;
