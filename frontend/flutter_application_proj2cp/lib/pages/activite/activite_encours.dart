@@ -65,9 +65,7 @@ class _DemandesEnCoursState extends State<DemandesEnCours> {
             final String imagePrestation =
                 demande['Prestation']['imagePrestation'] ?? '';
             final bool status = confirme;
-            print('name: $name');
-            print('status: $status');
-            print('confirme: $confirme');
+           
             demandes.add(Demande(
               name: name,
               orderTime: '$dateFin, $heureFin',

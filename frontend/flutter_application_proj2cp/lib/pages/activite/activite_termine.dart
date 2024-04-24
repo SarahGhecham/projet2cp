@@ -82,7 +82,6 @@ class _DemandesTerminesState extends State<DemandesTermines> {
         for (var item in data) {
           final demande = item['demande'];
           final rdv = item['rdvAffich'];
-                  print('rdv: $rdv');
 
 
 
@@ -90,13 +89,11 @@ class _DemandesTerminesState extends State<DemandesTermines> {
           if (demande != null && rdv != null) {
            
             final String name = demande['Prestation']['nomPrestation'] ?? '';
-                    print('name: $name');
 
 
             final String orderTime = rdv['DateFin'] + ', ' + rdv['HeureFin'] ?? '';
             final String demandeImage =demande['Prestation']['imagePrestation'] ?? '';
             final String nomArtisan = demande['Artisans'][0]['NomArtisan'] ?? '';
-                    print('nomArtisan: $nomArtisan');
 
 
             final String prenomArtisan = demande['Artisans'][0]['PrenomArtisan'] ?? '';
