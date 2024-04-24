@@ -18,7 +18,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_application_proj2cp/lancer_demande1.dart';
 import 'package:flutter_application_proj2cp/lancer_demande1Web.dart';
 import 'package:flutter_application_proj2cp/pages/mademande.dart';
-
+import 'package:flutter_application_proj2cp/details_prestation.dart';
 
 
 
@@ -40,7 +40,7 @@ class App extends StatelessWidget {
           /*theme: ThemeData(
             iconTheme: const IconThemeData(color: vertClair),
           ),*/
-          home: Lancerdemande3Page(),
+          home: details_prestationPage(),
         );
       },
 
