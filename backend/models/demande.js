@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     PrestationId: DataTypes.INTEGER,
     ClientId: DataTypes.INTEGER,
     Urgente:DataTypes.BOOLEAN,
-    Localisation: DataTypes.STRING,
+    Localisation:DataTypes.STRING 
 
   }, {
     sequelize,

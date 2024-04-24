@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       RDV.belongsTo(models.Demande, { foreignKey: 'DemandeId'});
       RDV.hasOne(models.Evaluation, { foreignKey: 'RDVId' });
 
+
     }
   }
   RDV.init({

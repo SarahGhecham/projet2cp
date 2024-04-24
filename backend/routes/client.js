@@ -17,10 +17,12 @@ router.post('/annulerRDV',auth(),clientController.annulerRDV);
 router.get('/AffcherArtisan',auth(),clientController.AfficherArtisan);
 router.get('/Affichermonprofil',auth(),clientController.AfficherProfil)
 //router.get('/test',clientController.test);
-router.get('/AfficherActiviteTerminee',auth(),clientController.ActiviteTerminee);
-router.get('/AfficherActiviteEncours',auth(),clientController.ActiviteEncours);
+router.get('/AfficherActiviteTerminee/:id',clientController.ActiviteTerminee);
+router.get('/AfficherActiviteEncours/:id',clientController.ActiviteEncours);
 router.get('/AfficherPrestations',auth(),clientController.AfficherPrestations);
 router.get('/DetailsDemandeConfirmee',auth(),clientController.DetailsDemandeConfirmee);
 router.get('/DetailsRDVTermine',auth(),clientController.DetailsRDVTermine);
+router.get('/demandes/:demandeId/artisans', clientController.getArtisansForDemand);
+
 
 module.exports = router;
