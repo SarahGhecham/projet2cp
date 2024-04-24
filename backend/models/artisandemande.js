@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     ArtisanId: DataTypes.INTEGER,
     accepte: DataTypes.BOOLEAN,
     confirme: DataTypes.BOOLEAN,
-
+    refuse: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'ArtisanDemande',

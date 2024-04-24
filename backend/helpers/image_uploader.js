@@ -11,7 +11,8 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-    if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'application/pdf'){
+    console.log('Type MIME reçu:', file.mimetype); 
+    if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'application/pdf'|| file.mimetype === 'application/octet-stream'){
          cb(null, true);
     }else{
         cb(new Error('Fichiers insupportables'), false);

@@ -24,9 +24,13 @@ app.use('/jours', jourRoutes);
 app.use('/artisanjour', artisanjourroute);
 app.use('/pageaccueil',pageaccueilRoute);
 app.use("/imageDomaine",express.static('uploads'));
+app.use("/imageArtisan",express.static('uploads'));
+app.use("/imageClient",express.static('uploads'));
+
 app.use("/imagePrestation",express.static('uploads'));
 app.use('/messages', messagesRouter);
 app.use('/conversation', conversationRoutes);
+
 
 
 

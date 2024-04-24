@@ -21,12 +21,6 @@ module.exports = {
       HeureFin: {
         type: Sequelize.TIME
       },
-      accepte: {
-        type: Sequelize.BOOLEAN
-      },
-      confirme: {
-        type: Sequelize.BOOLEAN
-      },
       annule: {
         type: Sequelize.BOOLEAN
       },
