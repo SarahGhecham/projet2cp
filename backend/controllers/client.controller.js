@@ -569,9 +569,8 @@ async function annulerRDV(req, res) {
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
-
 async function ActiviteEncours(req, res) {
-    const clientId = req.userId;
+    const clientId = req.params.id;
 
     try {
         const maintenant = new Date();
@@ -600,20 +599,19 @@ async function ActiviteEncours(req, res) {
                 if (!artisandemande || !artisandemande.accepte ) {
                     return null;
                 }
-                
-                return rdv;
+                return { rdv, artisandemande };
             } else {
                 return null;
             }
         }));
         
 
-        const rendezVousDetails = await Promise.all(rendezVousEnCours.map(async (rdv) => {
-            if (!rdv) {
+        const rendezVousDetails = await Promise.all(rendezVousEnCours.map(async (rdvArtisan) => {
+            if (!rdvArtisan) {
                 return null; 
             }
 
-            const demande = await models.Demande.findByPk(rdv.DemandeId, {
+            const demande = await models.Demande.findByPk(rdvArtisan.rdv.DemandeId, {
                 attributes: ['id',
                     [models.sequelize.literal("DATE_FORMAT(`Demande`.`createdAt`, '%Y-%m-%d')"), 'date'], 
             [models.sequelize.literal("DATE_FORMAT(`Demande`.`createdAt`, '%H:%i:%s')"), 'heure'] 
@@ -623,9 +621,11 @@ async function ActiviteEncours(req, res) {
                         model: models.Prestation,
                         attributes: ['nomPrestation', 'imagePrestation'] 
                     }
+                    
                 ]
             });
-            return { demande };
+
+            return { demande, rdv: rdvArtisan.rdv, confirme: rdvArtisan.artisandemande.confirme };
         }));
 
         const filteredRendezVousDetails = rendezVousDetails.filter(item => item !== null);
@@ -636,6 +636,7 @@ async function ActiviteEncours(req, res) {
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
+
 
 
 
