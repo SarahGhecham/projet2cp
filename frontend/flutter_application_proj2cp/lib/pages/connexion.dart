@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_proj2cp/pages/activite/activite_client.dart';
 import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
 import 'package:flutter_application_proj2cp/widgets/bottom_nav_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -41,7 +42,7 @@ class _LogInPageState extends State<LogInPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => BottomNavBar(),
+            builder: (context) => Activite(),
           ),
         );
       } else {

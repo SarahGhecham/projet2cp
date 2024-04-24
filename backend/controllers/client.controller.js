@@ -118,22 +118,18 @@ L'équipe Beaver`,
                             }
                           );
 
-                          res
-                            .status(201)
-                            .json({
-                              message: 'Inscription client réussie',
-                              client: result,
-                              token,
-                            });
+                          res.status(201).json({
+                            message: 'Inscription client réussie',
+                            client: result,
+                            token,
+                          });
                         })
                         .catch((error) => {
-                          res
-                            .status(500)
-                            .json({
-                              message:
-                                "Une erreur s'est produite lors de la création du client",
-                              error: error,
-                            });
+                          res.status(500).json({
+                            message:
+                              "Une erreur s'est produite lors de la création du client",
+                            error: error,
+                          });
                         });
                     }
                   );
@@ -155,12 +151,10 @@ L'équipe Beaver`,
     // }
   } catch (error) {
     console.error("Erreur lors de la validation de l'e-mail :", error);
-    res
-      .status(500)
-      .json({
-        message: "Erreur lors de la validation de l'e-mail",
-        error: error,
-      });
+    res.status(500).json({
+      message: "Erreur lors de la validation de l'e-mail",
+      error: error,
+    });
   }
 }
 
@@ -263,13 +257,11 @@ function updateClientImage(req, res) {
       });
     })
     .catch((error) => {
-      res
-        .status(500)
-        .json({
-          success: false,
-          message: 'Something went wrong',
-          error: error,
-        });
+      res.status(500).json({
+        success: false,
+        message: 'Something went wrong',
+        error: error,
+      });
     });
 }
 async function creerEvaluation(req, res) {
@@ -293,21 +285,17 @@ async function creerEvaluation(req, res) {
         .json({ message: `Le rendez-vous avec l'ID ${RDVId} a été annulé.` });
     }
     if (!RDV.confirme) {
-      return res
-        .status(400)
-        .json({
-          message: `Le rendez-vous avec l'ID ${RDVId} n'est pas confirmé.`,
-        });
+      return res.status(400).json({
+        message: `Le rendez-vous avec l'ID ${RDVId} n'est pas confirmé.`,
+      });
     }
     const now = new Date();
     const rdvDateFin = new Date(RDV.DateFin);
     // Comparaison de la date actuelle avec la date de fin du RDV
     if (now < rdvDateFin) {
-      return res
-        .status(400)
-        .json({
-          message: `La date actuelle est antérieure à la fin du rendez-vous.`,
-        });
+      return res.status(400).json({
+        message: `La date actuelle est antérieure à la fin du rendez-vous.`,
+      });
     }
     // Comparaison de la date et l'heure actuelles avec la date et l'heure de fin du RDV
     const maintenant = moment();
@@ -320,19 +308,15 @@ async function creerEvaluation(req, res) {
     // Comparer maintenant avec l'heure de fin du rendez-vous
     if (now == rdvDateFin) {
       if (nowDateTime.isBefore(rdvHeureFin)) {
-        return res
-          .status(400)
-          .json({
-            message: `L'heure actuelle est antérieure à la fin du rendez-vous.`,
-          });
+        return res.status(400).json({
+          message: `L'heure actuelle est antérieure à la fin du rendez-vous.`,
+        });
       }
     }
     if (isNaN(Note) || Note < 0 || Note > 5) {
-      return res
-        .status(400)
-        .json({
-          message: 'La notation doit être un nombre décimal entre 0 et 5.',
-        });
+      return res.status(400).json({
+        message: 'La notation doit être un nombre décimal entre 0 et 5.',
+      });
     }
     const result = await models.Evaluation.create(evaluation);
     return res.status(201).json({
@@ -344,12 +328,9 @@ async function creerEvaluation(req, res) {
       "Une erreur s'est produite lors de la création de l'évaluation :",
       error
     );
-    return res
-      .status(500)
-      .json({
-        message:
-          "Une erreur s'est produite lors du traitement de votre demande.",
-      });
+    return res.status(500).json({
+      message: "Une erreur s'est produite lors du traitement de votre demande.",
+    });
   }
 }
 
@@ -432,11 +413,9 @@ async function lancerdemande(req, res) {
       await client.save();
     }
     if (!prestation) {
-      return res
-        .status(404)
-        .json({
-          message: `La prestation avec le nom '${nomPrestation}' n'existe pas.`,
-        });
+      return res.status(404).json({
+        message: `La prestation avec le nom '${nomPrestation}' n'existe pas.`,
+      });
     }
 
     // Créer la demande avec le nom fourni
@@ -460,11 +439,9 @@ async function lancerdemande(req, res) {
 
     // Vérifier si des couples sont associés à la prestation
     if (!artisansAssocies || artisansAssocies.length === 0) {
-      return res
-        .status(404)
-        .json({
-          message: `Aucun artisan n'est associé à la prestation '${nomPrestation}'.`,
-        });
+      return res.status(404).json({
+        message: `Aucun artisan n'est associé à la prestation '${nomPrestation}'.`,
+      });
     }
 
     const idsArtisansAssocies = artisansAssocies.map(
@@ -523,12 +500,9 @@ async function lancerdemande(req, res) {
       "Une erreur s'est produite lors de la création de la demande :",
       error
     );
-    return res
-      .status(500)
-      .json({
-        message:
-          "Une erreur s'est produite lors du traitement de votre demande.",
-      });
+    return res.status(500).json({
+      message: "Une erreur s'est produite lors du traitement de votre demande.",
+    });
   }
 }
 
@@ -660,12 +634,9 @@ async function creerRDV(req, res) {
     return res.status(201).json({ message: 'RDV créé avec succès', rdv });
   } catch (error) {
     console.error('Erreur lors de la création du RDV :', error);
-    return res
-      .status(500)
-      .json({
-        message:
-          "Une erreur s'est produite lors du traitement de votre demande.",
-      });
+    return res.status(500).json({
+      message: "Une erreur s'est produite lors du traitement de votre demande.",
+    });
   }
 }
 
@@ -688,20 +659,15 @@ async function confirmerRDV(req, res) {
 
     rdv.confirme = true;
     await rdv.save();
-    return res
-      .status(200)
-      .json({
-        message: `Le RDV avec l'ID ${rdvId} a été confirmé avec succès.`,
-        rdv,
-      });
+    return res.status(200).json({
+      message: `Le RDV avec l'ID ${rdvId} a été confirmé avec succès.`,
+      rdv,
+    });
   } catch (error) {
     console.error('Erreur lors de la confirmation du RDV :', error);
-    return res
-      .status(500)
-      .json({
-        message:
-          "Une erreur s'est produite lors du traitement de votre demande.",
-      });
+    return res.status(500).json({
+      message: "Une erreur s'est produite lors du traitement de votre demande.",
+    });
   }
 }
 
@@ -718,93 +684,20 @@ async function annulerRDV(req, res) {
 
     rdv.annule = true;
     await rdv.save();
-    return res
-      .status(200)
-      .json({
-        message: `Le RDV avec l'ID ${rdvId} a été annulé avec succès.`,
-        rdv,
-      });
+    return res.status(200).json({
+      message: `Le RDV avec l'ID ${rdvId} a été annulé avec succès.`,
+      rdv,
+    });
   } catch (error) {
     console.error("Erreur lors de l'annulation du RDV :", error);
-    return res
-      .status(500)
-      .json({
-        message:
-          "Une erreur s'est produite lors du traitement de votre demande.",
-      });
+    return res.status(500).json({
+      message: "Une erreur s'est produite lors du traitement de votre demande.",
+    });
   }
 }
 
 async function ActiviteEncours(req, res) {
-    const clientId = req.userId;
-
-    try {
-        const maintenant = new Date();
-
-        const demandes = await models.Demande.findAll({
-            where: { ClientId: clientId }
-        });
-
-        const demandeIds = demandes.map(demande => demande.id);
-
-        const rdvs = await models.RDV.findAll({
-            where: { DemandeId: demandeIds },
-            attributes: ['id', 'DemandeId', 'annule', 'DateFin', 'HeureFin']
-        });
-
-        const rendezVousEnCours = await Promise.all(rdvs.map(async (rdv) => {
-            const rdvDateFin = new Date(rdv.DateFin);
-            const rdvHeureFin = new Date(`${rdv.DateFin}T${rdv.HeureFin}`);
-        
-            if (rdv.annule) {
-                return null;
-            }
-        
-            if (rdvDateFin > maintenant || (rdvDateFin.getTime() === maintenant.getTime() && rdvHeureFin > maintenant)) {
-                const artisandemande = await models.ArtisanDemande.findOne({ where: { DemandeId: rdv.DemandeId } });
-                if (!artisandemande || !artisandemande.accepte || !artisandemande.confirme) {
-                    return null;
-                }
-                
-                return rdv;
-            } else {
-                return null;
-            }
-        }));
-        
-
-        const rendezVousDetails = await Promise.all(rendezVousEnCours.map(async (rdv) => {
-            if (!rdv) {
-                return null; 
-            }
-
-            const demande = await models.Demande.findByPk(rdv.DemandeId, {
-                attributes: ['id',
-                    [models.sequelize.literal("DATE_FORMAT(`Demande`.`createdAt`, '%Y-%m-%d')"), 'date'], 
-            [models.sequelize.literal("DATE_FORMAT(`Demande`.`createdAt`, '%H:%i:%s')"), 'heure'] 
-                ],
-                include: [
-                    {
-                        model: models.Prestation,
-                        attributes: ['nomPrestation', 'imagePrestation'] 
-                    }
-                ]
-            });
-            return { demande };
-        }));
-
-        const filteredRendezVousDetails = rendezVousDetails.filter(item => item !== null);
-
-        return res.status(200).json(filteredRendezVousDetails);
-    } catch (error) {
-        console.error('Une erreur s\'est produite lors de la récupération des rendez-vous en cours :', error);
-        return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
-    }
-}
-
-
-async function ActiviteTerminee(req, res) {
-  const clientId = req.params.id;
+  const clientId = req.userId;
 
   try {
     const maintenant = new Date();
@@ -830,9 +723,9 @@ async function ActiviteTerminee(req, res) {
         }
 
         if (
-          rdvDateFin < maintenant ||
+          rdvDateFin > maintenant ||
           (rdvDateFin.getTime() === maintenant.getTime() &&
-            rdvHeureFin < maintenant)
+            rdvHeureFin > maintenant)
         ) {
           const artisandemande = await models.ArtisanDemande.findOne({
             where: { DemandeId: rdv.DemandeId },
@@ -855,6 +748,113 @@ async function ActiviteTerminee(req, res) {
     const rendezVousDetails = await Promise.all(
       rendezVousEnCours.map(async (rdv) => {
         if (!rdv) {
+          return null;
+        }
+
+        const demande = await models.Demande.findByPk(rdv.DemandeId, {
+          attributes: [
+            'id',
+            [
+              models.sequelize.literal(
+                "DATE_FORMAT(`Demande`.`createdAt`, '%Y-%m-%d')"
+              ),
+              'date',
+            ],
+            [
+              models.sequelize.literal(
+                "DATE_FORMAT(`Demande`.`createdAt`, '%H:%i:%s')"
+              ),
+              'heure',
+            ],
+          ],
+          include: [
+            {
+              model: models.Prestation,
+              attributes: ['nomPrestation', 'imagePrestation'],
+            },
+          ],
+        });
+        return { demande };
+      })
+    );
+
+    const filteredRendezVousDetails = rendezVousDetails.filter(
+      (item) => item !== null
+    );
+
+    return res.status(200).json(filteredRendezVousDetails);
+  } catch (error) {
+    console.error(
+      "Une erreur s'est produite lors de la récupération des rendez-vous en cours :",
+      error
+    );
+    return res
+      .status(500)
+      .json({
+        message:
+          "Une erreur s'est produite lors du traitement de votre demande.",
+      });
+  }
+}
+
+async function ActiviteTerminee(req, res) {
+  const clientId = req.params.id;
+  console.log(clientId);
+  try {
+    const maintenant = new Date();
+
+    const demandes = await models.Demande.findAll({
+      where: { ClientId: clientId },
+    });
+
+    const demandeIds = demandes.map((demande) => demande.id);
+
+    const rdvs = await models.RDV.findAll({
+      where: { DemandeId: demandeIds },
+      attributes: ['id', 'DemandeId', 'annule', 'DateFin', 'HeureFin'],
+    });
+
+    const rendezVousEnCours = await Promise.all(
+      rdvs.map(async (rdv) => {
+        const rdvDateFin = new Date(rdv.DateFin);
+        const rdvHeureFin = new Date(`${rdv.DateFin}T${rdv.HeureFin}`);
+
+        if (rdv.annule) {
+          console.log('rdv.annule');
+          return null;
+        }
+
+        if (
+
+          rdvDateFin < maintenant ||
+          (rdvDateFin.getTime() === maintenant.getTime() &&
+            rdvHeureFin < maintenant)
+        ) {
+          console.log('rdvDateFin < maintenant');
+          const artisandemande = await models.ArtisanDemande.findOne({
+            where: { DemandeId: rdv.DemandeId },
+          });
+          if (
+            !artisandemande ||
+            !artisandemande.accepte ||
+            !artisandemande.confirme
+          ) {
+            console.log('!artisandemande');
+            return null;
+          }
+
+          return rdv;
+        } else {
+          console.log('rdvDateFin > maintenant');
+          return null;
+        }
+      })
+    );
+
+    const rendezVousDetails = await Promise.all(
+      rendezVousEnCours.map(async (rdv) => {
+        if (!rdv) {
+          console.log('rdvDateFin');
           return null;
         }
 
@@ -889,12 +889,9 @@ async function ActiviteTerminee(req, res) {
       "Une erreur s'est produite lors de la récupération des rendez-vous en cours :",
       error
     );
-    return res
-      .status(500)
-      .json({
-        message:
-          "Une erreur s'est produite lors du traitement de votre demande.",
-      });
+    return res.status(500).json({
+      message: "Une erreur s'est produite lors du traitement de votre demande.",
+    });
   }
 }
 
@@ -919,13 +916,11 @@ function AfficherPrestations(req, res) {
       }
     })
     .catch((error) => {
-      res
-        .status(500)
-        .json({
-          message:
-            "Une erreur s'est produite lors de la récupération des prestations.",
-          error: error,
-        });
+      res.status(500).json({
+        message:
+          "Une erreur s'est produite lors de la récupération des prestations.",
+        error: error,
+      });
     });
 }
 
@@ -961,11 +956,9 @@ async function DetailsDemandeConfirmee(req, res) {
     });
 
     if (!artisanDemande) {
-      return res
-        .status(404)
-        .json({
-          message: `Aucun artisan n'est associé à la demande de RDV avec l'ID ${rdvId}.`,
-        });
+      return res.status(404).json({
+        message: `Aucun artisan n'est associé à la demande de RDV avec l'ID ${rdvId}.`,
+      });
     }
 
     const artisan = await models.Artisan.findByPk(artisanDemande.ArtisanId, {
@@ -989,12 +982,9 @@ async function DetailsDemandeConfirmee(req, res) {
       'Erreur lors de la récupération des détails de la demande confirmée :',
       error
     );
-    return res
-      .status(500)
-      .json({
-        message:
-          "Une erreur s'est produite lors du traitement de votre demande.",
-      });
+    return res.status(500).json({
+      message: "Une erreur s'est produite lors du traitement de votre demande.",
+    });
   }
 }
 async function DetailsRDVTermine(req, res) {
@@ -1033,11 +1023,9 @@ async function DetailsRDVTermine(req, res) {
       (rdvDateFin.getTime() === now.getTime() &&
         rdvHeureFin.getTime() > now.getTime())
     ) {
-      return res
-        .status(400)
-        .json({
-          message: `Le RDV avec l'ID ${rdvId} n'est pas encore terminé.`,
-        });
+      return res.status(400).json({
+        message: `Le RDV avec l'ID ${rdvId} n'est pas encore terminé.`,
+      });
     }
 
     const artisanDemande = await models.ArtisanDemande.findOne({
@@ -1045,11 +1033,9 @@ async function DetailsRDVTermine(req, res) {
     });
 
     if (!artisanDemande) {
-      return res
-        .status(404)
-        .json({
-          message: `Aucun artisan n'est associé à la demande de RDV avec l'ID ${rdvId}.`,
-        });
+      return res.status(404).json({
+        message: `Aucun artisan n'est associé à la demande de RDV avec l'ID ${rdvId}.`,
+      });
     }
 
     const artisan = await models.Artisan.findByPk(artisanDemande.ArtisanId, {
@@ -1077,12 +1063,9 @@ async function DetailsRDVTermine(req, res) {
       'Erreur lors de la récupération des détails du RDV terminé :',
       error
     );
-    return res
-      .status(500)
-      .json({
-        message:
-          "Une erreur s'est produite lors du traitement de votre demande.",
-      });
+    return res.status(500).json({
+      message: "Une erreur s'est produite lors du traitement de votre demande.",
+    });
   }
 }
 

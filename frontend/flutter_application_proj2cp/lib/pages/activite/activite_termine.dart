@@ -64,16 +64,20 @@ class _DemandesTerminesState extends State<DemandesTermines> {
 
         final List<Demande?> demandes = data.map((item) {
           // Assuming the response structure includes direct keys like 'Prestation' and 'RDV'
+          //final item = data[index];
           final demande = item['demande'];
-          final rdv = item['RDV'];
+          print('demande: $demande');
+          final rdv = item['rdv'];
           print('RDV: $rdv');
           // Assuming there's an 'Artisan' key within the RDV object
-          final artisan = item['Artisan'];
+          final artisan = item['demande']['Artisans'];
           print('artisan: $artisan');
+          final prestation = item['demande']['Prestation'];
+          print('prestation: $prestation');
           return Demande(
-            name: demande['prestation']['NomPrestation'] as String,
+            name: demande['Prestation']['nomPrestation'] as String,
             orderTime: rdv['DateFin'] + ', ' + rdv['HeureFin'] as String,
-            demandeImage: demande['prestation']['imagePrestation'] as String,
+            demandeImage: demande['Prestation']['imagePrestation'] as String,
             artisan: Artisan(
               nomArtisan: artisan['NomArtisan'] as String,
               prenomArtisan: artisan['PrenomArtisan'] as String,
@@ -196,7 +200,7 @@ class _DemandesTerminesState extends State<DemandesTermines> {
                               ),
                               SizedBox(width: 3.0),
                               Text(
-                                '${demande.artisan.points.toStringAsFixed(1)}',
+                                '${demande.artisan.points}',
                                 style: GoogleFonts.poppins(
                                   textStyle: TextStyle(
                                     fontSize: 12,
