@@ -5,7 +5,7 @@ import 'package:flutter_application_proj2cp/pages/activite/activite_encours.dart
 import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
 
 class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({Key? key}) : super(key: key);
+  const BottomNavBar({super.key});
 
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
@@ -48,7 +48,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                     const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
                 decoration: BoxDecoration(
                   color: vertFonce,
-                  borderRadius: const BorderRadius.all(Radius.circular(27)),
+                  borderRadius: BorderRadius.all(Radius.circular(27)),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,

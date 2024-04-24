@@ -146,6 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               HomeHeader(),
               BarRecherche(),
+
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 30, 20, 5),
                 child: Align(
@@ -188,6 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   scrollDirection: Axis.horizontal,
                   padding: EdgeInsets.symmetric(horizontal: 15),
                   children: topPrestationWidgets,
+
                 ),
               ),
               Padding(
@@ -214,6 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(
                 height: 80,
+
               )
             ],
           ),

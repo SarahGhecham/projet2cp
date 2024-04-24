@@ -1,27 +1,95 @@
 // ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'dart:io';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as path;
 
-// Modèle de prestation
 class Prestation {
-  final String name;
-  final String description;
-  final String imageUrl;
-  final double price;
-  final Duration duration;
-
-  Prestation({
-    required this.name,
-    required this.description,
-    required this.imageUrl,
-    required this.price,
-    required this.duration,
+  final String nomPrestation;
+  final String materiel;
+  final String dureeMax;
+  final String dureeMin;
+  final int tarifId;
+  final int domaineId;
+  final bool ecologique;
+  final String imagePrestation;
+  final double? tarifJourMin;
+  final double? tarifJourMax;
+  const Prestation({
+    required this.nomPrestation,
+    required this.materiel,
+    required this.dureeMax,
+    required this.dureeMin,
+    required this.tarifId,
+    required this.domaineId,
+    required this.ecologique,
+    required this.imagePrestation,
+    required this.tarifJourMin,
+    required this.tarifJourMax,
   });
 }
 
-class PrestationPage extends StatelessWidget {
-  // Données fictives pour les prestations
-  final List<Prestation> prestations = [
+class PrestationPage extends StatefulWidget {
+  @override
+  _PrestationPageState createState() => _PrestationPageState();
+}
+
+class _PrestationPageState extends State<PrestationPage> {
+  List<Prestation> _prestations = []; // Initialize with empty list
+
+  Future<void> _getPrestations(int domaineId) async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+            'http://192.168.151.173:3000/client/AfficherPrestations/$domaineId'),
+      );
+
+      if (response.statusCode == 200) {
+        final prestationsJson = jsonDecode(response.body) as List;
+
+        final prestations = prestationsJson.map((prestationJson) {
+          // Default value if parsing fails
+          final tarifJourMin = double.tryParse(
+              prestationJson['Tarif']['TarifJourMin'].toString());
+          final tarifJourMax = double.tryParse(
+              prestationJson['Tarif']['TarifJourMax'].toString());
+
+          return Prestation(
+            nomPrestation: prestationJson['NomPrestation'] as String,
+            materiel: prestationJson['Matériel'] as String,
+            dureeMax: prestationJson['DuréeMax'] as String,
+            dureeMin: prestationJson['DuréeMin'] as String,
+            tarifId: prestationJson['TarifId'] as int,
+            domaineId: prestationJson['DomaineId'] as int,
+            ecologique: prestationJson['Ecologique'] as bool,
+            imagePrestation: prestationJson['imagePrestation'] as String,
+            tarifJourMin: tarifJourMin,
+            tarifJourMax: tarifJourMax,
+          );
+        }).toList();
+
+        setState(() {
+          _prestations = prestations; // Update the list in state
+        });
+      } else {
+        throw Exception(
+            'Failed to fetch prestations (Status code: ${response.statusCode})');
+      }
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getPrestations(1); // Assuming domaineId is available
+  }
+
+  /* [
     Prestation(
       name: 'Prestation 1',
       description: 'Description de la prestation 1',
@@ -44,10 +112,12 @@ class PrestationPage extends StatelessWidget {
       price: 90.0,
       duration: Duration(hours: 1),
     ),
-  ];
+  ];*/
 
   @override
   Widget build(BuildContext context) {
+    // Données fictives pour les prestations
+
     return Scaffold(
       body: Column(
         children: [
@@ -90,7 +160,7 @@ class PrestationPage extends StatelessWidget {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: prestations.length,
+              itemCount: _prestations.length,
               itemBuilder: (context, index) {
                 return Container(
                   height: 95,
@@ -112,7 +182,7 @@ class PrestationPage extends StatelessWidget {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(15),
                           child: Image.network(
-                            prestations[index].imageUrl,
+                            _prestations[index].imagePrestation,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -124,16 +194,16 @@ class PrestationPage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              prestations[index].name,
+                              _prestations[index].nomPrestation,
                               style: TextStyle(
                                 color: Color(0xff05564B),
                                 fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                                fontSize: 14,
                               ),
                             ),
                             SizedBox(height: 5),
                             Text(
-                              '${prestations[index].price} € ',
+                              '${_prestations[index].tarifJourMin}DA - ${_prestations[index].tarifJourMax}DA',
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
@@ -141,11 +211,11 @@ class PrestationPage extends StatelessWidget {
                             ),
                             SizedBox(height: 5),
                             Text(
-                              '${prestations[index].duration.inMinutes} min',
+                              '${_prestations[index].dureeMin} ~ ${_prestations[index].dureeMax} ',
                               style: TextStyle(
                                 fontSize: 14,
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ),

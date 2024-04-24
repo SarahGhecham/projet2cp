@@ -8,13 +8,13 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
-class LogInPage extends StatefulWidget {
-  const LogInPage({super.key});
+class LogInPageWeb extends StatefulWidget {
+  const LogInPageWeb({super.key});
   @override
-  State<LogInPage> createState() => _LogInPageState();
+  State<LogInPageWeb> createState() => _LogInPageState();
 }
 
-class _LogInPageState extends State<LogInPage> {
+class _LogInPageState extends State<LogInPageWeb> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -75,25 +75,25 @@ class _LogInPageState extends State<LogInPage> {
             children: <Widget>[
               const SizedBox(height: 100),
               SizedBox(
-                height: 100,
-                width: 300,
+                height: 200,
+                width: 350,
                 child: Image.asset("assets/logo1.png"),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
               Center(
                 child: Text(
                   "Connexion",
                   style: GoogleFonts.poppins(
                     color: const Color(0xFF05564B),
                     fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    fontSize: 20,
                   ),
                 ),
               ),
               const SizedBox(height: 50),
               Container(
-                width: 277,
-                height: 41,
+                width: 500,
+                height: 50,
                 decoration: BoxDecoration(
                   color: const Color(0xFFDCC8C5).withOpacity(0.22),
                   border: Border.all(
@@ -120,8 +120,8 @@ class _LogInPageState extends State<LogInPage> {
               ),
               const SizedBox(height: 40),
               Container(
-                width: 277,
-                height: 41,
+                width: 500,
+                height: 50,
                 decoration: BoxDecoration(
                   color: const Color(0xFFDCC8C5).withOpacity(0.22),
                   border: Border.all(
@@ -151,7 +151,7 @@ class _LogInPageState extends State<LogInPage> {
               ElevatedButton(
                 onPressed: _authenticateUser,
                 style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all<Size>(const Size(100, 37)),
+                  minimumSize: MaterialStateProperty.all<Size>(const Size(200, 50)),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),

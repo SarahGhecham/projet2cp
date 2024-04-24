@@ -279,6 +279,12 @@ async function lancerdemande(req, res) {
     const nomPrestation = req.body.nomPrestation;
     const urgente = req.body.urgente;
     const localisation=req.body.Localisation;
+    const fullUrl = req.headers.host + req.url;
+    console.log(nomPrestation);
+    // Récupérer uniquement la partie de l'hôte de l'URL
+    const host = req.headers.host.split(':')[0]; // Pour supprimer le port le cas échéant
+    
+    console.log('Hôte détecté :', host);
     
 
     // Vérifier si clientId est défini
@@ -342,6 +348,7 @@ async function lancerdemande(req, res) {
             const artisan = await models.Artisan.findByPk(artisanId);
             if (artisan && (artisan.Disponibilite||!urgente)) {
                 const AdresseArtisan = artisan.AdresseArtisan;
+                const AdresseArtisan = "ESI,oued smar";
                 console.log(localisation);
                 const clientCoords = await geocode(localisation);
                 const artisanCoords = await geocode(AdresseArtisan);
@@ -463,6 +470,10 @@ async function creerRDV(req,demandeId) {
     const dateDebutString = req.body.dateDebut;
     const heureDebutString = req.body.heureDebut;
     const dureeString = req.body.duree; // La durée entrée par le client est en heures
+
+    const dateArray = dateDebutString.split('"');
+    //const extractedDate = dateArray[3];
+    console.log(dateDebutString);
 
     // Convertir la chaîne de caractères de la date en un objet Date valide
     const dateDebut = new Date(dateDebutString);

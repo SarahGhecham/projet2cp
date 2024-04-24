@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     ClientId: DataTypes.INTEGER,
     Urgente:DataTypes.BOOLEAN,
     Localisation: DataTypes.STRING,
+
   }, {
     sequelize,
     modelName: 'Demande',
