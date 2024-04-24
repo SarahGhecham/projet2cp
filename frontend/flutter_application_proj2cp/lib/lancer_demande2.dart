@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:table_calendar/table_calendar.dart';
-
+import 'package:flutter_application_proj2cp/lancer_demande3.dart';
 
 class Lancerdemande2Page extends StatefulWidget {
-  const Lancerdemande2Page({super.key});
+  final int hour;
+  final int min;
+  final bool urgent;
+
+  const Lancerdemande2Page({Key? key, required this.hour, required this.min, required this.urgent}) : super(key: key);
 
   @override
   State<Lancerdemande2Page> createState() => _Lancerdemande2PageState();
@@ -14,14 +18,32 @@ class Lancerdemande2Page extends StatefulWidget {
 class _Lancerdemande2PageState extends State<Lancerdemande2Page> {
 
   var nomprest = "Lavage de sol";
+  String dateOnly="";
   final _heuredebutController = TextEditingController();
+  
   void _oneDaySelected(DateTime day, DateTime focusedDay)
   {
     setState(() {
       today = day;
+      //String dateString = day.toString();
+      //DateTime dateTime = DateTime.parse(dateString);
+      dateOnly = "${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
+
+    print(dateOnly); // Output: 2024-04-04
     });
   }
   DateTime today = DateTime.now();
+  void _navigateToNextPage(BuildContext context) {
+    String heureMinutes = _heuredebutController.text;
+    if (heureMinutes.isEmpty) {
+    heureMinutes = "10:00"; // Valeur par défaut si aucun texte n'est saisi
+     }
+    Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => Lancerdemande3Page(hour: widget.hour, min: widget.min,urgent: widget.urgent,heureMinutes:heureMinutes,jour:dateOnly),
+    ),
+  );}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,7 +168,7 @@ class _Lancerdemande2PageState extends State<Lancerdemande2Page> {
             const SizedBox(height: 80),
             Center(
               child: ElevatedButton(
-                onPressed: (){},
+                onPressed: () => _navigateToNextPage(context),
                 style: ButtonStyle(
                   minimumSize: MaterialStateProperty.all<Size>(const Size(315, 55)),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(

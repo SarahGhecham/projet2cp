@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_application_proj2cp/lancer_demande2.dart';
 
 
 class Lancerdemande1Page extends StatefulWidget {
@@ -15,7 +16,15 @@ class _Lancerdemande1PageState extends State<Lancerdemande1Page> {
   var nomprest = "Lavage de sol";
   var hour = 1;
   var min = 30;
-
+  var urgent = false;
+  void _navigateToNextPage(BuildContext context) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => Lancerdemande2Page(hour: hour, min: min,urgent: urgent),
+    ),
+  );
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -158,7 +167,11 @@ class _Lancerdemande1PageState extends State<Lancerdemande1Page> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                onPressed: (){},
+                onPressed: (){
+                  setState(() {
+                    urgent = false; // La demande est considérée comme urgente
+                     });
+                },
                 style: ButtonStyle(
                   minimumSize: MaterialStateProperty.all<Size>(const Size(132, 69)),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -180,7 +193,11 @@ class _Lancerdemande1PageState extends State<Lancerdemande1Page> {
               ),
               const SizedBox(width: 50),
               ElevatedButton(
-                onPressed: (){},
+                onPressed: (){
+                  setState(() {
+                    urgent = true; // La demande est considérée comme urgente
+                     });
+                },
                 style: ButtonStyle(
                   minimumSize: MaterialStateProperty.all<Size>(const Size(132, 69)),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -205,7 +222,7 @@ class _Lancerdemande1PageState extends State<Lancerdemande1Page> {
           const SizedBox(height: 90),
           Center(
             child: ElevatedButton(
-              onPressed: (){},
+              onPressed: () => _navigateToNextPage(context),
               style: ButtonStyle(
                 minimumSize: MaterialStateProperty.all<Size>(const Size(315, 55)),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(

@@ -279,7 +279,7 @@ async function lancerdemande(req, res) {
     const urgente = req.body.urgente;
     const localisation=req.body.Localisation;
     const fullUrl = req.headers.host + req.url;
-    
+    console.log(nomPrestation);
     // Récupérer uniquement la partie de l'hôte de l'URL
     const host = req.headers.host.split(':')[0]; // Pour supprimer le port le cas échéant
     
@@ -468,6 +468,10 @@ async function creerRDV(req,demandeId) {
     const dateDebutString = req.body.dateDebut;
     const heureDebutString = req.body.heureDebut;
     const dureeString = req.body.duree; // La durée entrée par le client est en heures
+
+    const dateArray = dateDebutString.split('"');
+    //const extractedDate = dateArray[3];
+    console.log(dateDebutString);
 
     // Convertir la chaîne de caractères de la date en un objet Date valide
     const dateDebut = new Date(dateDebutString);
