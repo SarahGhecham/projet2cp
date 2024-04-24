@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Mademande extends StatefulWidget {
   @override
@@ -10,7 +12,7 @@ class Mademande extends StatefulWidget {
 
 class _MademandePageState extends State<Mademande> {
   List<dynamic> artisans = [];
-
+  bool ecologique = true;
   String description = '';
   String localisation = '';
   String imagePrestation = '';
@@ -18,6 +20,16 @@ class _MademandePageState extends State<Mademande> {
   String Heure = '';
   String dateDebut = '';
   DateTime dateDebut1 = DateTime(0, 0, 0, 0, 0);
+  bool urgente = true;
+  var nomArtisan = "Karim Mouloud";
+  var note = "4.7";
+  var telephone = "0771253705";
+  var date = "merc 13 jan";
+  var heure = "13h";
+  var adresse = "Cite 289 logements Jijel N113";
+  var prix = "1000da";
+  var prestation = "Peinture de mûrs";
+  var duree = "1h-2h";
   @override
   void initState() {
     super.initState();
@@ -92,95 +104,198 @@ class _MademandePageState extends State<Mademande> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(left: 35.0, top: 15.0),
-                        width: 218,
-                        height: 59,
-                        child: Opacity(
-                          opacity: 0.8,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Color(0xFFD6E3DC),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            padding: EdgeInsets.all(8),
-                            child: Column(
+                  Center(
+                    child: Container(
+                      height: 220, // Adjust total height as needed
+                      width: 315,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD6E3DC),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.access_time,
-                                      color: Color(0xff05564B),
-                                      size: 16,
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: RichText(
+                                    text: TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: "Peinture de Murs et Plafonds",
+                                          style: GoogleFonts.lato(
+                                            color: const Color(0xFF05564B),
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        if (ecologique) ...[
+                                          WidgetSpan(
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 6),
+                                              child: SvgPicture.asset(
+                                                'assets/leaf.svg',
+                                                color: const Color(0xff05564B)
+                                                    .withOpacity(0.6),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ],
                                     ),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      "$Date $Heure",
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
-                                        fontFamily: 'Lato',
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
-                                SizedBox(height: 2),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.place,
-                                      color: Color(0xff05564B),
-                                      size: 16,
+                                const SizedBox(width: 20),
+                                Container(
+                                  width: 92,
+                                  height: 58,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    color: Colors.grey[200],
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: Image.asset(
+                                      'assets/prestation_peinture.jpg',
+                                      fit: BoxFit.cover,
                                     ),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      "${localisation ?? 'null'} ",
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
-                                        fontFamily: 'Lato',
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ],
                             ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 15),
-                      Container(
-                        margin: EdgeInsets.only(top: 15.0),
-                        width: 92,
-                        height: 58,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.white,
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: imagePrestation != null
-                              ? Image.network(
-                                  imagePrestation,
-                                  fit: BoxFit.cover,
-                                )
-                              : Container(
-                                  color: Colors.grey,
-                                  child: Icon(
-                                    Icons.image,
-                                    size: 40,
-                                    color: Colors.white,
-                                  ),
+                            SizedBox(height: 00), // Adjust spacing as needed
+                            Container(
+                              height: 140,
+                              width: 300,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(0.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        SizedBox(width: 10),
+                                        SizedBox(
+                                          width: 16,
+                                          height: 16,
+                                          child: SvgPicture.asset(
+                                            "assets/calendar.svg",
+                                            color: Color(0xff05564B)
+                                                .withOpacity(1),
+                                          ),
+                                        ),
+                                        SizedBox(width: 15),
+                                        Text(
+                                          date,
+                                          style: GoogleFonts.lato(
+                                            fontSize: 13, // Adjusted font size
+                                          ),
+                                        ),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          heure,
+                                          style: GoogleFonts.lato(
+                                            color: Color(0xFF777777),
+                                            fontSize: 13, // Adjusted font size
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 10),
+                                    Row(
+                                      children: [
+                                        SizedBox(width: 9),
+                                        SizedBox(
+                                          width: 16,
+                                          height: 16,
+                                          child: SvgPicture.asset(
+                                              "assets/clock.svg"),
+                                        ),
+                                        SizedBox(width: 15),
+                                        Text(
+                                          duree,
+                                          style: GoogleFonts.lato(
+                                            fontSize: 13, // Adjusted font size
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 10),
+                                    Row(
+                                      children: [
+                                        SizedBox(width: 9),
+                                        SizedBox(
+                                          width: 16,
+                                          height: 16,
+                                          child: SvgPicture.asset(
+                                              "assets/pin_light.svg"),
+                                        ),
+                                        SizedBox(width: 14),
+                                        Text(
+                                          adresse,
+                                          style: GoogleFonts.lato(
+                                            fontSize: 13, // Adjusted font size
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 10),
+                                    Row(
+                                      children: [
+                                        SizedBox(width: 9),
+                                        SizedBox(
+                                          width: 16,
+                                          height: 16,
+                                          child: SvgPicture.asset(
+                                              "assets/money.svg"),
+                                        ),
+                                        SizedBox(width: 13),
+                                        Text(
+                                          prix,
+                                          style: GoogleFonts.lato(
+                                            fontSize: 13, // Adjusted font size
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 10),
+                                    Row(
+                                      children: [
+                                        SizedBox(width: 10),
+                                        SizedBox(
+                                          width: 16,
+                                          height: 16,
+                                          child: SvgPicture.asset(
+                                            "assets/urgent.svg",
+                                            color: Color(0xff05564B)
+                                                .withOpacity(1),
+                                          ),
+                                        ),
+                                        SizedBox(width: 15),
+                                        Text(
+                                          urgente ? "Urgente" : "Pas urgente",
+                                          style: GoogleFonts.lato(
+                                            fontSize: 13, // Adjusted font size
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
                   SizedBox(height: 10),
                   Padding(
