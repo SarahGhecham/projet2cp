@@ -27,14 +27,13 @@ class _MademandePageState extends State<Mademande> {
   Future<void> fetchArtisansData() async {
     int demandeId = 36;
     final String apiUrl =
-        'http://192.168.100.7:3000/client/demandes/$demandeId/artisans';
+        'http://192.168.151.173:3000/client/demandes/$demandeId/artisans';
 
     try {
       final response = await http.get(Uri.parse(apiUrl));
 
       if (response.statusCode == 200) {
         Map<String, dynamic> responseData = json.decode(response.body);
-        print("ok");
 
         setState(() {
           artisans = responseData['artisans'];
@@ -422,4 +421,3 @@ class _MademandePageState extends State<Mademande> {
     );
   }
 }
-
