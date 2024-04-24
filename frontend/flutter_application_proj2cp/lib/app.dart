@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:flutter_application_proj2cp/pages/ajouter_domaine.dart';
 import 'package:flutter_application_proj2cp/pages/connexion.dart';
+import 'package:flutter_application_proj2cp/pages/connexionweb.dart';
 import 'package:flutter_application_proj2cp/pages/entree/pagesentree.dart';
 import 'package:flutter_application_proj2cp/pages/profile_screen.dart';
 import 'package:flutter_application_proj2cp/pages/profile_screen.dart';
@@ -10,7 +11,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:flutter_application_proj2cp/widgets/bottom_nav_bar.dart';
 import 'package:flutter_application_proj2cp/lancer_demande3.dart';
+import 'package:flutter_application_proj2cp/lancer_demande3Web.dart';
 import 'package:flutter_application_proj2cp/demande_confirmé.dart';
+import 'package:flutter_application_proj2cp/lancer_demande1.dart';
+import 'package:flutter_application_proj2cp/lancer_demande1Web.dart';
+import 'package:flutter_application_proj2cp/pages/mademande.dart';
+
 
 
 
@@ -32,7 +38,7 @@ class App extends StatelessWidget {
           /*theme: ThemeData(
             iconTheme: const IconThemeData(color: vertClair),
           ),*/
-          home: HomeScreen(),
+          home: Lancerdemande3Page(),
         );
       },
 
