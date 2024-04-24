@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/Affichermonprofil/:id',artisanController.AfficherProfil)
 router.patch('/updateartisan',auth(),artisanController.updateartisan);
 router.post('/accepterRDV',auth(),artisanController.accepterRDV);
-router.post('/annulerRDV',auth(),artisanController.annulerRDV);
+router.post('/refuserRDV',auth(),artisanController.refuserRDV);
 //router.get('/HistoriqueInterventions',auth(),artisanController.HistoriqueInterventions);
 router.post('/test',artisanController.associerDemandeArtisan);
 //router.get('/AfficherEvaluations',auth(),artisanController.AfficherEvaluations);

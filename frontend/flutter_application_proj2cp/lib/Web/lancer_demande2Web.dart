@@ -2,37 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:flutter_application_proj2cp/lancer_demande3.dart';
+import 'package:flutter_application_proj2cp/Web/lancer_demande3Web.dart';
 
-class Lancerdemande2Page extends StatefulWidget {
+class Lancerdemande2PageWeb extends StatefulWidget {
   final int hour;
   final int min;
   final bool urgent;
 
-  const Lancerdemande2Page({Key? key, required this.hour, required this.min, required this.urgent}) : super(key: key);
-
+  const Lancerdemande2PageWeb({Key? key, required this.hour, required this.min, required this.urgent}) : super(key: key);
   @override
-  State<Lancerdemande2Page> createState() => _Lancerdemande2PageState();
+  State<Lancerdemande2PageWeb> createState() => _Lancerdemande2PageState();
 }
 
-class _Lancerdemande2PageState extends State<Lancerdemande2Page> {
 
+class _Lancerdemande2PageState extends State<Lancerdemande2PageWeb> {
   var nomprest = "Lavage de sol";
-  String dateOnly="";
   final _heuredebutController = TextEditingController();
   
-  void _oneDaySelected(DateTime day, DateTime focusedDay)
-  {
+   late DateTime selectedDay; // Variable pour stocker le jour sélectionné
+  void _oneDaySelected(DateTime day, DateTime focusedDay) {
     setState(() {
       today = day;
-      //String dateString = day.toString();
-      //DateTime dateTime = DateTime.parse(dateString);
-      dateOnly = "${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
-
-    print(dateOnly); // Output: 2024-04-04
+      print("Jour sélectionné : $today"); 
     });
   }
+
   DateTime today = DateTime.now();
+
   void _navigateToNextPage(BuildContext context) {
     String heureMinutes = _heuredebutController.text;
     if (heureMinutes.isEmpty) {
@@ -41,9 +37,15 @@ class _Lancerdemande2PageState extends State<Lancerdemande2Page> {
     Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => Lancerdemande3Page(hour: widget.hour, min: widget.min,urgent: widget.urgent,heureMinutes:heureMinutes,jour:dateOnly),
+      builder: (context) => Lancerdemande3PageWeb(hour: widget.hour, min: widget.min,urgent: widget.urgent,heureMinutes:heureMinutes,jour:today),
     ),
-  );}
+  );
+  }
+
+ 
+
+  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,15 +55,8 @@ class _Lancerdemande2PageState extends State<Lancerdemande2Page> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(height:180),
-            SizedBox(
-              height: 18,
-              width: 25,
-              child: SvgPicture.asset("assets/fleche.svg"),
-            ),
-            const SizedBox(width: 50),
             Container(
-              width: 200,
+              width: 800,
               height: 11,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
@@ -73,12 +68,6 @@ class _Lancerdemande2PageState extends State<Lancerdemande2Page> {
                 valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF05564B)),
               ),
             ),
-            const SizedBox(width: 50),
-            SizedBox(
-              height: 16,
-              width: 20,
-              child: SvgPicture.asset("assets/cancel.svg"),
-            ),
           ],
         ),
       ),
@@ -86,26 +75,33 @@ class _Lancerdemande2PageState extends State<Lancerdemande2Page> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 50),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: Text(
-                nomprest, style: GoogleFonts.poppins(fontSize :18),
+            const SizedBox(height: 30),
+            Align(
+              alignment: Alignment.center,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 50),
+                child: Text(
+                  nomprest,
+                  style: GoogleFonts.poppins(fontSize: 18),
+                ),
               ),
             ),
-            const SizedBox(height: 50),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: Text(
-                "Quelle heure vous convient?",
-                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
+            const SizedBox(height: 30),
+            Align(
+              alignment: Alignment.center,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 500, vertical: 0),
+                child: Text(
+                  "Quelle heure vous convient?",
+                  style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
               ),
             ),
-            const SizedBox(height: 60),
+            const SizedBox(height: 30),
             Center(
               child: Container(
-                height: 78,
-                width: 132,
+                height: 80,
+                width: 140,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: const Color(0xFFDCC8C5),
@@ -125,24 +121,28 @@ class _Lancerdemande2PageState extends State<Lancerdemande2Page> {
                 ),
               ),
             ),
-            const SizedBox(height: 80),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: Text(
-                "Quel jour vous convient?",
-                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
+            const SizedBox(height: 30),
+            Align(
+              alignment: Alignment.center,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 510),
+                child: Text(
+                  "Quel jour vous convient?",
+                  style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
+                ),
               ),
             ),
-            const SizedBox(height: 60),
+            const SizedBox(height: 30),
             Center(
               child: Container(
-                height: 400,
-                width: 335,
+                height: 370,
+                width: 345,
                 decoration: BoxDecoration(
                   color: const Color(0xFFD6E3DC),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: TableCalendar(
+                  
                   locale: 'en_US',
                   calendarStyle: CalendarStyle(
                     defaultTextStyle: GoogleFonts.poppins(fontSize: 16, color: Colors.black,),
@@ -162,15 +162,16 @@ class _Lancerdemande2PageState extends State<Lancerdemande2Page> {
                   firstDay: DateTime.utc(2010, 10, 16),
                   lastDay: DateTime(2030, 3, 14),
                   onDaySelected: _oneDaySelected,
+                  
                 ),
               ),
             ),
-            const SizedBox(height: 80),
+            const SizedBox(height: 50),
             Center(
               child: ElevatedButton(
                 onPressed: () => _navigateToNextPage(context),
                 style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all<Size>(const Size(315, 55)),
+                  minimumSize: MaterialStateProperty.all<Size>(const Size(400, 55)),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -184,7 +185,7 @@ class _Lancerdemande2PageState extends State<Lancerdemande2Page> {
                   style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 20,
+                    fontSize: 25,
                   ),
                 ),
               ),
