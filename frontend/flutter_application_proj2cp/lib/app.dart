@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:flutter_application_proj2cp/pages/activite/activite_client.dart';
 import 'package:flutter_application_proj2cp/pages/activite/activite_termine.dart';
+import 'package:flutter_application_proj2cp/pages/afficher_prestation.dart';
 import 'package:flutter_application_proj2cp/pages/ajouter_domaine.dart';
 import 'package:flutter_application_proj2cp/pages/connexion.dart';
 import 'package:flutter_application_proj2cp/pages/entree/pagesentree.dart';
 import 'package:flutter_application_proj2cp/pages/inscription.dart';
+import 'package:flutter_application_proj2cp/pages/mademande.dart';
 import 'package:flutter_application_proj2cp/pages/profile_screen.dart';
 import 'package:flutter_application_proj2cp/pages/profile_screen.dart';
 import 'package:flutter_application_proj2cp/widgets/bottom_nav_bar.dart';
@@ -33,7 +35,7 @@ class App extends StatelessWidget {
           /*theme: ThemeData(
             iconTheme: const IconThemeData(color: vertClair),
           ),*/
-          home: DemandesTermines(),
+          home: (),
         );
       },
 
