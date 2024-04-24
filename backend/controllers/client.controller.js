@@ -1303,7 +1303,7 @@ module.exports = {
     AfficherArtisan:AfficherArtisan,
     creerEvaluation:creerEvaluation,
     test,
-    Activiteterminee,
+    ActiviteTerminee,
     ActiviteEncours,
     AfficherPrestations,
     AfficherProfil,
