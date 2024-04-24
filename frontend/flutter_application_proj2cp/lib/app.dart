@@ -22,6 +22,7 @@ import 'package:flutter_application_proj2cp/lancer_demande1.dart';
 import 'package:flutter_application_proj2cp/Web/lancer_demande1Web.dart';
 import 'package:flutter_application_proj2cp/pages/mademande.dart';
 import 'package:flutter_application_proj2cp/details_prestation.dart';
+import 'package:flutter_application_proj2cp/rendez-vous_terminée.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -42,12 +43,8 @@ class App extends StatelessWidget {
           /*theme: ThemeData(
             iconTheme: const IconThemeData(color: vertClair),
           ),*/
-<<<<<<< HEAD
 
-          home: Profile(),
-=======
-          home: Mademande(),
->>>>>>> f54aabfa3589d5917ef4f94a69c2ec204da97cb3
+          home: RDV_confirmePage(),
         );
       },
 
