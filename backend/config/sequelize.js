@@ -2,7 +2,7 @@
 
 const { Sequelize } = require('sequelize');
 
-const sequelize = new Sequelize('datab', 'root', 'root', {
+const sequelize = new Sequelize('app', 'root', 'root', {
   host: 'localhost',
   dialect: 'mysql',
   // Other configuration options
