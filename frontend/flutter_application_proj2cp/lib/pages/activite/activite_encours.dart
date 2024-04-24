@@ -43,35 +43,43 @@ class _DemandesEnCoursState extends State<DemandesEnCours> {
 
   Future<void> fetchDemandesEnCours() async {
     try {
-      //final prefs = await SharedPreferences.getInstance();
-      //final token = prefs.getString('token') ?? '';
       final response = await http.get(
         Uri.parse('http://10.0.2.2:3000/client/AfficherActiviteEncours/3'),
       );
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
-        //print('Fetched data: $data');
-        final List<Demande?> demandes = data.map((item) {
+        final List<Demande?> demandes = [];
+
+        for (var item in data) {
           final rdv = item['rdv'];
           final demande = item['demande'];
-         // print('RDV: $rdv');
-          //print('Demande: $demande');
-          if (rdv['accepte'] && !rdv['annule']) {
-            // Filter based on accepte and not annulé
-            return Demande(
-              name: demande['Prestation']['NomPrestation'] as String,
-              orderTime: rdv['DateFin'] + ', ' + rdv['HeureFin'] as String,
-              demandeImage: demande['Prestation']['imagePrestation'] as String,
-              status: rdv['accepte'] as bool,
-            );
-          } else {
-            return null; // Return null for items that don't meet the criteria
+
+          if (rdv != null && demande != null) {
+            final String name = demande['Prestation']['nomPrestation'] ??
+                ''; // Assurez-vous d'avoir une valeur par défaut
+            final String dateFin = demande['date'] ??
+                ''; // Assurez-vous d'avoir une valeur par défaut
+            final String heureFin = demande['heure'] ??
+                ''; // Assurez-vous d'avoir une valeur par défaut
+            final String imagePrestation = demande['Prestation']
+                    ['imagePrestation'] ??
+                ''; // Assurez-vous d'avoir une valeur par défaut
+            final bool accepte = demande['accepte'] ??
+                false; // Assurez-vous d'avoir une valeur par défaut
+            print('name: $name');
+            demandes.add(Demande(
+              name: name,
+              orderTime: '$dateFin, $heureFin',
+              demandeImage: imagePrestation,
+              status: accepte,
+            ));
           }
-        }).toList();
+        }
 
         setState(() {
           demandesEnCours = demandes;
+          print('demandes: $demandesEnCours');
         });
       } else {
         print('Failed to fetch demandes en cours: ${response.statusCode}');
@@ -88,93 +96,83 @@ class _DemandesEnCoursState extends State<DemandesEnCours> {
         itemCount: demandesEnCours.length,
         itemBuilder: (context, index) {
           final demande = demandesEnCours[index];
-          if (demande != null) {
-            // Check if demande is not null
-            String iconAsset;
-            if (demande.status) {
-              // Use status directly as it's already a bool
-              iconAsset = 'assets/icons/acceptee.png';
-            } else {
-              iconAsset = 'assets/icons/confirmee.png';
-            }
+          String iconAsset = demande?.status ?? false
+              ? 'assets/icons/acceptee.png'
+              : 'assets/icons/confirmee.png';
 
-            return Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: creme, width: 1),
-                ),
+          return Container(
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(color: creme, width: 1),
               ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Stack(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 65,
-                            height: 65,
-                            decoration: BoxDecoration(
-                              color: creme,
-                              borderRadius: BorderRadius.circular(10),
-                              image: DecorationImage(
-                                image: AssetImage(demande.demandeImage ?? ''),
-                                // Use ?. to access demandeImage conditionally
-                                fit: BoxFit.cover,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Stack(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 65,
+                          height: 65,
+                          decoration: BoxDecoration(
+                            color: creme,
+                            borderRadius: BorderRadius.circular(10),
+                            image: DecorationImage(
+                              image: AssetImage(demande?.demandeImage ??
+                                  ''), // Utilisation de ?. et ??
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 15.0),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                demande?.name ?? '', // Utilisation de ?. et ??
+                                style: GoogleFonts.poppins(
+                                  textStyle: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 15,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          SizedBox(width: 15.0),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  demande.name ?? '',
-                                  // Provide a default value if name is null
-                                  style: GoogleFonts.poppins(
-                                    textStyle: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 15,
-                                    ),
+                              SizedBox(height: 20),
+                              Text(
+                                demande?.orderTime ??
+                                    '', // Utilisation de ?. et ??
+                                style: GoogleFonts.poppins(
+                                  textStyle: TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 13,
                                   ),
                                 ),
-                                SizedBox(height: 20),
-                                Text(
-                                  demande.orderTime ?? '',
-                                  // Provide a default value if orderTime is null
-                                  style: GoogleFonts.poppins(
-                                    textStyle: TextStyle(
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    Positioned(
-                      right: 16.0, // Adjust the padding here
-                      top: 20,
-                      child: Image.asset(
-                        iconAsset,
-                        width: 20,
-                        height: 20,
-                      ), // Add the icon here
-                    ),
-                  ],
-                ),
+                  ),
+                  Positioned(
+                    right: 16.0, // Ajustez le padding ici
+                    top: 20,
+                    child: Image.asset(
+                      iconAsset,
+                      width: 20,
+                      height: 20,
+                    ), // Ajoutez l'icône ici
+                  ),
+                ],
               ),
-            );
-          } else {
-            return Container(); // Return an empty container for null items
-          }
+            ),
+          );
         },
       ),
     );

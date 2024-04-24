@@ -15,7 +15,10 @@ module.exports = (sequelize, DataTypes) => {
   }
   ArtisanDemande.init({
     DemandeId: DataTypes.INTEGER,
-    ArtisanId: DataTypes.INTEGER
+    ArtisanId: DataTypes.INTEGER,
+    accepte: DataTypes.BOOLEAN,
+    confirme: DataTypes.BOOLEAN,
+    refuse: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'ArtisanDemande',

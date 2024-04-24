@@ -736,7 +736,7 @@ async function annulerRDV(req, res) {
 }
 
 async function ActiviteEncours(req, res) {
-    const clientId = req.userId;
+    const clientId = req.params.id;
 
     try {
         const maintenant = new Date();
@@ -770,6 +770,8 @@ async function ActiviteEncours(req, res) {
             } else {
                 return null;
             }
+            
+
         }));
         
 
@@ -790,7 +792,7 @@ async function ActiviteEncours(req, res) {
                     }
                 ]
             });
-            return { demande };
+            return { demande, rdv };
         }));
 
         const filteredRendezVousDetails = rendezVousDetails.filter(item => item !== null);
@@ -875,7 +877,7 @@ async function ActiviteTerminee(req, res) {
 
         // Ajoutez les détails de l'artisan à la demande
         const artisan = demande.Artisan;
-        return { demande, rdv, artisan };
+        return { demande, rdv };
       })
     );
 
