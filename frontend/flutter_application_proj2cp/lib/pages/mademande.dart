@@ -32,7 +32,8 @@ class _MademandePageState extends State<Mademande> {
     'Content-Type': 'application/json', // Spécifiez le type de contenu JSON
   };
   Map<String, dynamic> data = {
-  'rdvId': 36,
+  'rdvId': 9,
+   'artisanId':1
   };
 
 String jsonData = jsonEncode(data);
