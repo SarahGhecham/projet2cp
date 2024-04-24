@@ -6,7 +6,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
-import 'package:flutter_typeahead/flutter_typeahead.dart';
+
 
 class Profile extends StatefulWidget {
   @override
