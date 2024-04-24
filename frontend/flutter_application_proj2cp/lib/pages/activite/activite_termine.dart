@@ -69,7 +69,7 @@ class _DemandesTerminesState extends State<DemandesTermines> {
 
         for (var item in data) {
           final demande = item['demande'];
-          final rdv = item['rdv'];
+          final rdv = item['rdvAffich'];
                   print('rdv: $rdv');
 
 

@@ -804,7 +804,6 @@ async function ActiviteEncours(req, res) {
     }
 }
 
-
 async function ActiviteTerminee(req, res) {
   const clientId = req.params.id;
 
@@ -822,9 +821,11 @@ async function ActiviteTerminee(req, res) {
       attributes: ['id', 'DemandeId', 'annule', 'DateFin', 'HeureFin'],
     });
 
-    const rendezVousEnCours = await Promise.all(
+    const rendezVousDetails = await Promise.all(
       rdvs.map(async (rdv) => {
-        const rdvDateFin = new Date(rdv.DateFin);
+        var rdvDateFin = new Date(rdv.DateFin);
+        const formattedDate = rdvDateFin.toISOString().split('T')[0].substring(0, 10); // Déplacez cette ligne ici pour la définir dans la portée appropriée
+        console.log(formattedDate)
         const rdvHeureFin = new Date(`${rdv.DateFin}T${rdv.HeureFin}`);
 
         if (rdv.annule) {
@@ -834,7 +835,7 @@ async function ActiviteTerminee(req, res) {
         if (
           rdvDateFin < maintenant ||
           (rdvDateFin.getTime() === maintenant.getTime() &&
-            rdvHeureFin < maintenant)
+          rdvHeureFin < maintenant)
         ) {
           const artisandemande = await models.ArtisanDemande.findOne({
             where: { DemandeId: rdv.DemandeId },
@@ -847,37 +848,33 @@ async function ActiviteTerminee(req, res) {
             return null;
           }
 
-          return rdv;
+          const rdvAffich = {
+            DateFin: formattedDate,
+            HeureFin: rdv.HeureFin
+          };
+
+          const demande = await models.Demande.findByPk(rdv.DemandeId, {
+            attributes: ['id'],
+            include: [
+              {
+                model: models.Prestation,
+                attributes: ['nomPrestation', 'imagePrestation'],
+              },
+              {
+                model: models.Artisan, // Inclure les détails de l'artisan
+                attributes: ['id', 'NomArtisan', 'PrenomArtisan', 'Note'],
+                through: { attributes: [] },
+              },
+            ],
+          });
+
+          // Ajoutez les détails de l'artisan à la demande
+          const artisan = demande.Artisan;
+
+          return { demande, rdvAffich };
         } else {
           return null;
         }
-      })
-    );
-
-    const rendezVousDetails = await Promise.all(
-      rendezVousEnCours.map(async (rdv) => {
-        if (!rdv) {
-          return null;
-        }
-
-        const demande = await models.Demande.findByPk(rdv.DemandeId, {
-          attributes: ['id'],
-          include: [
-            {
-              model: models.Prestation,
-              attributes: ['nomPrestation', 'imagePrestation'],
-            },
-            {
-              model: models.Artisan, // Inclure les détails de l'artisan
-              attributes: ['id', 'NomArtisan', 'PrenomArtisan', 'Note'],
-              through: { attributes: [] },
-            },
-          ],
-        });
-
-        // Ajoutez les détails de l'artisan à la demande
-        const artisan = demande.Artisan;
-        return { demande, rdv };
       })
     );
 
@@ -899,6 +896,7 @@ async function ActiviteTerminee(req, res) {
       });
   }
 }
+
 
 function AfficherPrestations(req, res) {
   const domaineId = req.body.domaineId; // Supposons que vous récupériez l'ID du domaine depuis les paramètres de l'URL
