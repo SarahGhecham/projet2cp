@@ -3,11 +3,12 @@ import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Domaine {
+  final int id;
   final String image;
   final String serviceName;
 
 
-  Domaine({required this.image, required this.serviceName});
+  Domaine({required this.id,required this.image, required this.serviceName});
 }
 
 class DomaineContainer extends StatefulWidget {

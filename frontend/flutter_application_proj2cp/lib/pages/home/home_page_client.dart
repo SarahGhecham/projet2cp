@@ -49,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
           domainWidgets = data
               .map((domaineJson) {
                 return Domaine(
+                  id: domaineJson['id'] as int,
                   image: domaineJson['imageDomaine'] != null
                       ? domaineJson['imageDomaine'] as String
                       : '', // Check for null before casting

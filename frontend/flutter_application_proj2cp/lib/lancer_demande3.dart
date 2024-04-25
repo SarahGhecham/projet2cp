@@ -264,8 +264,81 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
                  //print('Adresse: $_adresse');
                  //print('Description: $_description');
                  onPressed: () {
+                showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  backgroundColor: Color(0xFFD6E3DC),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  content: Container(
+                    width: 280.0, // Ajustez la largeur au besoin
+                    height: 290.0, // Ajustez la hauteur au besoin
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 20),
+                          child: Center(
+                            child: Text(
+                              "Voulez-vous vraiment lancer cette demande ?",
+                              style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 20),
+                            ),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {},
+                          style: ButtonStyle(
+                            minimumSize: MaterialStateProperty.all<Size>(const Size(115, 35)),
+                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFFFF8787)),
+                          ),
+                          child: Text(
+                            "Oui",
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: () {},
+                          style: ButtonStyle(
+                            minimumSize: MaterialStateProperty.all<Size>(const Size(115, 35)),
+                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF05564B)),
+                          ),
+                          child: Text(
+                            "Non",
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+
+                  
                 // Construire le corps de la requête
-                Map<String, dynamic> body = {
+                /*Map<String, dynamic> body = {
                   'nomPrestation': nomprest,
                   'description':'$_description',
                   'urgente': widget.urgent, // Ajoutez la valeur de l'urgence ici
@@ -293,7 +366,7 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
                 }).catchError((error) {
                   // Une erreur s'est produite lors de l'envoi de la requête
                   print('Erreur lors de lenvoi de la requête POST: $error');
-                });
+                });*/
                 
                 },
                 style: ButtonStyle(

@@ -57,21 +57,39 @@ async function getArtisansForDemand(req, res) {
             note: artisan.Note
         }));
 
+        // Récupérez l'ID du tarif à partir de la prestation
+        const tarifId = prestation.TarifId;
+
+        // Utilisez l'ID du tarif pour récupérer les détails du tarif
+        const tarif = await models.Tarif.findByPk(tarifId);
+
         // Combine additional demande, prestation, and rdv attributes with artisansData
         const combinedData = {
             demande: {
                 id: demande.id,
                 description: demande.Description,
-                localisation: demande.Localisation
+                localisation: demande.Localisation,
+                Urgente: demande.Urgente
             },
             prestation: {
                 id: prestation.id,
-                imagePrestation: prestation.imagePrestation
+                imagePrestation: prestation.imagePrestation,
+                nomPrestation : prestation.nomPrestation,
+                Ecologique: prestation.Ecologique,
+                DureeMin : prestation.DureeMin,
+                DureeMax : prestation.DureeMax,
             },
+            tarif: {
+                // Utilisez les détails du tarif récupéré à partir de la base de données
+                TarifJourMin: tarif ? tarif.TarifJourMin: null,
+                TarifJourMax: tarif ? tarif.TarifJourMax : null,
+            },
+            
             rdv: {
                 id: rdv.id,
                 dateDebut: rdv ? rdv.DateDebut : null,
-                heureDebut: rdv ? rdv.HeureDebut : null
+                heureDebut: rdv ? rdv.HeureDebut : null,
+               
             },
             artisans: artisansData
         };
