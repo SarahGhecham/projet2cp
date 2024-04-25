@@ -565,7 +565,7 @@ function AfficherArtisan(req,res){
 }
 
 function AfficherProfil(req,res){
-    const id=req.params.id;
+    const id=req.userId;
     models.Client.findByPk(id).then(result=>{
         if(result){
             const clientInfo = {
