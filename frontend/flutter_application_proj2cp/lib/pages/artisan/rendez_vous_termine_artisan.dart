@@ -3,21 +3,22 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class demande_confirmePage extends StatefulWidget {
-  const demande_confirmePage({super.key});
+class RDV_confirmeartisanPage extends StatefulWidget {
+  const RDV_confirmeartisanPage({super.key});
 
   @override
-  State<demande_confirmePage> createState() => _demande_confirmePageState();
+  State<RDV_confirmeartisanPage> createState() =>
+      _RDV_confirmeartisanPageState();
 }
 
-class _demande_confirmePageState extends State<demande_confirmePage> {
+class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
   var nomartisan = "Karim Mouloud";
   var note = "4.7";
   var telephone = "07 71253705";
   var date = "merc 13 jan";
   var heure = "13h";
   var adresse = "Cite 289 logements Jijel N113";
-  var prix = "500da - 1000da";
+  var prix = "1000da";
   var prestation = "Peinture de mûrs";
   bool ecologique = true;
   bool urgente = true;
@@ -134,7 +135,7 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 50.0),
             child: Text(
-              "Préstataire",
+              "Client",
               style: GoogleFonts.poppins(
                   fontSize: 16, fontWeight: FontWeight.w600),
             ),
@@ -179,14 +180,6 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
                             style: GoogleFonts.poppins(
                                 fontSize: 15, fontWeight: FontWeight.w600),
                           ),
-                          SizedBox(width: 20),
-                          SvgPicture.asset("assets/star.svg"),
-                          SizedBox(
-                              width: 5), // Adjust spacing between text and star
-                          Text(
-                            note,
-                            style: GoogleFonts.poppins(fontSize: 15),
-                          ),
                         ],
                       ),
                       SizedBox(height: 10),
@@ -219,7 +212,7 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
           SizedBox(height: 20),
           Center(
             child: Container(
-              height: 400,
+              height: 430,
               width: 300,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
@@ -272,12 +265,6 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
                           prix,
                           style: GoogleFonts.poppins(fontSize: 15),
                         ),
-                        SizedBox(width: 10),
-                        Text(
-                          "/h",
-                          style: GoogleFonts.poppins(
-                              color: Color(0xFF777777), fontSize: 15),
-                        ),
                       ],
                     ),
                     SizedBox(height: 20),
@@ -306,7 +293,19 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 50),
+                    SizedBox(height: 20),
+                    Row(
+                      children: [
+                        SizedBox(width: 10),
+                        SvgPicture.asset("assets/note.svg"),
+                        SizedBox(width: 15),
+                        Text(
+                          note,
+                          style: GoogleFonts.poppins(fontSize: 15),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 40),
                     Stack(
                       children: [
                         Positioned(
@@ -358,34 +357,6 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
                       ],
                     ),
                   ],
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Align(
-              alignment: Alignment.bottomRight,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ButtonStyle(
-                  minimumSize:
-                      MaterialStateProperty.all<Size>(const Size(100, 30)),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(const Color(0xFFE52E22)),
-                ),
-                child: Text(
-                  "Annuler",
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
                 ),
               ),
             ),

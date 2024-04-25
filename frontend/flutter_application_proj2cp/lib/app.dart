@@ -21,7 +21,7 @@ import 'package:flutter_application_proj2cp/Web/lancer_demande1Web.dart';
 import 'package:flutter_application_proj2cp/pages/mademande.dart';
 import 'package:flutter_application_proj2cp/details_prestation.dart';
 import 'package:flutter_application_proj2cp/pages/artisan/detail_demande_lancee.dart';
-import 'package:flutter_application_proj2cp/pages/artisan/detail_demande_acceptee.dart';
+import 'package:flutter_application_proj2cp/pages/artisan/rendez_vous_termine_artisan.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -41,7 +41,7 @@ class App extends StatelessWidget {
           /*theme: ThemeData(
             iconTheme: const IconThemeData(color: vertClair),
           ),*/
-          home: DemandeAcceptee(),
+          home: RDV_confirmeartisanPage(),
         );
       },
 
