@@ -39,7 +39,6 @@ class DemandesEnCours extends StatefulWidget {
 
 class _DemandesEnCoursState extends State<DemandesEnCours> {
   List<Demande?> demandesEnCours = [];
-  List<Demande?> demandesEnCours = [];
 
   @override
   void initState() {
