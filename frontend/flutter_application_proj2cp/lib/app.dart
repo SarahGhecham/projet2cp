@@ -24,12 +24,9 @@ import 'package:flutter_application_proj2cp/lancer_demande1.dart';
 import 'package:flutter_application_proj2cp/Web/lancer_demande1Web.dart';
 import 'package:flutter_application_proj2cp/pages/mademande.dart';
 import 'package:flutter_application_proj2cp/details_prestation.dart';
-<<<<<<< HEAD
 import 'package:flutter_application_proj2cp/rendez-vous_terminée.dart';
-=======
 import 'package:flutter_application_proj2cp/pages/artisan/detail_demande_lancee.dart';
 import 'package:flutter_application_proj2cp/pages/artisan/rendez_vous_termine_artisan.dart';
->>>>>>> lynda/pages
 
 class App extends StatelessWidget {
   const App({super.key});
