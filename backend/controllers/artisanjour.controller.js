@@ -30,6 +30,39 @@ async function addJourToArtisan(req, res) {
         return res.status(500).json({ message: 'Failed to add jour to artisan. Please try again later.' });
     }
 }
+
+async function modifyJour(req, res) {
+    try {
+        // Extract the jour ID from the request parameters
+        const jourId = req.params.jourId;
+
+        // Find the jour by ID
+        const jour = await models.Jour.findByPk(jourId);
+
+        // Check if the jour exists
+        if (!jour) {
+            return res.status(404).json({ message: `Jour with ID ${jourId} not found.` });
+        }
+
+        // Extract the updated jour data from the request body
+        const updatedJourData = {
+            jour: req.body.jour, 
+            HeureDebut: req.body.HeureDebut,
+            HeureFin: req.body.HeureFin
+        };
+
+        // Update the jour with the new data
+        await jour.update(updatedJourData);
+
+        // Respond with success message and the updated jour
+        return res.status(200).json({ message: `Jour with ID ${jourId} updated successfully.`, jour });
+    } catch (error) {
+        // Handle any errors that occur during the process
+        console.error('Error modifying jour:', error);
+        return res.status(500).json({ message: 'Failed to modify jour. Please try again later.' });
+    }
+}
+
 async function deleteJourFromArtisan(req, res) {
     const artisanId = req.params.artisanId;
     const jourId = req.params.jourId;
@@ -121,6 +154,7 @@ async function displayplanningofArtisan(req, res) {
 module.exports = {
     addJourToArtisan,
     deleteJourFromArtisan,
-    displayplanningofArtisan
+    displayplanningofArtisan,
+    modifyJour
 };
 
