@@ -16,31 +16,105 @@ class DemandelanceePage extends StatefulWidget {
 
 class _DemandelanceePageState extends State<DemandelanceePage> {
 
-  List <LatLng> coordinates = [
-    LatLng(-33.86, 151.20),
-    LatLng(-34.0, 150.0),
-    LatLng(-37.81, 144.96),
-
-  ];
-
+  List <LatLng> coordinates = [];
+  var adresse = "Oued Smar";//la le l'adresse (appellation)
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Map with Markers Example'),
-      ),
-      body: GoogleMap(
-        initialCameraPosition: CameraPosition(
-          target: LatLng(-37.422, 140.084),
-          zoom: 6.0,
+        backgroundColor: Colors.transparent,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+           Container(
+             height: 42,
+             width: 300,
+             decoration: BoxDecoration(
+               borderRadius: BorderRadius.circular(10),
+               color: Color(0xFFD6E3DC),
+             ),
+             child: Row(
+               children: [
+                 SvgPicture.asset("assets/pin_light.svg"),
+                 Text(
+                   adresse,
+                   style: GoogleFonts.poppins(fontSize: 16, color: Color(0xFF777777)),
+                 ),
+               ],
+             ),
+           ),
+            SvgPicture.asset("assets/cancel.svg"),
+          ],
         ),
-        markers: Set <Marker>.from(coordinates.map((LatLng coordinate) {
-          return Marker(
-            markerId: MarkerId(
-                '${coordinate.latitude}-${coordinate.longitude}'),
-            position: coordinate,
-          );
-        })),
+      ),
+      body: Stack(
+        children: [
+          GoogleMap(
+            initialCameraPosition: CameraPosition(
+              target: LatLng(-37.422, 140.084),// là met l'adresse du clien (coordonnées)
+              zoom: 15.0,
+            ),
+            markers: Set <Marker>.from(coordinates.map((LatLng coordinate) {
+              return Marker(
+                markerId: MarkerId(
+                    '${coordinate.latitude}-${coordinate.longitude}'),
+                position: coordinate,
+              );
+            })),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              height: 240, // Adjust height as needed
+              decoration: BoxDecoration(
+                color: Color(0xFFD6E3DC),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(10.0),
+                  topRight: Radius.circular(10.0),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Votre demande a été envoyé au artisans du coin',
+                        style: GoogleFonts.poppins(fontSize: 25, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 30),
+                      ElevatedButton(
+                        onPressed: (){},
+                        style: ButtonStyle(
+                          minimumSize: MaterialStateProperty.all<Size>(const Size(315, 55)),
+                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          backgroundColor:
+                          MaterialStateProperty.all<Color>(const Color(0xFF05564B)),
+                        ),
+                        child: Text(
+                          "Suivant",
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
