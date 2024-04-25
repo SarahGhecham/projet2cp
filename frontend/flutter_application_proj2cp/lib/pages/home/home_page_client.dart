@@ -35,8 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
     print('Token: $_token');
     await Future.wait([
       fetchDomaines(),
-      //fetchEcoServices(),
-      //fetchTopPrestations(),
+      fetchEcoServices(),
+      fetchTopPrestations(),
     ]);
   }
 
@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  /*Future<void> fetchEcoServices() async {
+  Future<void> fetchEcoServices() async {
     final url =
         Uri.parse('http://10.0.2.2:3000/pageaccueil/AfficherPrestationsEco');
     try {
@@ -151,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
       print('Error fetching top prestations: $error');
     }
   }
-*/
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
