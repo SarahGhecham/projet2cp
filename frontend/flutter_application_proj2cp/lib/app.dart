@@ -3,13 +3,9 @@ import 'package:flutter_application_proj2cp/lancer_demande3.dart';
 import 'package:flutter_application_proj2cp/rendez-vous_terminée.dart';
 import 'package:flutter_application_proj2cp/demande_confirmé.dart';
 import 'package:flutter_application_proj2cp/lancer_demande2.dart';
+import 'package:flutter_application_proj2cp/details_prestation.dart';
 import 'package:intl/date_symbol_data_local.dart';
-
-
-
-
-
-
+import 'package:flutter_application_proj2cp/demande_lancée.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -18,7 +14,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: RDV_confirmePage(), // Use AppNavigator as the home widget
+      home: DemandelanceePage(), // Use AppNavigator as the home widget
     );
   }
 }

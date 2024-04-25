@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+
 class Lancerdemande3Page extends StatefulWidget {
   const Lancerdemande3Page({super.key});
 
@@ -225,7 +226,78 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
             const SizedBox(height: 60),
             Center(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        backgroundColor: Color(0xFFD6E3DC),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        content: Container(
+                          width: 280.0, // Adjust the width as needed
+                          height: 290.0, // Adjust the height as needed
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 20),
+                                child: Center(child: Text("Voulez vous vraiment lancer cette demande ?", style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 20),)),
+                              ),
+                              ElevatedButton(
+                                  onPressed: (){},
+                                  style: ButtonStyle(
+                                    minimumSize:
+                                    MaterialStateProperty.all<Size>(const Size(115, 35)),
+                                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    backgroundColor:
+                                    MaterialStateProperty.all<Color>(const Color(0xFFFF8787)),
+                                  ),
+                                  child: Text(
+                                    "Oui",
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                              ),
+                              SizedBox(height: 10),
+                              ElevatedButton(
+                                  onPressed: (){},
+                                  style: ButtonStyle(
+                                    minimumSize:
+                                    MaterialStateProperty.all<Size>(const Size(115, 35)),
+                                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    backgroundColor:
+                                    MaterialStateProperty.all<Color>(const Color(0xFF05564B)),
+                                  ),
+                                  child: Text(
+                                    "Non",
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
                 style: ButtonStyle(
                   minimumSize:
                       MaterialStateProperty.all<Size>(const Size(315, 55)),

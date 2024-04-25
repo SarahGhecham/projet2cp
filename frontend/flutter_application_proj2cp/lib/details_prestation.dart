@@ -40,10 +40,20 @@ class _details_prestationPageState extends State<details_prestationPage> {
           Positioned(
             top: 20,
             left: 50,
-            child: SizedBox(
-              height: 300,
-              width: 315,
-              child: Image.asset("assets/lavage_sol.png"),
+            child: Container(
+              width: 315, // Adjust the width as needed
+              height: 300, // Adjust the height as needed
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30.0), // Adjust the border radius as needed
+                color: Colors.grey[200], // Set container background color
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(30.0), // Match the container's border radius
+                child: Image.asset(
+                  'assets/lavage_sol.png', // Replace 'your_image.jpg' with your image path
+                  fit: BoxFit.cover, // Ensure the image covers the entire container
+                ),
+              ),
             ),
           ),
           Positioned(
