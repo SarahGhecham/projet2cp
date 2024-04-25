@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       RDV.belongsTo(models.Demande, { foreignKey: 'DemandeId'});
       RDV.hasOne(models.Evaluation, { foreignKey: 'RDVId' });
 
+
     }
   }
   RDV.init({
@@ -21,8 +22,6 @@ module.exports = (sequelize, DataTypes) => {
     DateFin: DataTypes.DATE,
     HeureDebut: DataTypes.TIME,
     HeureFin: DataTypes.TIME,
-    accepte: DataTypes.BOOLEAN,
-    confirme: DataTypes.BOOLEAN,
     annule:DataTypes.BOOLEAN,
     DemandeId:DataTypes.INTEGER
   }, {

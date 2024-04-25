@@ -256,7 +256,8 @@ class _SignUpPageState extends State<SignUpPage> {
               ElevatedButton(
                 onPressed: _signUpUser,
                 style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all<Size>(const Size(100, 37)),
+                  minimumSize:
+                      MaterialStateProperty.all<Size>(const Size(100, 37)),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),

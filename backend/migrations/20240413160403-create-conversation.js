@@ -2,30 +2,30 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('RDVs', {
+    await queryInterface.createTable('Conversations', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      DateDebut: {
-        type: Sequelize.DATE
+      clientId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Clients',
+          key: 'id'
+        }
       },
-      DateFin: {
-        type: Sequelize.DATE
+      artisanId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Artisans',
+          key: 'id'
+        }
       },
-      HeureDebut: {
-        type: Sequelize.TIME
-      },
-      HeureFin: {
-        type: Sequelize.TIME
-      },
-      annule: {
-        type: Sequelize.BOOLEAN
-      },
-      DemandeId: {
-        type: Sequelize.INTEGER
+      status: {
+        type: Sequelize.ENUM('open', 'closed'), 
+        defaultValue: 'open' 
       },
       createdAt: {
         allowNull: false,
@@ -38,6 +38,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('RDVs');
+    await queryInterface.dropTable('Conversations');
   }
 };
