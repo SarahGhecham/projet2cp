@@ -6,8 +6,10 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
+import 'package:flutter_application_proj2cp/details_prestation.dart';
 
 class Prestation {
+  final int id;
   final String nomPrestation;
   final String materiel;
   final String dureeMax;
@@ -15,10 +17,15 @@ class Prestation {
   final int tarifId;
   final int domaineId;
   final bool ecologique;
+  final String Description;
   final String imagePrestation;
-  final double? tarifJourMin;
-  final double? tarifJourMax;
+  final String? tarifJourMin;
+  final String? tarifJourMax;
+  final String Unite;
   const Prestation({
+    required this.id,
+    required this.Unite,
+    required this.Description,
     required this.nomPrestation,
     required this.materiel,
     required this.dureeMax,
@@ -33,18 +40,26 @@ class Prestation {
 }
 
 class PrestationPage extends StatefulWidget {
+  final int id;
+  final String NomDomaine;
+
+  PrestationPage({required this.id,required this.NomDomaine});
   @override
   _PrestationPageState createState() => _PrestationPageState();
 }
 
 class _PrestationPageState extends State<PrestationPage> {
   List<Prestation> _prestations = []; // Initialize with empty list
+  void afficherId(int id) {
+    print('ID: $id');
+    // Vous pouvez faire d'autres choses avec l'ID ici
+  }
 
   Future<void> _getPrestations(int domaineId) async {
     try {
       final response = await http.get(
         Uri.parse(
-            'http://192.168.151.173:3000/client/AfficherPrestations/$domaineId'),
+            'http://192.168.100.7:3000/client/AfficherPrestations/$domaineId'),
       );
 
       if (response.statusCode == 200) {
@@ -58,16 +73,19 @@ class _PrestationPageState extends State<PrestationPage> {
               prestationJson['Tarif']['TarifJourMax'].toString());
 
           return Prestation(
+            id: prestationJson['id'] as int,
             nomPrestation: prestationJson['NomPrestation'] as String,
             materiel: prestationJson['Matériel'] as String,
+            Description: prestationJson['Matériel'] as String,
             dureeMax: prestationJson['DuréeMax'] as String,
             dureeMin: prestationJson['DuréeMin'] as String,
             tarifId: prestationJson['TarifId'] as int,
             domaineId: prestationJson['DomaineId'] as int,
             ecologique: prestationJson['Ecologique'] as bool,
             imagePrestation: prestationJson['imagePrestation'] as String,
-            tarifJourMin: tarifJourMin,
-            tarifJourMax: tarifJourMax,
+            tarifJourMin: prestationJson['Tarif']['TarifJourMin'] as String,
+            tarifJourMax: prestationJson['Tarif']['TarifJourMax'] as String,
+            Unite: prestationJson['Tarif']['Unité'] as String
           );
         }).toList();
 
@@ -86,7 +104,8 @@ class _PrestationPageState extends State<PrestationPage> {
   @override
   void initState() {
     super.initState();
-    _getPrestations(1); // Assuming domaineId is available
+    print(widget.id);
+    _getPrestations(widget.id); // Assuming domaineId is available
   }
 
   /* [
@@ -113,6 +132,7 @@ class _PrestationPageState extends State<PrestationPage> {
       duration: Duration(hours: 1),
     ),
   ];*/
+
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +164,7 @@ class _PrestationPageState extends State<PrestationPage> {
                     ),
                     child: Center(
                       child: Text(
-                        'Peinture',
+                        widget.NomDomaine,
                         style: TextStyle(
                           color: Color(0xff05564B),
                           fontSize: 21,
@@ -160,70 +180,82 @@ class _PrestationPageState extends State<PrestationPage> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: _prestations.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  height: 95,
-                  width: 335,
-                  margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Color(0xFFD6E3DC),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(left: 10),
-                        width: 80,
-                        height: 74,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          child: Image.network(
-                            _prestations[index].imagePrestation,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              _prestations[index].nomPrestation,
-                              style: TextStyle(
-                                color: Color(0xff05564B),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              '${_prestations[index].tarifJourMin}DA - ${_prestations[index].tarifJourMax}DA',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              '${_prestations[index].dureeMin} ~ ${_prestations[index].dureeMax} ',
-                              style: TextStyle(
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
+  itemCount: _prestations.length,
+  itemBuilder: (context, index) {
+    return GestureDetector(
+      onTap: () {
+        print("ID de la prestation: ${_prestations[index].id}");
+        Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => details_prestationPage(id: _prestations[index].id,prst: _prestations[index].nomPrestation,avgtime:'${_prestations[index].dureeMin} - ${_prestations[index].dureeMax} ',avgprice:  '${_prestations[index].tarifJourMin.toString()} da - ${_prestations[index].tarifJourMin.toString()}',imagePrestation: _prestations[index].imagePrestation,Description:_prestations[index].Description,Unite :_prestations[index].Unite),
+        ),
+      );
+      },
+      child: Container(
+        height: 95,
+        width: 335,
+        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          color: Color(0xFFD6E3DC),
+        ),
+        child: Row(
+          children: [
+            Container(
+              margin: EdgeInsets.only(left: 10),
+              width: 80,
+              height: 74,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: Image.network(
+                  _prestations[index].imagePrestation,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
+            SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    _prestations[index].nomPrestation,
+                    style: TextStyle(
+                      color: Color(0xff05564B),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    '${_prestations[index].tarifJourMin}DA - ${_prestations[index].tarifJourMax}DA',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    '${_prestations[index].dureeMin} ~ ${_prestations[index].dureeMax} ',
+                    style: TextStyle(
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  },
+),
+
           ),
         ],
       ),

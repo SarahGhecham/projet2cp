@@ -27,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     DomaineId: DataTypes.INTEGER,
     Ecologique: DataTypes.BOOLEAN,
     imagePrestation: DataTypes.STRING,
+    Description: DataTypes.TEXT
   }, {
     sequelize,
     modelName: 'Prestation',

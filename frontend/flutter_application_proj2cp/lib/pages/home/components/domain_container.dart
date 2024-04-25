@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:flutter_application_proj2cp/pages/afficher_prestation.dart';
 class Domaine {
   final int id;
   final String image;
@@ -25,7 +25,13 @@ class _DomaineContainerState extends State<DomaineContainer> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Implement the onTap functionality
+        // Naviguer vers une nouvelle page en passant domaine.id
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PrestationPage(id: widget.domaine.id,NomDomaine: widget.domaine.serviceName,),
+        ),
+      );
       },
       child: Padding(
         padding: const EdgeInsets.all(9.0),

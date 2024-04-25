@@ -20,7 +20,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   final List<Widget> _pages = [
     HomeScreen(),
     Activite(),
-    PrestationPage(),
+    //PrestationPage(),
     Profile(),
   ];
 
