@@ -1,27 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:flutter_application_proj2cp/pages/activite/activite_client.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/page_acceuil.dart';
 import 'package:flutter_application_proj2cp/pages/afficher_prestation.dart';
 
 import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
 import 'package:flutter_application_proj2cp/pages/profile_screen.dart';
 
-class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({super.key});
+class BottomNavBarAdmin extends StatefulWidget {
+  const BottomNavBarAdmin({super.key});
 
   @override
-  State<BottomNavBar> createState() => _BottomNavBarState();
+  State<BottomNavBarAdmin> createState() => _BottomNavBarAdminState();
 }
 
-class _BottomNavBarState extends State<BottomNavBar> {
+class _BottomNavBarAdminState extends State<BottomNavBarAdmin> {
   int _selectedIndex = 0;
 
   // Define your page views
   final List<Widget> _pages = [
-    HomeScreen(),
-    Activite(),
-    PrestationPage(),
-    Profile(),
+    HomeScreenAdmin(),
+    //Activite(),
+    //PrestationPage(),
+    //Profile(),
   ];
 
   void _onItemTapped(int index) {
@@ -58,8 +59,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       onTap: () => _onItemTapped(0),
                       child: Image.asset(
                         _selectedIndex == 0
-                            ? 'assets/images/home_filled.png'
-                            : 'assets/images/home.png',
+                            ? 'assets/icons/dashboard_filled.png'
+                            : 'assets/icons/dashboard_notfilled.png',
                         width: 25,
                         height: 25,
                       ),
@@ -68,8 +69,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       onTap: () => _onItemTapped(1),
                       child: Image.asset(
                         _selectedIndex == 1
-                            ? 'assets/images/activity.png'
-                            : 'assets/images/activity_notfilled.png',
+                            ? 'assets/images/chat_filled.png'
+                            : 'assets/images/chat_outline.png',
                         width: 27,
                         height: 27,
                       ),
@@ -78,20 +79,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       onTap: () => _onItemTapped(2),
                       child: Image.asset(
                         _selectedIndex == 2
-                            ? 'assets/images/chat_filled.png'
-                            : 'assets/images/chat_outline.png',
-                        width: 25,
-                        height: 25,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => _onItemTapped(3),
-                      child: Image.asset(
-                        _selectedIndex == 3
                             ? 'assets/images/profile_filled.png'
                             : 'assets/images/profile_notfilled.png',
-                        width: 35,
-                        height: 35,
+                        width: 30,
+                        height: 30,
                       ),
                     ),
                   ],

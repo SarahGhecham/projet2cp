@@ -6,6 +6,7 @@ import 'package:flutter_application_proj2cp/pages/home/components/domain_contain
 import 'package:flutter_application_proj2cp/pages/home/components/bar_recherche.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -20,6 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> domainWidgets = [];
   List<Widget> ecoServiceWidgets = [];
   List<Widget> topPrestationWidgets = [];
+  late String _token;
 
   @override
   void initState() {
@@ -28,17 +30,23 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> fetchData() async {
+    final prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('token') ?? '';
+    print('Token: $_token');
     await Future.wait([
       fetchDomaines(),
-      fetchEcoServices(),
-      fetchTopPrestations(),
+      //fetchEcoServices(),
+      //fetchTopPrestations(),
     ]);
   }
 
   Future<void> fetchDomaines() async {
     final url = Uri.parse('http://10.0.2.2:3000/pageaccueil/AfficherDomaines');
     try {
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {'Authorization': 'Bearer $_token'},
+      );
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
@@ -72,11 +80,14 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> fetchEcoServices() async {
+  /*Future<void> fetchEcoServices() async {
     final url =
         Uri.parse('http://10.0.2.2:3000/pageaccueil/AfficherPrestationsEco');
     try {
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {'Authorization': 'Bearer $_token'},
+      );
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
@@ -109,7 +120,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final url =
         Uri.parse('http://10.0.2.2:3000/pageaccueil/AfficherPrestationsTop');
     try {
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {'Authorization': 'Bearer $_token'},
+      );
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
@@ -137,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
       print('Error fetching top prestations: $error');
     }
   }
-
+*/
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -145,7 +159,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              HomeHeader(),
+              HomeHeader(
+                userName: 'User',
+                profilePictureUrl: 'https://example.com/profile.jpg',
+              ),
               BarRecherche(),
 
               Padding(

@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
 class demande_confirmePage extends StatefulWidget {
   const demande_confirmePage({super.key});
 
@@ -20,8 +19,10 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
   var adresse = "Cite 289 logements Jijel N113";
   var prix = "500da - 1000da";
   var prestation = "Peinture de mûrs";
+  bool ecologique = true;
+  bool urgente = true;
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -36,7 +37,8 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
             const SizedBox(width: 130),
             Text(
               "Details",
-              style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
+              style: GoogleFonts.poppins(
+                  fontSize: 20, fontWeight: FontWeight.w600),
             ),
           ],
         ),
@@ -56,37 +58,63 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start, // Align children to the start
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start, // Align children to the start
                   children: [
                     Container(
-                      width: 80, // Adjust the width as needed
-                      height: 80, // Adjust the height as needed
+                      width: 80,
+                      height: 80,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.0), // Adjust the border radius as needed
-                        color: Colors.grey[200], // Set container background color
+                        borderRadius: BorderRadius.circular(8.0),
+                        color: Colors.grey[200],
                       ),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0), // Match the container's border radius
+                        borderRadius: BorderRadius.circular(8.0),
                         child: Image.asset(
-                          'assets/prestation_peinture.jpg', // Replace 'your_image.jpg' with your image path
-                          fit: BoxFit.cover, // Ensure the image covers the entire container
+                          'assets/lavage_sol.png',
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
                     const SizedBox(width: 20),
                     Expanded(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start, // Align children to the start
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text(
-                            "Peinture de Murs et Plafonds",
-                            softWrap: true,
-                            style: GoogleFonts.poppins(
-                              color: const Color(0xFF05564B),
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: "Peinture de Murs et Plafonds",
+                                        style: GoogleFonts.poppins(
+                                          color: const Color(0xFF05564B),
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      if (ecologique) ...[
+                                        WidgetSpan(
+                                          child: Padding(
+                                            padding:
+                                                const EdgeInsets.only(left: 6),
+                                            child: SvgPicture.asset(
+                                              'assets/leaf.svg',
+                                              color: const Color(0xff05564B)
+                                                  .withOpacity(0.6),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 10),
                           Text(
@@ -106,7 +134,9 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 50.0),
             child: Text(
-              "Préstataire", style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
+              "Préstataire",
+              style: GoogleFonts.poppins(
+                  fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ),
           const SizedBox(height: 20),
@@ -126,30 +156,33 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
                 children: [
                   SizedBox(width: 15),
                   Container(
-                      height: 50,
-                      width: 50,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: AssetImage("assets/artisan.jpg"),
-                          fit: BoxFit.cover,
-                        ),
+                    height: 50,
+                    width: 50,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        image: AssetImage("assets/artisan.jpg"),
+                        fit: BoxFit.cover,
                       ),
+                    ),
                   ),
                   SizedBox(width: 15), // Add spacing between image and column
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.start, // Align children to start
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start, // Align children to start
                     children: [
                       SizedBox(height: 15),
                       Row(
                         children: [
                           Text(
                             nomartisan,
-                            style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600),
+                            style: GoogleFonts.poppins(
+                                fontSize: 15, fontWeight: FontWeight.w600),
                           ),
                           SizedBox(width: 20),
                           SvgPicture.asset("assets/star.svg"),
-                          SizedBox(width: 5), // Adjust spacing between text and star
+                          SizedBox(
+                              width: 5), // Adjust spacing between text and star
                           Text(
                             note,
                             style: GoogleFonts.poppins(fontSize: 15),
@@ -163,7 +196,8 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
                           SizedBox(width: 10),
                           Text(
                             telephone,
-                            style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
+                            style: GoogleFonts.poppins(
+                                fontSize: 14, fontWeight: FontWeight.w600),
                           ),
                         ],
                       ),
@@ -177,7 +211,9 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 50.0),
             child: Text(
-              "Informations", style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
+              "Informations",
+              style: GoogleFonts.poppins(
+                  fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ),
           SizedBox(height: 20),
@@ -209,7 +245,8 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
                         SizedBox(width: 10),
                         Text(
                           heure,
-                          style: GoogleFonts.poppins(color: Color(0xFF777777), fontSize: 15),
+                          style: GoogleFonts.poppins(
+                              color: Color(0xFF777777), fontSize: 15),
                         ),
                       ],
                     ),
@@ -238,7 +275,8 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
                         SizedBox(width: 10),
                         Text(
                           "/h",
-                          style: GoogleFonts.poppins(color: Color(0xFF777777), fontSize: 15),
+                          style: GoogleFonts.poppins(
+                              color: Color(0xFF777777), fontSize: 15),
                         ),
                       ],
                     ),
@@ -255,6 +293,19 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
                         ),
                       ],
                     ),
+                    SizedBox(height: 20),
+                    Row(
+                      children: [
+                        SizedBox(width: 10),
+                        SvgPicture.asset("assets/urgent.svg",
+                            color: Color(0xff05564B).withOpacity(1)),
+                        SizedBox(width: 15),
+                        Text(
+                          urgente ? "Urgente" : "Pas urgente",
+                          style: GoogleFonts.poppins(fontSize: 15),
+                        ),
+                      ],
+                    ),
                     SizedBox(height: 50),
                     Stack(
                       children: [
@@ -263,18 +314,19 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
                             height: 150,
                             width: 270,
                             decoration: BoxDecoration(
-                                color: const Color(0xFFDCC8C5).withOpacity(0.22),
+                                color:
+                                    const Color(0xFFDCC8C5).withOpacity(0.22),
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
                                   color: const Color(0xFFDCC8C5),
                                   width: 2,
-                                )
-                            ),
+                                )),
                             child: Center(
                               child: Padding(
                                 padding: const EdgeInsets.all(20.0),
                                 child: Text(
-                                  "Nettoyage complet et professionnel des sols avec des produits efficaces et non nocifs ", style: GoogleFonts.poppins(),
+                                  "Nettoyage complet et professionnel des sols avec des produits efficaces et non nocifs ",
+                                  style: GoogleFonts.poppins(),
                                 ),
                               ),
                             ),
@@ -293,7 +345,11 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
                               ),
                               child: Center(
                                 child: Text(
-                                  "Description", style: GoogleFonts.poppins(color: const Color(0xFF05564B), fontSize: 14, fontWeight: FontWeight.w600),
+                                  "Description",
+                                  style: GoogleFonts.poppins(
+                                      color: const Color(0xFF05564B),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600),
                                 ),
                               ),
                             ),
@@ -311,16 +367,17 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
             child: Align(
               alignment: Alignment.bottomRight,
               child: ElevatedButton(
-                onPressed: (){},
+                onPressed: () {},
                 style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all<Size>(const Size(100, 30)),
+                  minimumSize:
+                      MaterialStateProperty.all<Size>(const Size(100, 30)),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   backgroundColor:
-                  MaterialStateProperty.all<Color>(const Color(0xFFE52E22)),
+                      MaterialStateProperty.all<Color>(const Color(0xFFE52E22)),
                 ),
                 child: Text(
                   "Annuler",

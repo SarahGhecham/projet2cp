@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_proj2cp/pages/activite/activite_client.dart';
 import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
+import 'package:flutter_application_proj2cp/widgets/bottom_nav_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_application_proj2cp/pages/inscription.dart';
 import 'package:google_fonts/google_fonts.dart';

@@ -1,7 +1,7 @@
 const Validator = require('fastest-validator');
 const models = require('../models');
-const { RDV, Demande} = require('../models');
-const {Prestation} = require('../models');
+const { RDV, Demande } = require('../models');
+const { Prestation } = require('../models');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
@@ -104,69 +104,84 @@ async function getArtisansForDemand(req, res) {
 
 
 async function signUp(req, res) {
-    try {
-        const requiredFields = ['Username', 'MotdepasseClient', 'EmailClient', 'AdresseClient', 'NumeroTelClient'];
-        for (const field of requiredFields) {
-            if (!req.body[field]) {
-                return res.status(400).json({ message: `Le champ '${field}' n'est pas rempli!` });
-            }
-        }
-        const phonePattern = /^[0-9]{10}$/; 
-        if (!phonePattern.test(req.body.NumeroTelClient)) {
-            return res.status(400).json({ message: "Le numéro de téléphone n'a pas le bon format" });
-        }
+  try {
+    const requiredFields = [
+      'Username',
+      'MotdepasseClient',
+      'EmailClient',
+      'AdresseClient',
+      'NumeroTelClient',
+    ];
+    for (const field of requiredFields) {
+      if (!req.body[field]) {
+        return res
+          .status(400)
+          .json({ message: `Le champ '${field}' n'est pas rempli!` });
+      }
+    }
+    const phonePattern = /^[0-9]{10}$/;
+    if (!phonePattern.test(req.body.NumeroTelClient)) {
+      return res
+        .status(400)
+        .json({ message: "Le numéro de téléphone n'a pas le bon format" });
+    }
 
-        const Cleapi = 'AIzaSyDRCkJohH9RkmMIgpoNB2KBlLF6YMOOmmk';
-        const address = req.body.AdresseClient;
+    const Cleapi = 'AIzaSyDRCkJohH9RkmMIgpoNB2KBlLF6YMOOmmk';
+    const address = req.body.AdresseClient;
 
-        
-        const isAddressValid = await validateAddress(address, Cleapi);
+    const isAddressValid = await validateAddress(address, Cleapi);
 
-        if (!isAddressValid) {
-            return res.status(400).json({ message: "L'adresse saisie est invalide" });
-        }
-       // const apiKey = '2859b334b5cf4296976a534dbe5e69a7';
-        const email = req.body.EmailClient;
+    if (!isAddressValid) {
+      return res.status(400).json({ message: "L'adresse saisie est invalide" });
+    }
+    // const apiKey = '2859b334b5cf4296976a534dbe5e69a7';
+    const email = req.body.EmailClient;
 
-        //const response = await axios.get(`https://api.zerobounce.net/v2/validate?api_key=${apiKey}&email=${email}`);
+    //const response = await axios.get(`https://api.zerobounce.net/v2/validate?api_key=${apiKey}&email=${email}`);
 
-       // if (response.data.status === 'valid') {
-            models.Client.findOne({ where: { EmailClient: email } })
-                .then(result => {
-                    if (result) {
-                        res.status(409).json({ message: "Compte email déjà existant" });
-                    } else {
-                        models.Artisan.findOne({ where: { EmailArtisan: email } })
-                            .then(result => {
-                                if (result) {
-                                    res.status(409).json({ message: "Compte email existant" });
-                                } else {
-                                    bcryptjs.genSalt(10, function (err, salt) {
-                                        bcryptjs.hash(req.body.MotdepasseClient, salt, function (err, hash) {
-                                            const client = {
-                                                Username: req.body.Username,
-                                                MotdepasseClient: hash,
-                                                EmailClient: email,
-                                                AdresseClient: req.body.AdresseClient,
-                                                NumeroTelClient: req.body.NumeroTelClient
-                                            };
-                                            models.Client.create(client)
-                                                .then(result => {
-                                                    const token = jwt.sign({ UserId: result.id, username: result.Username }, 'secret');
+    // if (response.data.status === 'valid') {
+    models.Client.findOne({ where: { EmailClient: email } })
+      .then((result) => {
+        if (result) {
+          res.status(409).json({ message: 'Compte email déjà existant' });
+        } else {
+          models.Artisan.findOne({ where: { EmailArtisan: email } })
+            .then((result) => {
+              if (result) {
+                res.status(409).json({ message: 'Compte email existant' });
+              } else {
+                bcryptjs.genSalt(10, function (err, salt) {
+                  bcryptjs.hash(
+                    req.body.MotdepasseClient,
+                    salt,
+                    function (err, hash) {
+                      const client = {
+                        Username: req.body.Username,
+                        MotdepasseClient: hash,
+                        EmailClient: email,
+                        AdresseClient: req.body.AdresseClient,
+                        NumeroTelClient: req.body.NumeroTelClient,
+                      };
+                      models.Client.create(client)
+                        .then((result) => {
+                          const token = jwt.sign(
+                            { UserId: result.id, username: result.Username },
+                            'secret'
+                          );
 
-                                                    const transporter = nodemailer.createTransport({
-                                                        service: 'gmail',
-                                                        auth: {
-                                                            user: 'beaverappservices@gmail.com',
-                                                            pass: 'rucn vtaq cmxq dcwe'
-                                                        }
-                                                    });
+                          const transporter = nodemailer.createTransport({
+                            service: 'gmail',
+                            auth: {
+                              user: 'beaverappservices@gmail.com',
+                              pass: 'rucn vtaq cmxq dcwe',
+                            },
+                          });
 
-                                                    const mailOptions = {
-                                                        from: 'Beaver',
-                                                        to: email,
-                                                        subject: 'Confirmation d\'inscription',
-                                                        text: `Bonjour ${req.body.Username},
+                          const mailOptions = {
+                            from: 'Beaver',
+                            to: email,
+                            subject: "Confirmation d'inscription",
+                            text: `Bonjour ${req.body.Username},
 
 Nous sommes ravis de vous accueillir chez Beaver ! Vous avez maintenant accès à notre plateforme et à tous nos services.
 
@@ -175,65 +190,91 @@ N'hésitez pas à explorer notre plateforme et à profiter de toutes les fonctio
 Nous vous remercions de votre confiance et sommes impatients de vous voir profiter pleinement de votre expérience avec Beaver !
 
 Cordialement,
-L'équipe Beaver`
-                                                    };
+L'équipe Beaver`,
+                          };
 
-                                                    transporter.sendMail(mailOptions, function (error, info) {
-                                                        if (error) {
-                                                            console.error("Erreur lors de l'envoi de l'email de confirmation :", error);
-                                                        } else {
-                                                            console.log('Email de confirmation envoyé : ' + info.response);
-                                                        }
-                                                    });
+                          transporter.sendMail(
+                            mailOptions,
+                            function (error, info) {
+                              if (error) {
+                                console.error(
+                                  "Erreur lors de l'envoi de l'email de confirmation :",
+                                  error
+                                );
+                              } else {
+                                console.log(
+                                  'Email de confirmation envoyé : ' +
+                                    info.response
+                                );
+                              }
+                            }
+                          );
 
-                                                    res.status(201).json({ message: "Inscription client réussie", client: result, token });
-                                                })
-                                                .catch(error => {
-                                                    res.status(500).json({ message: "Une erreur s'est produite lors de la création du client", error: error });
-                                                });
-                                        });
-                                    });
-                                }
-                            })
-                            .catch(error => {
-                                res.status(500).json({ message: "Something went wrong", error: error });
-                            });
+                          res.status(201).json({
+                            message: 'Inscription client réussie',
+                            client: result,
+                            token,
+                          });
+                        })
+                        .catch((error) => {
+                          res.status(500).json({
+                            message:
+                              "Une erreur s'est produite lors de la création du client",
+                            error: error,
+                          });
+                        });
                     }
-                })
-                .catch(error => {
-                    res.status(500).json({ message: "Something went wrong", error: error });
+                  );
                 });
-       // } else {
-            //res.status(400).json({ message: "Email invalide" });
-       // }
-    } catch (error) {
-        console.error("Erreur lors de la validation de l'e-mail :", error);
-        res.status(500).json({ message: "Erreur lors de la validation de l'e-mail", error: error });
-    }
+              }
+            })
+            .catch((error) => {
+              res
+                .status(500)
+                .json({ message: 'Something went wrong', error: error });
+            });
+        }
+      })
+      .catch((error) => {
+        res.status(500).json({ message: 'Something went wrong', error: error });
+      });
+    // } else {
+    //res.status(400).json({ message: "Email invalide" });
+    // }
+  } catch (error) {
+    console.error("Erreur lors de la validation de l'e-mail :", error);
+    res.status(500).json({
+      message: "Erreur lors de la validation de l'e-mail",
+      error: error,
+    });
+  }
 }
 
 async function validateAddress(address, Cleapi) {
-    try {
-        const encodedAddress = encodeURIComponent(address);
-        const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${Cleapi}`);
+  try {
+    const encodedAddress = encodeURIComponent(address);
+    const response = await axios.get(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${Cleapi}`
+    );
 
-        return response.data.results.length > 0;
-    } catch (error) {
-        console.error("Une erreur s'est produite lors de la validation de l'adresse :", error);
-        throw error;
-    }
+    return response.data.results.length > 0;
+  } catch (error) {
+    console.error(
+      "Une erreur s'est produite lors de la validation de l'adresse :",
+      error
+    );
+    throw error;
+  }
 }
 
-
-
 async function updateClient(req, res) {
-    const id = req.userId;
+    const id = req.params.id;
 
-    // Hash the new password if provided
-    let hashedPassword = null;
-    if (req.body.MotdepasseClient) {
-        hashedPassword = await bcrypt.hash(req.body.MotdepasseClient, 10);
-    }
+  // Hash the new password if provided
+  let hashedPassword = null;
+  if (req.body.MotdepasseClient) {
+    hashedPassword = await bcrypt.hash(req.body.MotdepasseClient, 10);
+  }
 
     const updatedClient = {
         Username:req.body.Username ,
@@ -245,71 +286,75 @@ async function updateClient(req, res) {
     }
    const fs = require('fs')
 
-    // Update the Client model with the updated data
-    models.Client.update(updatedClient, { where: { id: id } })
-        .then(result => {
-            if (result[0] === 1) {
-                res.status(200).json({
-                    message: "Client updated successfully",
-                    client: updatedClient
-                });
-            } else {
-                res.status(404).json({ message: "Client not found" });
-            }
-        })
-        .catch(error => {
-            res.status(500).json({
-                message: "Something went wrong",
-                error: error
-            });
+  // Update the Client model with the updated data
+  models.Client.update(updatedClient, { where: { id: id } })
+    .then((result) => {
+      if (result[0] === 1) {
+        res.status(200).json({
+          message: 'Client updated successfully',
+          client: updatedClient,
         });
+      } else {
+        res.status(404).json({ message: 'Client not found' });
+      }
+    })
+    .catch((error) => {
+      res.status(500).json({
+        message: 'Something went wrong',
+        error: error,
+      });
+    });
 }
 
-
-
-
 function updateClientImage(req, res) {
-    const id = req.userId; // Extract client ID from request parameters
+    const id = req.params.id; // Extract client ID from request parameters
 
-    // Check if a file is uploaded
-    if (!req.file) {
-        return res.status(400).json({ success: false, message: "You must upload an image." });
-    }
-    
-    if (req.file.mimetype == 'image/jpeg') {
-        return res.status(400).json({ success: false, message: "Only JPEG images are supported." });}
-    
+  // Check if a file is uploaded
+  if (!req.file) {
+    return res
+      .status(400)
+      .json({ success: false, message: 'You must upload an image.' });
+  }
+
+  if (req.file.mimetype == 'image/jpeg') {
+    return res
+      .status(400)
+      .json({ success: false, message: 'Only JPEG images are supported.' });
+  }
 
     // Construct the image URL for the client
-    const imageURL = `http://localhost:3000/imageClient/${req.file.filename}`; // changer avec votre adressse ip/10.0.2.2(emulateur)
+    const imageURL = `http://192.168.151.173:3000/imageClient/${req.file.filename}`; // changer avec votre adressse ip/10.0.2.2(emulateur)
 
-    // Update the client's photo URL in the database
-    models.Client.findByPk(id)
-        .then(client => {
-            if (!client) {
-                return res.status(404).json({ message: 'Client not found' });
-            }
+  // Update the client's photo URL in the database
+  models.Client.findByPk(id)
+    .then((client) => {
+      if (!client) {
+        return res.status(404).json({ message: 'Client not found' });
+      }
 
-            // Update the client's photo URL
-            client.photo = imageURL;
-            
+      // Update the client's photo URL
+      client.photo = imageURL;
 
-            // Save the updated client
-            return client.save();
-        })
-        .then(updatedClient => {
-            // Return success message and the updated client object
-            res.status(200).json({
-                success: true,
-                message: 'Client image updated successfully',
-                client: updatedClient,
-                imageURL: imageURL
-            });
-        })
-        .catch(error => {
-            res.status(500).json({ success: false, message: 'Something went wrong', error: error });
-        });
-} 
+      // Save the updated client
+      return client.save();
+    })
+    .then((updatedClient) => {
+      // Return success message and the updated client object
+      res.status(200).json({
+        success: true,
+        message: 'Client image updated successfully',
+        client: updatedClient,
+        imageURL: imageURL,
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        success: false,
+        message: 'Something went wrong',
+        error: error,
+      });
+    });
+}
 async function creerEvaluation(req, res) {
     const evaluation = {
         Note: req.body.Note,
@@ -346,18 +391,25 @@ async function creerEvaluation(req, res) {
             return res.status(400).json({ message: `L'heure actuelle est antérieure à la fin du rendez-vous.` });
         }
     }
-        if (isNaN(Note) || Note < 0 || Note > 5) {
-            return res.status(400).json({ message: "La notation doit être un nombre décimal entre 0 et 5." });
-        }
-        const result = await models.Evaluation.create(evaluation);
-        return res.status(201).json({
-            message: "Réussite",
-            evaluation: result,
-        });
-    } catch (error) {
-        console.error("Une erreur s'est produite lors de la création de l'évaluation :", error);
-        return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
+    if (isNaN(Note) || Note < 0 || Note > 5) {
+      return res.status(400).json({
+        message: 'La notation doit être un nombre décimal entre 0 et 5.',
+      });
     }
+    const result = await models.Evaluation.create(evaluation);
+    return res.status(201).json({
+      message: 'Réussite',
+      evaluation: result,
+    });
+  } catch (error) {
+    console.error(
+      "Une erreur s'est produite lors de la création de l'évaluation :",
+      error
+    );
+    return res.status(500).json({
+      message: "Une erreur s'est produite lors du traitement de votre demande.",
+    });
+  }
 }
 
 
@@ -376,10 +428,12 @@ async function lancerdemande(req, res) {
     console.log('Hôte détecté :', host);
     
 
-    // Vérifier si clientId est défini
-    if (!clientId) {
-        return res.status(400).json({ message: `L'ID du client n'est pas défini.` });
-    }
+  // Vérifier si clientId est défini
+  if (!clientId) {
+    return res
+      .status(400)
+      .json({ message: `L'ID du client n'est pas défini.` });
+  }
 
     try {
         // Vérifier si la prestation existe
@@ -511,7 +565,7 @@ function AfficherArtisan(req,res){
 }
 
 function AfficherProfil(req,res){
-    const id=req.userId;
+    const id=req.params.id;
     models.Client.findByPk(id).then(result=>{
         if(result){
             const clientInfo = {
@@ -569,10 +623,10 @@ async function creerRDV(req,demandeId) {
     // Extraire les heures et les minutes de l'heure de début
     const [heureDebutHours, heureDebutMinutes] = heureDebutString.split(':');
 
-    // Créer un objet Date avec l'heure de début
-    const heureDebut = new Date(dateDebut);
-    heureDebut.setHours(heureDebutHours);
-    heureDebut.setMinutes(heureDebutMinutes);
+  // Créer un objet Date avec l'heure de début
+  const heureDebut = new Date(dateDebut);
+  heureDebut.setHours(heureDebutHours);
+  heureDebut.setMinutes(heureDebutMinutes);
 
         const demande = await models.Demande.findByPk(demandeId, {
             include: [
@@ -581,22 +635,24 @@ async function creerRDV(req,demandeId) {
             ]
         });
 
-        if (!demande) {
-            return res.status(404).json({ message: `La demande avec l'ID ${demandeId} n'existe pas.` });
-        }
+    if (!demande) {
+      return res
+        .status(404)
+        .json({ message: `La demande avec l'ID ${demandeId} n'existe pas.` });
+    }
 
-        const clientId = demande.ClientId;
-        const prestationId = demande.PrestationId;
+    const clientId = demande.ClientId;
+    const prestationId = demande.PrestationId;
 
-        // Convertir la durée en heures en un nombre entier
-        const duree = parseInt(dureeString);
+    // Convertir la durée en heures en un nombre entier
+    const duree = parseInt(dureeString);
 
-        // Calculer l'heure de fin en ajoutant la durée à l'heure de début
-        const heureFin = new Date(heureDebut.getTime() + duree * 60 * 60 * 1000);
+    // Calculer l'heure de fin en ajoutant la durée à l'heure de début
+    const heureFin = new Date(heureDebut.getTime() + duree * 60 * 60 * 1000);
 
-        // Formater l'heure de fin en hh:mm
-        const optionsHeure = { hour: '2-digit', minute: '2-digit' };
-        const heureFinFormatee = heureFin.toLocaleTimeString('fr-FR', optionsHeure);
+    // Formater l'heure de fin en hh:mm
+    const optionsHeure = { hour: '2-digit', minute: '2-digit' };
+    const heureFinFormatee = heureFin.toLocaleTimeString('fr-FR', optionsHeure);
 
         // Créer le RDV
         const rdv = await models.RDV.create({
@@ -647,7 +703,7 @@ async function confirmerRDV(req, res) {
 
 
 async function annulerRDV(req, res) {
-    const rdvId = req.body.rdvId; 
+  const rdvId = req.body.rdvId;
 
     try {
         const rdv = await models.RDV.findByPk(rdvId);
@@ -672,14 +728,14 @@ async function annulerRDV(req, res) {
 async function ActiviteEncours(req, res) {
     const clientId = req.params.id;
 
-    try {
-        const maintenant = new Date();
+  try {
+    const maintenant = new Date();
 
-        const demandes = await models.Demande.findAll({
-            where: { ClientId: clientId }
-        });
+    const demandes = await models.Demande.findAll({
+      where: { ClientId: clientId },
+    });
 
-        const demandeIds = demandes.map(demande => demande.id);
+    const demandeIds = demandes.map((demande) => demande.id);
 
         const rdvs = await models.RDV.findAll({
             where: { DemandeId: demandeIds },
@@ -736,8 +792,6 @@ async function ActiviteEncours(req, res) {
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
-
-
 
 
 async function ActiviteTerminee(req, res) {
@@ -851,27 +905,37 @@ async function ActiviteTerminee(req, res) {
 
 
 function AfficherPrestations(req, res) {
-    const domaineId = req.body.domaineId; // Supposons que vous récupériez l'ID du domaine depuis les paramètres de l'URL
+    const domaineId = req.params.id; // Supposons que vous récupériez l'ID du domaine depuis les paramètres de l'URL
 
-    models.Prestation.findAll({
-        where: { DomaineId: domaineId },
-        include: [{
-            model: models.Tarif // Inclure le modèle Tarif associé à chaque prestation
-        }]
-    }).then(result => {
-        if (result.length > 0) {
-            res.status(200).json(result);
-        } else {
-            res.status(404).json({ message: "Aucune prestation trouvée pour ce domaine." });
-        }
-    }).catch(error => {
-        res.status(500).json({ message: "Une erreur s'est produite lors de la récupération des prestations.", error: error });
+  models.Prestation.findAll({
+    where: { DomaineId: domaineId },
+    include: [
+      {
+        model: models.Tarif, // Inclure le modèle Tarif associé à chaque prestation
+      },
+    ],
+  })
+    .then((result) => {
+      if (result.length > 0) {
+        res.status(200).json(result);
+      } else {
+        res
+          .status(404)
+          .json({ message: 'Aucune prestation trouvée pour ce domaine.' });
+      }
+    })
+    .catch((error) => {
+      res.status(500).json({
+        message:
+          "Une erreur s'est produite lors de la récupération des prestations.",
+        error: error,
+      });
     });
 }
 
 async function DetailsDemandeConfirmee(req, res) {
-    const clientId = req.userId;
-    const rdvId = req.body.rdvId;
+  const clientId = req.userId;
+  const rdvId = req.body.rdvId;
 
     try {
         const rdv = await models.RDV.findByPk(rdvId, {
@@ -906,9 +970,9 @@ async function DetailsDemandeConfirmee(req, res) {
 
         }
 
-        const artisan = await models.Artisan.findByPk(artisanDemande.ArtisanId, {
-            attributes: ['NomArtisan', 'PrenomArtisan']
-        });
+    const artisan = await models.Artisan.findByPk(artisanDemande.ArtisanId, {
+      attributes: ['NomArtisan', 'PrenomArtisan'],
+    });
 
         const rdvAffich = {
             DateDebut: rdv.DateDebut,
@@ -932,8 +996,8 @@ async function DetailsDemandeConfirmee(req, res) {
     }
 }
 async function DetailsRDVTermine(req, res) {
-    const clientId = req.userId;
-    const rdvId = req.body.rdvId;
+  const clientId = req.userId;
+  const rdvId = req.body.rdvId;
 
     try {
         const rdv = await models.RDV.findByPk(rdvId, {
@@ -955,17 +1019,23 @@ async function DetailsRDVTermine(req, res) {
         }
         
 
-        const now = new Date();
-        const rdvDateFin = new Date(rdv.DateFin);
-        const rdvHeureFin = new Date(rdv.HeureFin);
+    const now = new Date();
+    const rdvDateFin = new Date(rdv.DateFin);
+    const rdvHeureFin = new Date(rdv.HeureFin);
 
-        if (rdvDateFin > now || (rdvDateFin.getTime() === now.getTime() && rdvHeureFin.getTime() > now.getTime())) {
-            return res.status(400).json({ message: `Le RDV avec l'ID ${rdvId} n'est pas encore terminé.` });
-        }
+    if (
+      rdvDateFin > now ||
+      (rdvDateFin.getTime() === now.getTime() &&
+        rdvHeureFin.getTime() > now.getTime())
+    ) {
+      return res.status(400).json({
+        message: `Le RDV avec l'ID ${rdvId} n'est pas encore terminé.`,
+      });
+    }
 
-        const artisanDemande = await models.ArtisanDemande.findOne({
-            where: { DemandeId: rdv.DemandeId }
-        });
+    const artisanDemande = await models.ArtisanDemande.findOne({
+      where: { DemandeId: rdv.DemandeId },
+    });
 
         if (!artisanDemande) {
             return res.status(404).json({ message: `Aucun artisan n'est associé à la demande de RDV avec l'ID ${rdvId}.` });
@@ -975,9 +1045,9 @@ async function DetailsRDVTermine(req, res) {
 
         }
 
-        const artisan = await models.Artisan.findByPk(artisanDemande.ArtisanId, {
-            attributes: ['NomArtisan', 'PrenomArtisan']
-        });
+    const artisan = await models.Artisan.findByPk(artisanDemande.ArtisanId, {
+      attributes: ['NomArtisan', 'PrenomArtisan'],
+    });
 
         const rdvAffich = {
             DateDebut: rdv.DateDebut,
@@ -1005,7 +1075,6 @@ async function DetailsRDVTermine(req, res) {
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
-
 
 module.exports = {
     getArtisansForDemand,

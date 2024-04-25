@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:flutter_application_proj2cp/pages/activite/activite_client.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/bottom_nav_bar.dart';
 import 'package:flutter_application_proj2cp/pages/ajouter_domaine.dart';
 import 'package:flutter_application_proj2cp/pages/connexion.dart';
 import 'package:flutter_application_proj2cp/Web/connexionweb.dart';
 import 'package:flutter_application_proj2cp/pages/entree/pagesentree.dart';
+import 'package:flutter_application_proj2cp/pages/inscription.dart';
 import 'package:flutter_application_proj2cp/pages/profile_screen.dart';
-import 'package:flutter_application_proj2cp/pages/profile_screen.dart';
+import 'package:flutter_application_proj2cp/pages/afficher_prestation.dart';
+import 'package:flutter_application_proj2cp/widgets/bottom_nav_bar.dart';
+
 import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -20,8 +24,12 @@ import 'package:flutter_application_proj2cp/lancer_demande1.dart';
 import 'package:flutter_application_proj2cp/Web/lancer_demande1Web.dart';
 import 'package:flutter_application_proj2cp/pages/mademande.dart';
 import 'package:flutter_application_proj2cp/details_prestation.dart';
-
-
+<<<<<<< HEAD
+import 'package:flutter_application_proj2cp/rendez-vous_terminée.dart';
+=======
+import 'package:flutter_application_proj2cp/pages/artisan/detail_demande_lancee.dart';
+import 'package:flutter_application_proj2cp/pages/artisan/rendez_vous_termine_artisan.dart';
+>>>>>>> lynda/pages
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -38,6 +46,7 @@ class App extends StatelessWidget {
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Beaver',
+
           /*theme: ThemeData(
             iconTheme: const IconThemeData(color: vertClair),
           ),*/

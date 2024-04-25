@@ -7,3 +7,4 @@ const crevette = Color(0xffff8787);
 const kWhite = Color(0xfffFFFFF);
 const kBlack = Color(0xff000000);
 const cremeClair = Color(0xfff7f3f2);
+const marron = Color(0xff777777);
