@@ -15,15 +15,14 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-   ScrollController? _scrollController;
-   bool _showSuggestions = false;
-   bool _suggestionSelected = false;
+  ScrollController? _scrollController;
+
   late String _token;
   Map<String, dynamic> _userData = {};
   bool _isEditing = false;
   @override // Déclaration de _token en dehors des méthodes
 
-      @override
+  @override
   void initState() {
     super.initState();
     _isEditing = false;
@@ -31,56 +30,57 @@ class _ProfileState extends State<Profile> {
     bool _showSuggestions = false;
     fetchData();
   }
-   @override
+
+  @override
   void dispose() {
     _scrollController?.dispose();
     super.dispose();
   }
+
   Future<void> fetchData() async {
     final prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('token') ?? '';
     print('Token: $_token');
-    await Future.wait([
-      _fetchUserData()
-    ]);
-  }  
-      Future<void> _fetchUserData() async {
-        final url = Uri.parse(
-            'http://192.168.100.7:3000/client/Affichermonprofil'); // Replace with your endpoint
-        try {
-          final response = await http.get(
-            url,
-            headers: {'Authorization': 'Bearer $_token'},
-          );
+    await Future.wait([_fetchUserData()]);
+  }
 
-          if (response.statusCode == 200) {
-            final userDataJson = json.decode(response.body);
+  Future<void> _fetchUserData() async {
+    final url = Uri.parse(
+        'http://192.168.1.67:3000/client/Affichermonprofil'); // Replace with your endpoint
+    try {
+      final response = await http.get(
+        url,
+        headers: {'Authorization': 'Bearer $_token'},
+      );
 
-            setState(() {
-              _userData = {
-                'Username': userDataJson['Username'] as String,
-                'EmailClient': userDataJson['EmailClient'] as String,
-                'AdresseClient': userDataJson['AdresseClient'] as String,
-                'NumeroTelClient': userDataJson['NumeroTelClient'] as String,
-                'Points': userDataJson['Points'],
-                'Service_account': userDataJson['Service_account']
-              };
-            });
-            print('_userData: $_userData'); // Debugging print
-          } else {
-            print('Failed to fetch user data');
-            print('Response Status Code: ${response.statusCode}');
-            print('Response Body: ${response.body}');
-          }
-        } catch (error) {
-          print('Error fetching user data: $error');
-        }
+      if (response.statusCode == 200) {
+        final userDataJson = json.decode(response.body);
+
+        setState(() {
+          _userData = {
+            'Username': userDataJson['Username'] as String,
+            'EmailClient': userDataJson['EmailClient'] as String,
+            'AdresseClient': userDataJson['AdresseClient'] as String,
+            'NumeroTelClient': userDataJson['NumeroTelClient'] as String,
+            'Points': userDataJson['Points'],
+            'Service_account': userDataJson['Service_account']
+          };
+        });
+        print('_userData: $_userData'); // Debugging print
+      } else {
+        print('Failed to fetch user data');
+        print('Response Status Code: ${response.statusCode}');
+        print('Response Body: ${response.body}');
       }
-
+    } catch (error) {
+      print('Error fetching user data: $error');
+    }
+  }
 
   List<dynamic> _predictions = [];
   bool _showSuggestions = true;
-   bool _suggestionSelected = false;
+  bool _suggestionSelected = false;
+  String _addressErrorText = '';
   @override
   void _searchPlaces(String input) async {
     const apiKey = 'AIzaSyD_d366EANPIHugZe9YF5QVxHHa_Bzef_4';
@@ -94,11 +94,10 @@ class _ProfileState extends State<Profile> {
       _predictions = data['predictions'];
     });
   }
-  
 
   Future<void> updateClientImage(int id, File image) async {
     // Replace "http://localhost:3000" with your server URL
-    String baseUrl = "http://192.168.100.7:3000";
+    String baseUrl = "http://192.168.1.67:3000";
 
     // Construct the endpoint URL
     String endpoint = "$baseUrl/client/updateClientImage/$id";
@@ -138,7 +137,7 @@ class _ProfileState extends State<Profile> {
 
   Future<void> updateClient(Map<String, dynamic> updatedData) async {
     final url = Uri.parse(
-        'http://192.168.100.7:3000/client/updateClient/1'); // Replace with your endpoint
+        'http://192.168.1.67:3000/client/updateClient/1'); // Replace with your endpoint
     try {
       final response = await http.patch(
         url,
@@ -724,3 +723,4 @@ class _ProfileState extends State<Profile> {
     );
   }
 }
+
