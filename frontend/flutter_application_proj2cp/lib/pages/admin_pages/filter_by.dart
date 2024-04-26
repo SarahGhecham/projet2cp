@@ -91,7 +91,7 @@ class _FiltrerState extends State<Filtrer> {
             filter,
             style: GoogleFonts.poppins(
               fontSize: 15,
-              color: marron,
+              color: kWhite,
               fontWeight: FontWeight.w500,
             ),
           ),

@@ -82,7 +82,7 @@ class _AppNavigatorState extends State<AppNavigator> {
 
   @override
   Widget build(BuildContext context) {
-    return _isLoggedIn ? HomeScreen() : LogInPage();
+    return _isLoggedIn ? BottomNavBar() : LogInPage();
   }
 }
 
