@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/lancer_demande3.dart';
+import 'package:flutter_application_proj2cp/profile_artisan.dart';
 import 'package:flutter_application_proj2cp/rendez-vous_terminée.dart';
 import 'package:flutter_application_proj2cp/demande_confirmé.dart';
 import 'package:flutter_application_proj2cp/lancer_demande1.dart';
@@ -14,7 +15,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Lancerdemande1Page(),
+      home: ProfileartisanPage(),
     );
   }
 }
