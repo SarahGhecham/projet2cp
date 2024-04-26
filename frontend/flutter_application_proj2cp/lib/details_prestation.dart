@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'dart:convert';
+import 'package:flutter_application_proj2cp/lancer_demande1.dart';
 
 
 
@@ -29,7 +30,13 @@ class _details_prestationPageState extends State<details_prestationPage> {
     print(widget.id);
     print(widget.imagePrestation); // Assuming domaineId is available
   }
-  
+  void _navigateToNextPage(BuildContext context) {
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Lancerdemande1Page(),
+                      ),
+                    );}
   
 
 
@@ -193,7 +200,8 @@ class _details_prestationPageState extends State<details_prestationPage> {
                   ),
                   const SizedBox(height: 30),
                   ElevatedButton(
-                    onPressed: (){},
+                    onPressed: (){
+                       _navigateToNextPage(context);},
                     style: ButtonStyle(
                       minimumSize: MaterialStateProperty.all<Size>(const Size(180, 50)),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(

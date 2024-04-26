@@ -469,7 +469,7 @@ async function lancerdemande(req, res) {
         });
         // Vérifier si la demande a été créée avec succès
         if (!nouvelleDemande) {
-            return res.status(500).json({ message: `Impossible de créer la demande.` });
+            return res.status(500).json({ message: `Impossible de créer la demande.` },error);
         }
         const demandeId = nouvelleDemande.id;
         const rdv = await creerRDV(req,demandeId);
@@ -487,13 +487,15 @@ async function lancerdemande(req, res) {
         
         const artisansIds = [];
         const coordinates=[];
+        //const clientCoords=geocode(client.AdresseClient);
+        let clientCoords;
         for (const artisanId of idsArtisansAssocies) {
             const artisan = await models.Artisan.findByPk(artisanId);
             if (artisan && (artisan.Disponibilite||!urgente)) {
                 const AdresseArtisan = artisan.AdresseArtisan;
                 //const AdresseArtisan = "ESI,oued smar";
-                console.log(localisation);
-                const clientCoords = await geocode(localisation);
+                //console.log(localisation);
+                clientCoords = await geocode(localisation);
                 const artisanCoords = await geocode(AdresseArtisan);
                 
                 // Afficher les coordonnées du client et de l'artisan
@@ -503,7 +505,7 @@ async function lancerdemande(req, res) {
                 // Calculer la distance routière entre le client et l'artisan
                 const routeDistance = await calculateRouteDistance(clientCoords, artisanCoords);
                 console.log('Route distance between client and artisan:', routeDistance.toFixed(2), 'km');
-                //await artisan.update({ RayonKm: 19.4 });
+                await artisan.update({ RayonKm: 19.4 });
                 if(artisan.RayonKm>=routeDistance)
                 {
                     artisansIds.push(artisan.id);
@@ -518,13 +520,16 @@ async function lancerdemande(req, res) {
                     }
                 }
             }
+            
         }
-        
+
+        console.log(clientCoords);
 
         return res.status(201).json({
             message: `La demande a été créée avec succès et associée au client et à la prestation.`,
             demande: nouvelleDemande,
             coordinates,
+            clientCoords: clientCoords,
             rdv
         });
     } catch (error) {
