@@ -1,6 +1,11 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_application_proj2cp/constants/constants.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/ajouter_prestation.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
@@ -82,7 +87,34 @@ class _AddDomainePageState extends State<AddDomainePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Domaine'),
+        automaticallyImplyLeading: false,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 30),
+              child: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(
+                      context); // Navigate back when back arrow is pressed
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 30, left: 20),
+              child: Text(
+                'Ajouter un domaine',
+                style: GoogleFonts.poppins(
+                  textStyle: TextStyle(
+                    fontSize: 23,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -90,29 +122,183 @@ class _AddDomainePageState extends State<AddDomainePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextField(
-                controller: _domaineController,
-                decoration: InputDecoration(
-                  labelText: 'Nom du Domaine',
+              Padding(
+                padding: const EdgeInsets.fromLTRB(15, 30, 30, 0),
+                child: Text(
+                  'Nom du domaine',
+                  style: GoogleFonts.poppins(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
                 ),
               ),
-              SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Container(
+                  width: 277,
+                  height: 45,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFDCC8C5).withOpacity(0.22),
+                    border: Border.all(
+                      color: const Color(0xFFDCC8C5),
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      //hintText: "Saisir un nom",
+                      hintStyle: GoogleFonts.poppins(
+                        color: const Color(0xFF777777),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 10.0,
+                        horizontal: 16.0,
+                      ),
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(15, 25, 30, 0),
+                child: Text(
+                  'Image descriptive',
+                  style: GoogleFonts.poppins(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
               _imageFile != null
                   ? Image.file(_imageFile!)
-                  : Placeholder(
-                      fallbackHeight: 200,
-                      fallbackWidth: double.infinity,
+                  : Stack(children: [
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Container(
+                          width: 300,
+                          height: 70,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFDCC8C5).withOpacity(0.22),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                      Positioned.fill(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            GestureDetector(
+                              onTap: _selectImage,
+                              child: Container(
+                                width: 140,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: crevette,
+                                    width: 1,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'Séléctionner',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      color: crevette,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text(
+                                'Aucun fichier ',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  //fontWeight: FontWeight.w600,
+                                  color: Color.fromARGB(255, 109, 109, 109),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ]),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(15, 25, 30, 0),
+                child: Text(
+                  'Liste des prestation',
+                  style: GoogleFonts.poppins(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AddPrestationPage()),
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Container(
+                    width: 300,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFDCC8C5).withOpacity(0.22),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _selectImage,
-                child: Text('Sélectionner une image'),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Icon(
+                          Icons.add,
+                          color: Color.fromARGB(255, 109, 109, 109),
+                        ),
+                        Text(
+                          'Ajouter une prestation',
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            color: Color.fromARGB(255, 109, 109, 109),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _ajouterDomaine,
-                child: Text('Ajouter Domaine'),
+              SizedBox(
+                height: 180,
               ),
+              Center(
+                  child: GestureDetector(
+                onTap: _ajouterDomaine,
+                child: Container(
+                    height: 50,
+                    width: 150,
+                    decoration: BoxDecoration(
+                      color: crevette,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Enregistrer',
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          color: kWhite,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    )),
+              )),
             ],
           ),
         ),
