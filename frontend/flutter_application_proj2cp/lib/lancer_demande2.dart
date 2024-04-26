@@ -31,13 +31,7 @@ class _Lancerdemande2PageState extends State<Lancerdemande2Page> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(height:180),
-            SizedBox(
-              height: 18,
-              width: 25,
-              child: SvgPicture.asset("assets/fleche.svg"),
-            ),
-            const SizedBox(width: 50),
+            const SizedBox(width: 30),
             Container(
               width: 200,
               height: 11,
@@ -51,7 +45,7 @@ class _Lancerdemande2PageState extends State<Lancerdemande2Page> {
                 valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF05564B)),
               ),
             ),
-            const SizedBox(width: 50),
+            const SizedBox(width: 60),
             SizedBox(
               height: 16,
               width: 20,
