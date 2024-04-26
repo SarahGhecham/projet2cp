@@ -15,6 +15,9 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+   ScrollController? _scrollController;
+   bool _showSuggestions = false;
+   bool _suggestionSelected = false;
   late String _token;
   Map<String, dynamic> _userData = {};
   bool _isEditing = false;
@@ -23,9 +26,16 @@ class _ProfileState extends State<Profile> {
       @override
   void initState() {
     super.initState();
+    _isEditing = false;
+    _scrollController = ScrollController();
+    bool _showSuggestions = false;
     fetchData();
   }
-
+   @override
+  void dispose() {
+    _scrollController?.dispose();
+    super.dispose();
+  }
   Future<void> fetchData() async {
     final prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('token') ?? '';
@@ -33,7 +43,7 @@ class _ProfileState extends State<Profile> {
     await Future.wait([
       _fetchUserData()
     ]);
-  }
+  }  
       Future<void> _fetchUserData() async {
         final url = Uri.parse(
             'http://192.168.100.7:3000/client/Affichermonprofil'); // Replace with your endpoint
@@ -70,6 +80,7 @@ class _ProfileState extends State<Profile> {
 
   List<dynamic> _predictions = [];
   bool _showSuggestions = true;
+   bool _suggestionSelected = false;
   @override
   void _searchPlaces(String input) async {
     const apiKey = 'AIzaSyD_d366EANPIHugZe9YF5QVxHHa_Bzef_4';
@@ -221,55 +232,74 @@ class _ProfileState extends State<Profile> {
                     ),
                   ),
                 ),
-                Stack(
-                  children: [
-                    FractionalTranslation(
-                      translation: const Offset(
-                        0,
-                        0.78,
-                      ),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Container(
-                          width: 168,
-                          height: 174,
-                          child: GestureDetector(
-                            onTap: () async {
-                              if (_isEditing) {
-                                final picker = ImagePicker();
-                                final pickedFile = await picker.getImage(
-                                  source: ImageSource.gallery,
-                                );
-
-                                if (pickedFile != null) {
-                                  setState(() {
-                                    File imageFile = File(pickedFile.path);
-                                    updateClientImage(1, imageFile);
-                                  });
-                                }
-                              }
-                            },
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(14),
-                              child: _userData['photo'] != null
-                                  ? Image.file(
-                                      File(_userData['photo']),
-                                      width: 168,
-                                      height: 174,
-                                      fit: BoxFit.cover,
-                                    )
-                                  : Image.asset(
-                                      'assets/images/l.png',
-                                      width: 168,
-                                      height: 174,
-                                      fit: BoxFit.cover,
-                                    ),
+                FractionalTranslation(
+                  translation: const Offset(
+                    0,
+                    0.78,
+                  ),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      width: 168,
+                      height: 174,
+                      child: Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(14),
+                            child: _userData['photo'] != null
+                                ? Image.file(
+                                    File(_userData['photo']),
+                                    width: 168,
+                                    height: 174,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.asset(
+                                    'assets/images/l.png',
+                                    width: 168,
+                                    height: 174,
+                                    fit: BoxFit.cover,
+                                  ),
+                          ),
+                          Visibility(
+                            visible: _isEditing,
+                            child: Positioned(
+                              top: 6,
+                              right: 6,
+                              child: GestureDetector(
+                                onTap: () {
+                                  // Action to perform when the edit icon is tapped
+                                },
+                                child: Icon(
+                                  Icons.edit,
+                                  color: Colors.black,
+                                  size: 28,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                          Positioned.fill(
+                            child: GestureDetector(
+                              onTap: () async {
+                                if (_isEditing) {
+                                  final picker = ImagePicker();
+                                  final pickedFile = await picker.getImage(
+                                    source: ImageSource.gallery,
+                                  );
+
+                                  if (pickedFile != null) {
+                                    setState(() {
+                                      File imageFile = File(pickedFile.path);
+                                      updateClientImage(1, imageFile);
+                                    });
+                                  }
+                                }
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ],
             ),
@@ -283,10 +313,15 @@ class _ProfileState extends State<Profile> {
                     height: 33,
                     child: ElevatedButton(
                       onPressed: () {
-                        if (_isEditing) {
+                        if (_isEditing && _suggestionSelected) {
                           _saveChanges();
                           updateClient(_userData);
                           _toggleEditing(false);
+                        } else if (_isEditing && !_suggestionSelected) {
+                          setState(() {
+                            _addressErrorText =
+                                'Veuillez choisir un emplacement de la liste ';
+                          });
                         } else {
                           _toggleEditing(true);
                         }
@@ -502,38 +537,20 @@ class _ProfileState extends State<Profile> {
                         ),
                       ),
                       child: Center(
-                        child: _isEditing
-                            ? Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8),
-                                child: TextFormField(
-                                  controller: _gmailController,
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Entrer email ',
-                                    hintStyle: TextStyle(color: Colors.grey),
-                                  ),
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              )
-                            : Text(
-                                _userData['EmailClient'] != null &&
-                                        _userData['EmailClient'].isNotEmpty
-                                    ? _userData['EmailClient']
-                                    : 'Gmail',
-                                style: TextStyle(
-                                  color: _userData['EmailClient'] != null &&
-                                          _userData['EmailClient'].isNotEmpty
-                                      ? Colors.black
-                                      : Colors.grey,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                        child: Text(
+                          _userData['EmailClient'] != null &&
+                                  _userData['EmailClient'].isNotEmpty
+                              ? _userData['EmailClient']
+                              : 'Gmail',
+                          style: TextStyle(
+                            color: _userData['EmailClient'] != null &&
+                                    _userData['EmailClient'].isNotEmpty
+                                ? Colors.black
+                                : Colors.grey,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -542,102 +559,162 @@ class _ProfileState extends State<Profile> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      width: 277,
-                      height: 51,
-                      decoration: BoxDecoration(
-                        color: Color(0xFFDCC8C5).withOpacity(0.22),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: Color(0xFFDCC8C5),
-                          width: 1,
-                        ),
-                      ),
-                      child: Center(
-                        child: _isEditing
-                            ? Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8),
-                                child: TextFormField(
-                                  controller: _addressController,
-                                  keyboardType: TextInputType.text,
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Entrer Adresse',
-                                    hintStyle: TextStyle(color: Colors.grey),
-                                  ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 277,
+                            height: 51,
+                            decoration: BoxDecoration(
+                              color: Color(0xFFDCC8C5).withOpacity(0.22),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: Color(0xFFDCC8C5),
+                                width: 1,
+                              ),
+                            ),
+                            child: Center(
+                              child: _isEditing
+                                  ? Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8),
+                                      child: TextFormField(
+                                        controller: _addressController,
+                                        keyboardType: TextInputType.text,
+                                        decoration: InputDecoration(
+                                          border: InputBorder.none,
+                                          hintText: 'Entrer Adresse',
+                                          hintStyle:
+                                              TextStyle(color: Colors.grey),
+                                        ),
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        onChanged: (value) {
+                                          if (value.isNotEmpty) {
+                                            _searchPlaces(value);
+                                            setState(() {
+                                              _showSuggestions = true;
+                                              _suggestionSelected = false;
+                                            });
+                                            _scrollController?.animateTo(
+                                              _scrollController?.position
+                                                      .maxScrollExtent ??
+                                                  00,
+                                              duration:
+                                                  Duration(milliseconds: 500),
+                                              curve: Curves.easeInOut,
+                                            );
+                                          } else {
+                                            setState(() {
+                                              _showSuggestions = false;
+                                              _suggestionSelected = false;
+                                            });
+                                          }
+                                        },
+                                      ),
+                                    )
+                                  : Text(
+                                      _userData['AdresseClient'] != null &&
+                                              _userData['AdresseClient']
+                                                  .isNotEmpty
+                                          ? _userData['AdresseClient']
+                                          : 'Adresse',
+                                      style: TextStyle(
+                                        color: _userData['AdresseClient'] !=
+                                                    null &&
+                                                _userData['AdresseClient']
+                                                    .isNotEmpty
+                                            ? Colors.black
+                                            : Colors.grey,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 4,
+                          ), // Add some space between TextFormField and Text
+                          _isEditing && _addressErrorText.isNotEmpty
+                              ? Text(
+                                  _addressErrorText,
                                   style: TextStyle(
-                                    color: Colors.black,
+                                    color: Colors.red,
                                     fontSize: 12,
-                                    fontWeight: FontWeight.bold,
                                   ),
-                                  onChanged: (value) {
-                                    if (value.isNotEmpty) {
-                                      _searchPlaces(value);
-                                      setState(() {
-                                        _showSuggestions =
-                                            true; // Afficher les suggestions lors de la saisie
-                                      });
-                                    } else {
-                                      setState(() {
-                                        _showSuggestions =
-                                            false; // Masquer les suggestions
-                                      });
-                                    }
-                                  },
-                                ),
-                              )
-                            : Text(
-                                _userData['AdresseClient'] != null &&
-                                        _userData['AdresseClient'].isNotEmpty
-                                    ? _userData['AdresseClient']
-                                    : 'Adresse',
-                                style: TextStyle(
-                                  color: _userData['AdresseClient'] != null &&
-                                          _userData['AdresseClient'].isNotEmpty
-                                      ? Colors.black
-                                      : Colors.grey,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
+                                )
+                              : SizedBox(),
+                          Stack(
+                            alignment: Alignment.topCenter,
+                            children: [
+                              Visibility(
+                                visible: _showSuggestions,
+                                child: Container(
+                                  width:
+                                      277, // Match the width of the address field
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.grey,
+                                      width: 1,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: ListView.separated(
+                                    padding: EdgeInsets.zero,
+                                    controller: _scrollController,
+                                    separatorBuilder:
+                                        (BuildContext context, int index) {
+                                      return Divider(
+                                        color: Color(0xFFDCC8C5),
+                                        thickness: 2.0,
+                                      );
+                                    },
+                                    shrinkWrap: true,
+                                    itemCount: _predictions.length,
+                                    itemBuilder: (context, index) {
+                                      return ListTile(
+                                        contentPadding: EdgeInsets.symmetric(
+                                            vertical:
+                                                10), // Adjust vertical padding
+                                        title: Text(
+                                          _predictions[index]["description"],
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        onTap: () {
+                                          _addressController.text =
+                                              _predictions[index]
+                                                  ["description"];
+                                          setState(() {
+                                            _showSuggestions = false;
+                                            _suggestionSelected = true;
+                                            _addressErrorText = '';
+                                          });
+                                        },
+                                      );
+                                    },
+                                  ),
                                 ),
                               ),
+                              Positioned(
+                                top: 0,
+                                child: Visibility(
+                                  visible: _showSuggestions,
+                                  child: Icon(
+                                    Icons.arrow_downward,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ],
-                ),
-                Visibility(
-                  visible: _showSuggestions,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                        left: 40.0,
-                        right: 40.0,
-                        bottom:
-                            100.0), // Adjust bottom padding to make space for keyboard
-                    child: ListView.separated(
-                      separatorBuilder: (BuildContext context, int index) {
-                        return Divider(
-                          color: Color(0xFFDCC8C5),
-                          thickness: 2.0,
-                        );
-                      },
-                      shrinkWrap: true,
-                      itemCount: _predictions.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(
-                            _predictions[index]["description"],
-                          ),
-                          onTap: () {
-                            _addressController.text =
-                                _predictions[index]["description"];
-                            setState(() {
-                              _showSuggestions = false;
-                            });
-                          },
-                        );
-                      },
-                    ),
-                  ),
                 ),
               ],
             ),
