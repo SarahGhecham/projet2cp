@@ -46,7 +46,7 @@ class _ProfileState extends State<Profile> {
 
   Future<void> _fetchUserData() async {
     final url = Uri.parse(
-        'http://192.168.1.67:3000/client/Affichermonprofil'); // Replace with your endpoint
+        'http://192.168.100.7:3000/client/Affichermonprofil'); // Replace with your endpoint
     try {
       final response = await http.get(
         url,
@@ -97,10 +97,10 @@ class _ProfileState extends State<Profile> {
 
   Future<void> updateClientImage(int id, File image) async {
     // Replace "http://localhost:3000" with your server URL
-    String baseUrl = "http://192.168.1.67:3000";
+    String baseUrl = "http://192.168.100.7:3000";
 
     // Construct the endpoint URL
-    String endpoint = "$baseUrl/client/updateClientImage/$id";
+    String endpoint = "$baseUrl/client/updateClientImage";
 
     try {
       // Create a multipart request
@@ -137,12 +137,13 @@ class _ProfileState extends State<Profile> {
 
   Future<void> updateClient(Map<String, dynamic> updatedData) async {
     final url = Uri.parse(
-        'http://192.168.1.67:3000/client/updateClient/1'); // Replace with your endpoint
+        'http://192.168.100.7:3000/client/updateClient'); // Replace with your endpoint
     try {
       final response = await http.patch(
         url,
         body: json.encode(updatedData),
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json','Authorization': 'Bearer $_token'},
+
       );
 
       if (response.statusCode == 200) {

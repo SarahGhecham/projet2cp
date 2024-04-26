@@ -268,7 +268,7 @@ async function validateAddress(address, Cleapi) {
 }
 
 async function updateClient(req, res) {
-    const id = req.params.id;
+    const id = req.userId;
 
   // Hash the new password if provided
   let hashedPassword = null;
@@ -307,7 +307,7 @@ async function updateClient(req, res) {
 }
 
 function updateClientImage(req, res) {
-    const id = req.params.id; // Extract client ID from request parameters
+    const id = req.userId; // Extract client ID from request parameters
 
   // Check if a file is uploaded
   if (!req.file) {
