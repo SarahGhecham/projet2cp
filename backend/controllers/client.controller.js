@@ -308,6 +308,7 @@ async function updateClient(req, res) {
 
 function updateClientImage(req, res) {
     const id = req.userId; // Extract client ID from request parameters
+    console.log(req.file.mimetype);
 
   // Check if a file is uploaded
   if (!req.file) {
@@ -323,7 +324,7 @@ function updateClientImage(req, res) {
   }
 
     // Construct the image URL for the client
-    const imageURL = `http://192.168.151.173:3000/imageClient/${req.file.filename}`; // changer avec votre adressse ip/10.0.2.2(emulateur)
+    const imageURL = `http://192.168.100.7:3000/imageClient/${req.file.filename}`; // changer avec votre adressse ip/10.0.2.2(emulateur)
 
   // Update the client's photo URL in the database
   models.Client.findByPk(id)
