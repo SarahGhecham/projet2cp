@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> fetchDomaines() async {
-    final url = Uri.parse('http://10.0.2.2:3000/pageaccueil/AfficherDomaines');
+    final url = Uri.parse('http://192.168.100.7:3000/pageaccueil/AfficherDomaines');
     try {
       final response = await http.get(
         url,
@@ -82,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> fetchEcoServices() async {
     final url =
-        Uri.parse('http://10.0.2.2:3000/pageaccueil/AfficherPrestationsEco');
+        Uri.parse('http://192.168.100.7:3000/pageaccueil/AfficherPrestationsEco');
     try {
       final response = await http.get(
         url,
@@ -91,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
-        //print('Fetched Eco Services: $data');
+        print('Fetched Eco Services: $data');
 
         setState(() {
           ecoServiceWidgets = data
@@ -118,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> fetchTopPrestations() async {
     final url =
-        Uri.parse('http://10.0.2.2:3000/pageaccueil/AfficherPrestationsTop');
+        Uri.parse('http://192.168.100.7:3000/pageaccueil/AfficherPrestationsTop');
     try {
       final response = await http.get(
         url,

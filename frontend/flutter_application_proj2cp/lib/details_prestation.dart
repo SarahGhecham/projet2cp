@@ -1,19 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_proj2cp/pages/afficher_prestation.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as path;
+import 'dart:convert';
+import 'package:flutter_application_proj2cp/lancer_demande1.dart';
+
 
 
 class details_prestationPage extends StatefulWidget {
-  const details_prestationPage({super.key});
+  final int id;
+  final String prst;
+  final String avgtime;
+  final String avgprice;
+  final String imagePrestation;
+  final String Description;
+  final String Unite;
+  details_prestationPage({required this.id,required this.prst,required this.avgtime,required this.avgprice,required this.imagePrestation,required this.Description,required this.Unite});
 
   @override
   State<details_prestationPage> createState() => _details_prestationPageState();
 }
 
 class _details_prestationPageState extends State<details_prestationPage> {
-  var prst = "Lavage de sol";
-  var avgtime = "1h - 2h";
-  var avgprice = "500da - 1500da";
+  String? nomPrestation;
+  void initState() {
+    super.initState();
+    print(widget.id);
+    print(widget.imagePrestation); // Assuming domaineId is available
+  }
+  void _navigateToNextPage(BuildContext context) {
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Lancerdemande1Page(),
+                      ),
+                    );}
+  
+
+
+  //var prst = "Lavage";
+  //var avgtime = "1h - 2h";
+  //var avgprice = "500da - 1500da";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,11 +51,6 @@ class _details_prestationPageState extends State<details_prestationPage> {
         backgroundColor: Colors.white,
         title: Row(
           children: [
-            SizedBox(
-              height: 18,
-              width: 25,
-              child: SvgPicture.asset("assets/fleche.svg"),
-            ),
             const SizedBox(width: 130),
             Text(
               "Details",
@@ -49,9 +73,9 @@ class _details_prestationPageState extends State<details_prestationPage> {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(30.0), // Match the container's border radius
-                child: Image.asset(
-                  'assets/lavage_sol.png', // Replace 'your_image.jpg' with your image path
-                  fit: BoxFit.cover, // Ensure the image covers the entire container
+                child: Image.network(
+                  widget.imagePrestation,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
@@ -82,7 +106,7 @@ class _details_prestationPageState extends State<details_prestationPage> {
                     ),
                     child: Center(
                       child: Text(
-                        prst, style: GoogleFonts.poppins(color: const Color(0xFF05564B), fontSize: 18, fontWeight: FontWeight.bold),
+                        widget.prst, style: GoogleFonts.poppins(color: const Color(0xFF05564B), fontSize: 14, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -94,7 +118,7 @@ class _details_prestationPageState extends State<details_prestationPage> {
                         SvgPicture.asset("assets/clock.svg"),
                         const SizedBox(width: 10),
                         Text(
-                          avgtime, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
+                          widget.avgtime, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
                         )
                       ],
                     ),
@@ -113,7 +137,7 @@ class _details_prestationPageState extends State<details_prestationPage> {
                           children: [
                             const SizedBox(height: 5),
                             Text(
-                              avgprice, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
+                              widget.avgprice, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
                             ),
                           ],
                         ),
@@ -121,7 +145,7 @@ class _details_prestationPageState extends State<details_prestationPage> {
                           children: [
                             const SizedBox(height: 5),
                             Text(
-                              "/h", style: GoogleFonts.poppins(fontSize: 14),
+                              "/${widget.Unite}", style: GoogleFonts.poppins(fontSize: 14),
                             ),
                           ],
                         ),
@@ -147,7 +171,7 @@ class _details_prestationPageState extends State<details_prestationPage> {
                             child: Padding(
                               padding: const EdgeInsets.all(20.0),
                               child: Text(
-                                "Nettoyage complet et professionnel des sols avec des produits efficaces et non nocifs ", style: GoogleFonts.poppins(),
+                                widget.Description, style: GoogleFonts.poppins(),
                               ),
                             ),
                           ),
@@ -176,7 +200,8 @@ class _details_prestationPageState extends State<details_prestationPage> {
                   ),
                   const SizedBox(height: 30),
                   ElevatedButton(
-                    onPressed: (){},
+                    onPressed: (){
+                       _navigateToNextPage(context);},
                     style: ButtonStyle(
                       minimumSize: MaterialStateProperty.all<Size>(const Size(180, 50)),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(

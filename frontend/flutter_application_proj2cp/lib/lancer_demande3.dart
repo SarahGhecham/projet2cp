@@ -1,10 +1,19 @@
+//import 'dart:html';
+
+
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_application_proj2cp/demande_lancee.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+
 
 class Lancerdemande3Page extends StatefulWidget {
   final int hour;
@@ -21,17 +30,38 @@ class Lancerdemande3Page extends StatefulWidget {
 }
 
 class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
+  late String _token;
   var nomprest = "Peinture des murs et plafonds";
   String _adresse = '';
   String _description = '';
+  List<dynamic> coordinates=[];
+
+  Future<void> fetchData() async {
+    final prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('token') ?? '';
+    print('Token: $_token');
+  }
+  
   final TextEditingController _controller = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
+  void _navigateToNextPage(BuildContext context,List<LatLng> latLngList,String _adresse,LatLng coords) {
+    Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => DemandelanceePage(coordinates: latLngList,adresse: _adresse,coords: coords,)
+    ),
+  );}
+
   List<dynamic> _predictions = [];
+  List<LatLng> latLngList = [];
+  LatLng coords=LatLng(36.7050299, 3.1739156);
   bool _showSuggestions = true;
   @override
   void initState() {
     super.initState();
+    fetchData();
+  
     _controller.addListener(() {
     setState(() {
       _adresse = _controller.text;
@@ -42,6 +72,8 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
       _description = _descriptionController.text;
     });
   });
+   
+    
 
     print('Valeur de hour : ${widget.hour}');
     
@@ -289,7 +321,57 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
                           ),
                         ),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Map<String, dynamic> body = {
+                  'nomPrestation': nomprest,
+                  'description':'$_description',
+                  'urgente': widget.urgent, // Ajoutez la valeur de l'urgence ici
+                  'dateDebut': '${widget.jour.toString()}',  // Ajoutez la valeur de la date de début ici
+                  'heureDebut': "${widget.hour}:${widget.min.toString().padLeft(2, '0')}", // Ajoutez la valeur de l'heure de début ici
+                  'duree': widget.hour, // Remplacez 'Votre valeur de durée ici' par la valeur de la durée
+                  'Localisation': '$_adresse', // Ajoutez la valeur de l'adresse ici
+                };
+
+                // Envoyer la requête POST
+                http.post(
+                  Uri.parse('http://192.168.100.7:3000/client/lancerdemande'),
+                  headers: <String, String>{
+                    'Content-Type': 'application/json; charset=UTF-8',
+                    'Authorization': 'Bearer $_token',
+                  },
+                  body: jsonEncode(body),
+                ).then((response) {
+                  if (response.statusCode == 201) {
+                    // La requête a réussi, affichez un message de succès ou effectuez d'autres actions
+                    print('Requête POST réussie: ${response.body}');
+                    
+                    List<dynamic> coordinates = json.decode(response.body)['coordinates'];
+                    var clientCoords = json.decode(response.body)['clientCoords'];
+                    // Maintenant, vous pouvez utiliser la liste de coordonnées comme vous le souhaitez
+                    
+                    print('Coordonnées récupérées: $coordinates');
+                    this.coordinates=coordinates;
+                    setState(() {
+                    latLngList = coordinates.map((item) {
+                      if (item is Map) {
+                        return LatLng(item["latitude"], item["longitude"]);
+                      } else {
+                        throw FormatException("L'élément n'est pas une carte contenant latitude et longitude");
+                      }
+                    }).toList();
+                    
+                  });
+                    print('couple de coordonnées récupéré: $clientCoords');
+                   _navigateToNextPage(context,latLngList,_adresse,coords);
+                  } else {
+                    // La requête a échoué, affichez un message d'erreur ou effectuez d'autres actions
+                    print('Erreur lors de la requête POST: ${response.statusCode}');
+                  }
+                }).catchError((error) {
+                  // Une erreur s'est produite lors de l'envoi de la requête
+                  print('Erreur lors de lenvoi de la requête POST: $error');
+                });
+                          },
                           style: ButtonStyle(
                             minimumSize: MaterialStateProperty.all<Size>(const Size(115, 35)),
                             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
