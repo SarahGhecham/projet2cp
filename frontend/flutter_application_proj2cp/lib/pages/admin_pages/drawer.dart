@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/drawer_services.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/page_acceuil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class DrawerDash extends StatefulWidget {
   final Function(int) onPageSelected;
 
-  const DrawerDash({required this.onPageSelected, Key? key}) : super(key: key);
+  final int initialSelectedIndex;
+
+  const DrawerDash({
+    required this.onPageSelected,
+    this.initialSelectedIndex = 0, // Default value is 0
+    Key? key,
+  }) : super(key: key);
 
   @override
   _DrawerDashState createState() => _DrawerDashState();
 }
 
 class _DrawerDashState extends State<DrawerDash> {
-  int _selectedIndex = 0;
-
+ late int _selectedIndex = widget.initialSelectedIndex;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -88,7 +95,65 @@ class _DrawerDashState extends State<DrawerDash> {
             _selectedIndex = index;
           });
           widget.onPageSelected(index);
+          _navigateToScreen(index, context);
         },
+      ),
+    );
+  }
+
+  void _navigateToScreen(int index, BuildContext context) {
+    switch (index) {
+      case 0:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreenAdmin()),
+        );
+        break;
+      case 1:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => DrawerServices()),
+        );
+        break;
+      case 2:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => UsersScreen()),
+        );
+        break;
+      case 3:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => OrdersScreen()),
+        );
+        break;
+    }
+  }
+}
+
+class UsersScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Users'),
+      ),
+      body: Center(
+        child: Text('Users Screen'),
+      ),
+    );
+  }
+}
+
+class OrdersScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Orders'),
+      ),
+      body: Center(
+        child: Text('Orders Screen'),
       ),
     );
   }
