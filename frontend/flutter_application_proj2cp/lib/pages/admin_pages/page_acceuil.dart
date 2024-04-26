@@ -29,7 +29,7 @@ class BarRecherche extends StatelessWidget {
           decoration: InputDecoration(
             filled: true,
             fillColor: vertClair,
-            hintText: 'Rechercher une prestation...',
+            hintText: 'Rechercher...',
             hintStyle: GoogleFonts.poppins(
               fontSize: 16,
               color: Colors.grey[600],
@@ -63,6 +63,7 @@ class _HomeScreenAdminState extends State<HomeScreenAdmin> {
     profilePictureUrl: 'https://picsum.photos/250?image=9',
   );
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  int _currentPageIndex = 0;
 
   String selectedFilter = 'Jour'; // Initialize with default filter
 
@@ -72,170 +73,180 @@ class _HomeScreenAdminState extends State<HomeScreenAdmin> {
     });
   }
 
+  void onPageSelected(int index) {
+    setState(() {
+      _currentPageIndex = index;
+    });
+    // You can add logic here to navigate to different pages based on the index
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      drawer: drawer_dash(),
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: CircleAvatar(
-                    backgroundImage:
-                        NetworkImage(headerAdmin.profilePictureUrl),
-                    radius: 30,
-                  ),
-                ),
-                Text(
-                  'Salut ${headerAdmin.userName}',
-                  style: GoogleFonts.poppins(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.black,
-                  ),
-                ),
-                const Spacer(),
-                GestureDetector(
-                  onTap: () {
-                    //
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 20.0),
-                    child: Image.asset('assets/icons/notif.png'),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 10), // Spacer between the two rows
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Space evenly
-              children: [
-                // Options icon with adjusted padding
-                Padding(
-                  padding:
-                      const EdgeInsets.only(left: 25.0), // Adjusted padding
-                  child: GestureDetector(
-                    onTap: () {
-                      _scaffoldKey.currentState?.openDrawer();
-                    },
-                    child: SizedBox(
-                      width: 30, // Adjusted width
-                      height: 30,
-                      child: Image.asset(
-                        'assets/icons/options.png',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ),
-                // Search bar with expanded flex
-                Expanded(
-                  flex: 2, // Give search bar more space (optional)
-                  child: BarRecherche(),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(30, 30, 20, 5),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Overview',
-                  style: GoogleFonts.poppins(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ), // Spacer between the two rows
-            SizedBox(
-              height: 10,
-            ),
-            Filtrer(
-              onSelectFilter: updateChartData,
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            SizedBox(
-              height: 230,
-              //width: 100,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(horizontal: 30),
+      drawer: DrawerDash(onPageSelected: onPageSelected),
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  SizedBox(
-                    child: Container(
-                      padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: vertClair,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      width: 300,
-                      child: charts.BarChart(
-                        _getSeriesData(),
-                        animate: true,
-                        barGroupingType:
-                            charts.BarGroupingType.grouped, // Adjust bar width
-                        domainAxis: charts.OrdinalAxisSpec(
-                          renderSpec: charts.SmallTickRendererSpec(
-                            labelRotation: 100,
-                            labelStyle: charts.TextStyleSpec(
-                                color: charts.MaterialPalette
-                                    .black, // Customize label color
-                                fontSize: 14,
-                                fontFamily:
-                                    "poppins" // Customize label font size
-                                ),
-                          ),
-                        ),
-                        primaryMeasureAxis: charts.NumericAxisSpec(
-                          renderSpec: charts.GridlineRendererSpec(
-                            labelStyle: charts.TextStyleSpec(
-                              color: charts.MaterialPalette
-                                  .black, // Customize label color
-                              fontSize: 14, // Customize label font size
-                            ),
-                            lineStyle: charts.LineStyleSpec(
-                              color: charts.MaterialPalette.gray
-                                  .shade400, // Customize gridline color
-                            ),
-                          ),
-                        ),
-                        behaviors: [
-                          charts.SeriesLegend(
-                              position:
-                                  charts.BehaviorPosition.bottom), // Add legend
-
-                          charts.PanAndZoomBehavior(), // Enable pan and zoom
-                        ],
-                        selectionModels: [
-                          charts.SelectionModelConfig(
-                            type: charts.SelectionModelType.info,
-                            changedListener: (model) {
-                              if (model.hasDatumSelection) {
-                                print(model.selectedSeries[0]
-                                    .measureFn(model.selectedDatum[0].index));
-                              }
-                            },
-                          ),
-                        ],
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: CircleAvatar(
+                      backgroundImage:
+                          NetworkImage(headerAdmin.profilePictureUrl),
+                      radius: 30,
                     ),
                   ),
-                  SizedBox(
-                    width: 10,
+                  Text(
+                    'Salut ${headerAdmin.userName}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () {
+                      //
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 20.0),
+                      child: Image.asset('assets/icons/notif.png'),
+                    ),
                   ),
                 ],
               ),
-            ),
-          ],
+              SizedBox(height: 10), // Spacer between the two rows
+              Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceEvenly, // Space evenly
+                children: [
+                  // Options icon with adjusted padding
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 25.0), // Adjusted padding
+                    child: GestureDetector(
+                      onTap: () {
+                        _scaffoldKey.currentState?.openDrawer();
+                      },
+                      child: SizedBox(
+                        width: 30, // Adjusted width
+                        height: 30,
+                        child: Image.asset(
+                          'assets/icons/options.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Search bar with expanded flex
+                  Expanded(
+                    flex: 2, // Give search bar more space (optional)
+                    child: BarRecherche(),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(30, 30, 20, 5),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Overview',
+                    style: GoogleFonts.poppins(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ), // Spacer between the two rows
+              SizedBox(
+                height: 10,
+              ),
+              Filtrer(
+                onSelectFilter: updateChartData,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              SizedBox(
+                height: 230,
+                //width: 100,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: EdgeInsets.symmetric(horizontal: 30),
+                  children: [
+                    SizedBox(
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: vertClair,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        width: 300,
+                        child: charts.BarChart(
+                          _getSeriesData(),
+                          animate: true,
+                          barGroupingType: charts
+                              .BarGroupingType.grouped, // Adjust bar width
+                          domainAxis: charts.OrdinalAxisSpec(
+                            renderSpec: charts.SmallTickRendererSpec(
+                              labelRotation: 100,
+                              labelStyle: charts.TextStyleSpec(
+                                  color: charts.MaterialPalette
+                                      .black, // Customize label color
+                                  fontSize: 14,
+                                  fontFamily:
+                                      "poppins" // Customize label font size
+                                  ),
+                            ),
+                          ),
+                          primaryMeasureAxis: charts.NumericAxisSpec(
+                            renderSpec: charts.GridlineRendererSpec(
+                              labelStyle: charts.TextStyleSpec(
+                                color: charts.MaterialPalette
+                                    .black, // Customize label color
+                                fontSize: 14, // Customize label font size
+                              ),
+                              lineStyle: charts.LineStyleSpec(
+                                color: charts.MaterialPalette.gray
+                                    .shade400, // Customize gridline color
+                              ),
+                            ),
+                          ),
+                          behaviors: [
+                            charts.SeriesLegend(
+                                position: charts
+                                    .BehaviorPosition.bottom), // Add legend
+
+                            charts.PanAndZoomBehavior(), // Enable pan and zoom
+                          ],
+                          selectionModels: [
+                            charts.SelectionModelConfig(
+                              type: charts.SelectionModelType.info,
+                              changedListener: (model) {
+                                if (model.hasDatumSelection) {
+                                  print(model.selectedSeries[0]
+                                      .measureFn(model.selectedDatum[0].index));
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -259,7 +270,7 @@ class _HomeScreenAdminState extends State<HomeScreenAdmin> {
 
     return [
       charts.Series(
-        id: "UtilisateurInscris",
+        id: "Clients Inscris",
         data: filteredData,
         domainFn: (UtilisateursInscris series, _) => series.jour.toString(),
         measureFn: (UtilisateursInscris series, _) => series.insriptions,
