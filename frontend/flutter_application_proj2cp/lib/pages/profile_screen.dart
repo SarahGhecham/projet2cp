@@ -9,6 +9,7 @@ import 'package:path/path.dart' as path;
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
 class Profile extends StatefulWidget {
   @override
   _ProfileState createState() => _ProfileState();
@@ -63,7 +64,8 @@ class _ProfileState extends State<Profile> {
             'AdresseClient': userDataJson['AdresseClient'] as String,
             'NumeroTelClient': userDataJson['NumeroTelClient'] as String,
             'Points': userDataJson['Points'],
-            'Service_account': userDataJson['Service_account']
+            'Service_account': userDataJson['Service_account'],
+             'photo': userDataJson['photo']
           };
         });
         print('_userData: $_userData'); // Debugging print
@@ -95,45 +97,50 @@ class _ProfileState extends State<Profile> {
     });
   }
 
-  Future<void> updateClientImage(int id, File image) async {
-    // Replace "http://localhost:3000" with your server URL
-    String baseUrl = "http://192.168.100.7:3000";
+  Future<void> updateClientImage(File image, String token) async {
+  // Replace "http://localhost:3000" with your server URL
+  String baseUrl = "http://192.168.100.7:3000";
 
-    // Construct the endpoint URL
-    String endpoint = "$baseUrl/client/updateClientImage";
+  // Construct the endpoint URL
+  String endpoint = "$baseUrl/client/updateClientImage";
 
-    try {
-      // Create a multipart request
-      var request = http.MultipartRequest('POST', Uri.parse(endpoint));
+  try {
+    // Create a multipart request
+    var request = http.MultipartRequest('POST', Uri.parse(endpoint));
+    print(image.path);
 
-      // Attach the image file to the request
-      request.files.add(await http.MultipartFile.fromPath('image', image.path));
+    // Attach the image file to the request
+    request.files.add(await http.MultipartFile.fromPath('image', image.path));
 
-      // Send the request
-      var streamedResponse = await request.send();
+    // Add Authorization header with token
+    request.headers['Authorization'] = 'Bearer $token';
 
-      // Check the response status
-      if (streamedResponse.statusCode == 200) {
-        // Image uploaded successfully, parse the response
-        var response = await streamedResponse.stream.bytesToString();
-        var data = jsonDecode(response);
+    // Send the request
+    var streamedResponse = await request.send();
 
-        if (data['success'] == true) {
-          // Client image updated successfully
-          print('Client image updated successfully');
-        } else {
-          // Image upload failed
-          print('Failed to update client image: ${data['message']}');
-        }
+    // Check the response status
+    if (streamedResponse.statusCode == 200) {
+      // Image uploaded successfully, parse the response
+      var response = await streamedResponse.stream.bytesToString();
+      var data = jsonDecode(response);
+
+      if (data['success'] == true) {
+        // Client image updated successfully
+        print('Client image updated successfully');
       } else {
-        // Request failed
-        print('Request failed with status: ${streamedResponse.statusCode}');
+        // Image upload failed
+        print('Failed to update client image: ${data['message']}');
       }
-    } catch (e) {
-      // Handle errors
-      print('Error: $e');
+    } else {
+      // Request failed
+      print('Request failed with status: ${streamedResponse.statusCode}');
     }
+  } catch (e) {
+    // Handle errors
+    print('Error: $e');
   }
+}
+
 
   Future<void> updateClient(Map<String, dynamic> updatedData) async {
     final url = Uri.parse(
@@ -148,6 +155,7 @@ class _ProfileState extends State<Profile> {
 
       if (response.statusCode == 200) {
         print('User data updated successfully');
+        _fetchUserData();
       } else {
         print('Failed to update user data');
         print('Response Status Code: ${response.statusCode}');
@@ -186,9 +194,9 @@ class _ProfileState extends State<Profile> {
         ? _addressController.text
         : _userData['AdresseClient'];
 
-    _userData['profilePicturePath'] = _pickedImagePath;
+     _userData['photo'] = _pickedImagePath;
   }
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -247,12 +255,12 @@ class _ProfileState extends State<Profile> {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(14),
                             child: _userData['photo'] != null
-                                ? Image.file(
-                                    File(_userData['photo']),
-                                    width: 168,
-                                    height: 174,
-                                    fit: BoxFit.cover,
-                                  )
+                                ? Image.network(
+                                  _userData['photo'], // Utilisez l'URL de la photo de profil
+                                  width: 168,
+                                  height: 174,
+                                  fit: BoxFit.cover,
+                                )
                                 : Image.asset(
                                     'assets/images/l.png',
                                     width: 168,
@@ -289,7 +297,7 @@ class _ProfileState extends State<Profile> {
                                   if (pickedFile != null) {
                                     setState(() {
                                       File imageFile = File(pickedFile.path);
-                                      updateClientImage(1, imageFile);
+                                      updateClientImage(imageFile,_token);
                                     });
                                   }
                                 }

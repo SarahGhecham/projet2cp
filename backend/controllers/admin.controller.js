@@ -199,7 +199,7 @@ function AjouterDomaine(req, res) {
 
     if (!req.file) {
         return res.status(400).json({ success: false, message: "Veuillez télécharger une image pour le domaine." });
-    }
+    };
 
    
     const imageURL = `http://localhost:3000/imageDomaine/${req.file.filename}`; 
@@ -248,7 +248,8 @@ function CreerPrestation(req, res) {
         DureeMax,
         TarifId,
         DomaineId,
-        Ecologique
+        Ecologique,
+        Description
     } = req.body;
     if (!req.file) {
         return res.status(400).json({ success: false, message: "Veuillez télécharger une image pour le domaine." });
@@ -262,6 +263,7 @@ function CreerPrestation(req, res) {
         DuréeMax:DureeMax,
         TarifId,
         DomaineId,
+        Description,
         Ecologique,
         imagePrestation
     }).then(() => {
