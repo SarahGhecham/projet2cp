@@ -154,9 +154,7 @@ function updateArtisanImage(req, res) {
         });
 }
 
-module.exports = {
-    updateArtisanImage: updateArtisanImage
-};
+
 
 async function accepterRDV(req, res) {
     const rdvId = req.body.rdvId;
@@ -607,6 +605,7 @@ async function DetailsRDVTermine(req, res) {
 
 module.exports = {
     updateartisan:updateartisan,
+    updateArtisanImage: updateArtisanImage,
     accepterRDV:accepterRDV,
     refuserRDV:refuserRDV,
     //HistoriqueInterventions,

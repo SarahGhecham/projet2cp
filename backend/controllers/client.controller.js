@@ -853,6 +853,7 @@ async function ActiviteTerminee(req, res) {
   
   
             const rdvAffich = {
+              rdvId: rdv.id,
               DateFin: formattedDate,
               HeureFin: rdv.HeureFin
             };
@@ -905,7 +906,109 @@ async function ActiviteTerminee(req, res) {
         });
     }
   }
+  async function ActiviteTermineeNonEvaluee(req, res) {
+    const clientId = req.params.id;
   
+    try {
+      const maintenant = new Date();
+  
+      const demandes = await models.Demande.findAll({
+        where: { ClientId: clientId },
+      });
+  
+      const demandeIds = demandes.map((demande) => demande.id);
+  
+      const rdvs = await models.RDV.findAll({
+        where: { DemandeId: demandeIds },
+        attributes: ['id', 'DemandeId', 'annule', 'DateFin', 'HeureFin'],
+      });
+  
+      const rendezVousDetails = await Promise.all(
+        rdvs.map(async (rdv) => {
+          var rdvDateFin = new Date(rdv.DateFin);
+          const formattedDate = rdvDateFin.toISOString().split('T')[0].substring(0, 10);
+          const rdvHeureFin = new Date(`${rdv.DateFin}T${rdv.HeureFin}`);
+  
+          if (rdv.annule) {
+            return null;
+          }
+  
+          if (
+            rdvDateFin < maintenant ||
+            (rdvDateFin.getTime() === maintenant.getTime() &&
+            rdvHeureFin < maintenant)
+          ) {
+            const artisandemande = await models.ArtisanDemande.findOne({
+              where: { DemandeId: rdv.DemandeId },
+            });
+            if (
+              !artisandemande ||
+              !artisandemande.accepte ||
+              !artisandemande.confirme
+            ) {
+              return null;
+            }
+  
+            const rdvEvalue = await estEvalue(rdv.id); // Vérifier si le rendez-vous a été évalué
+  
+            if (!rdvEvalue) { // Si le rendez-vous n'a pas été évalué
+              const rdvAffich = {
+                rdvId: rdv.id,
+                DateFin: formattedDate,
+                HeureFin: rdv.HeureFin
+              };
+  
+              const demande = await models.Demande.findByPk(rdv.DemandeId, {
+                attributes: ['id'],
+                include: [
+                  {
+                    model: models.Prestation,
+                    attributes: ['nomPrestation', 'imagePrestation'],
+                  },
+                  {
+                    model: models.Artisan,
+                    attributes: ['id', 'NomArtisan', 'PrenomArtisan', 'Note'],
+                    through: { attributes: [] },
+                  },
+                ],
+              });
+  
+              const artisan = demande.Artisan;
+  
+              return { demande, rdvAffich };
+            }
+          }
+          return null;
+        })
+      );
+  
+      const filteredRendezVousDetails = rendezVousDetails.filter(
+        (item) => item !== null
+      );
+  
+      return res.status(200).json(filteredRendezVousDetails);
+    } catch (error) {
+      console.error(
+        "Une erreur s'est produite lors de la récupération des rendez-vous en cours :",
+        error
+      );
+      return res
+        .status(500)
+        .json({
+          message:
+            "Une erreur s'est produite lors du traitement de votre demande.",
+        });
+    }
+  }
+
+async function estEvalue(x) {
+
+  const evaluation = await models.Evaluation.findOne({
+    where: { RDVId: x }
+    });
+    return evaluation !== null; // Si une évaluation est trouvée, le rendez-vous est évalué
+}
+
 
 
 
@@ -1094,6 +1197,7 @@ module.exports = {
     creerEvaluation:creerEvaluation,
     //test,
     ActiviteTerminee,
+    ActiviteTermineeNonEvaluee,
     ActiviteEncours,
     AfficherPrestations,
     AfficherProfil,
