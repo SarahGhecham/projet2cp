@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
-import 'package:flutter_application_proj2cp/pages/admin_pages/ajouter_prestation.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/ajouter_prestation1.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -18,7 +18,7 @@ class AddDomainePage extends StatefulWidget {
 class _AddDomainePageState extends State<AddDomainePage> {
   TextEditingController _domaineController = TextEditingController();
   File? _imageFile;
-
+  List<String> _prestations = [];
   Future<void> _selectImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
@@ -27,6 +27,21 @@ class _AddDomainePageState extends State<AddDomainePage> {
         _imageFile = File(pickedFile.path);
       });
     }
+  }
+
+  void _addPrestation() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddPrestationPage(
+          onPrestationAdded: (prestation) {
+            setState(() {
+              _prestations.add(prestation);
+            });
+          },
+        ),
+      ),
+    );
   }
 
   Future<void> _ajouterDomaine() async {
@@ -239,41 +254,64 @@ class _AddDomainePageState extends State<AddDomainePage> {
                   ),
                 ),
               ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => AddPrestationPage()),
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: Container(
-                    width: 300,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFDCC8C5).withOpacity(0.22),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Icon(
-                          Icons.add,
-                          color: Color.fromARGB(255, 109, 109, 109),
-                        ),
-                        Text(
-                          'Ajouter une prestation',
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            color: Color.fromARGB(255, 109, 109, 109),
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: _prestations.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == _prestations.length) {
+                    return GestureDetector(
+                      onTap: _addPrestation,
+                      child: Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Container(
+                          width: 300,
+                          height: 60,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFDCC8C5).withOpacity(0.22),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Icon(
+                                Icons.add,
+                                color: Color.fromARGB(255, 109, 109, 109),
+                              ),
+                              Text(
+                                'Ajouter une prestation',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  color: Color.fromARGB(255, 109, 109, 109),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
+                      ),
+                    );
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Container(
+                        width: 300,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFDCC8C5).withOpacity(0.22),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Center(
+                          child: Text(
+                            _prestations[index],
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                },
               ),
               SizedBox(
                 height: 180,
