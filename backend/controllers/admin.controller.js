@@ -56,6 +56,15 @@ async function CreerArtisan(req, res) {
                     });
                 }else{   bcryptjs.genSalt(10, function (err, salt) {
                     bcryptjs.hash(req.body.MotdepasseArtisan, salt, function (err, hash) {
+                        
+                        
+                        if (!req.file) {
+                            return res.status(400).json({ success: false, message: "Veuillez télécharger une image de l'artisan." });
+                        };
+                    
+                       
+                        const imageURL = `http://localhost:3000/imageArtisan/${req.file.filename}`; 
+                        const photo = imageURL; 
                         const artisan = {
                             NomArtisan: req.body.NomArtisan,
                             PrenomArtisan: req.body.PrenomArtisan,
@@ -64,8 +73,9 @@ async function CreerArtisan(req, res) {
                             AdresseArtisan: req.body.AdresseArtisan,
                             NumeroTelArtisan: req.body.NumeroTelArtisan,
                             Disponibilite:req.body.Disponibilite ,
-                            photo:req.body.photo
+                            photo:photo 
                         }
+
                         models.Artisan.create(artisan).then(result => {
                             res.status(201).json({
                                 message: "Creation compte artisan réussite",
@@ -273,6 +283,46 @@ function CreerPrestation(req, res) {
         return res.status(500).json({ message: "Une erreur s'est produite lors de la création de la prestation." });
     });
 }
+function ModifierPrestation(req, res) {
+    const {
+        PrestationId,
+        Description
+    } = req.body;
+
+    // Vérifier si la prestation existe
+    models.Prestation.findByPk(PrestationId)
+        .then(prestation => {
+            if (!prestation) {
+                return res.status(404).json({ success: false, message: "La prestation n'existe pas." });
+            }
+
+            // Mettre à jour la description si elle est fournie
+            if (Description) {
+                prestation.Description = Description;
+            }
+
+            // Mettre à jour l'image si elle est fournie
+            if (req.file) {
+                const imageURL = `http://localhost:3000/imagePrestation/${req.file.filename}`;
+                prestation.imagePrestation = imageURL;
+            }
+
+            // Sauvegarder les modifications
+            prestation.save()
+                .then(() => {
+                    return res.status(200).json({ success: true, message: "Prestation modifiée avec succès." });
+                })
+                .catch(error => {
+                    console.error("Une erreur s'est produite lors de la modification de la prestation:", error);
+                    return res.status(500).json({ success: false, message: "Une erreur s'est produite lors de la modification de la prestation." });
+                });
+        })
+        .catch(error => {
+            console.error("Une erreur s'est produite lors de la recherche de la prestation:", error);
+            return res.status(500).json({ success: false, message: "Une erreur s'est produite lors de la recherche de la prestation." });
+        });
+}
+
 async function AjouterPrestation(req, res) {
     try {
         artisanId = req.params.id;
@@ -338,6 +388,7 @@ module.exports={
     CreerTarif:CreerTarif,
     CreerPrestation:CreerPrestation,
     AjouterPrestation:AjouterPrestation,
-    obtenirStatistiques:obtenirStatistiques
+    obtenirStatistiques:obtenirStatistiques,
+    ModifierPrestation
 
 }
