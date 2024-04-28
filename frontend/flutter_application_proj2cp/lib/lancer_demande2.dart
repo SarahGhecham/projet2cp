@@ -114,7 +114,8 @@ class _Lancerdemande2PageState extends State<Lancerdemande2Page> {
                   color: const Color(0xFFD6E3DC),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: TableCalendar(
+                child:
+                TableCalendar(
                   locale: 'en_US',
                   calendarStyle: CalendarStyle(
                     defaultTextStyle: GoogleFonts.poppins(fontSize: 16, color: Colors.black,),
