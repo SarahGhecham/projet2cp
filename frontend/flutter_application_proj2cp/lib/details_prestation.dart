@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import 'lancer_demande1.dart';
-
 
 class details_prestationPage extends StatefulWidget {
   const details_prestationPage({super.key});
@@ -33,7 +31,8 @@ class _details_prestationPageState extends State<details_prestationPage> {
             const SizedBox(width: 130),
             Text(
               "Details",
-              style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
+              style: GoogleFonts.poppins(
+                  fontSize: 20, fontWeight: FontWeight.w600),
             ),
           ],
         ),
@@ -87,19 +86,26 @@ class _details_prestationPageState extends State<details_prestationPage> {
                       ),
                       child: Center(
                         child: Text(
-                          prst, style: GoogleFonts.poppins(color: const Color(0xFF05564B), fontSize: 18, fontWeight: FontWeight.bold),
+                          prst,
+                          style: GoogleFonts.poppins(
+                              color: const Color(0xFF05564B),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
                     const SizedBox(height: 10),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 10),
                       child: Row(
                         children: [
                           SvgPicture.asset("assets/clock.svg"),
                           const SizedBox(width: 10),
                           Text(
-                            avgtime, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
+                            avgtime,
+                            style: GoogleFonts.poppins(
+                                fontSize: 16, fontWeight: FontWeight.w600),
                           )
                         ],
                       ),
@@ -118,7 +124,9 @@ class _details_prestationPageState extends State<details_prestationPage> {
                             children: [
                               const SizedBox(height: 5),
                               Text(
-                                avgprice, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
+                                avgprice,
+                                style: GoogleFonts.poppins(
+                                    fontSize: 16, fontWeight: FontWeight.w600),
                               ),
                             ],
                           ),
@@ -126,7 +134,8 @@ class _details_prestationPageState extends State<details_prestationPage> {
                             children: [
                               const SizedBox(height: 5),
                               Text(
-                                "/h", style: GoogleFonts.poppins(fontSize: 14),
+                                "/h",
+                                style: GoogleFonts.poppins(fontSize: 14),
                               ),
                             ],
                           ),
@@ -134,7 +143,8 @@ class _details_prestationPageState extends State<details_prestationPage> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8),
                       child: Row(
                         children: [
                           Column(
@@ -147,7 +157,9 @@ class _details_prestationPageState extends State<details_prestationPage> {
                             children: [
                               const SizedBox(height: 5),
                               Text(
-                                outils, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
+                                outils,
+                                style: GoogleFonts.poppins(
+                                    fontSize: 16, fontWeight: FontWeight.w600),
                               ),
                             ],
                           ),
@@ -162,18 +174,19 @@ class _details_prestationPageState extends State<details_prestationPage> {
                             height: 150,
                             width: 270,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFDCC8C5).withOpacity(0.22),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: const Color(0xFFDCC8C5),
-                                width: 2,
-                              )
-                            ),
+                                color:
+                                    const Color(0xFFDCC8C5).withOpacity(0.22),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: const Color(0xFFDCC8C5),
+                                  width: 2,
+                                )),
                             child: Center(
                               child: Padding(
                                 padding: const EdgeInsets.all(20.0),
                                 child: Text(
-                                  "Nettoyage complet et professionnel des sols avec des produits efficaces et non nocifs ", style: GoogleFonts.poppins(),
+                                  "Nettoyage complet et professionnel des sols avec des produits efficaces et non nocifs ",
+                                  style: GoogleFonts.poppins(),
                                 ),
                               ),
                             ),
@@ -192,7 +205,11 @@ class _details_prestationPageState extends State<details_prestationPage> {
                               ),
                               child: Center(
                                 child: Text(
-                                  "Description", style: GoogleFonts.poppins(color: const Color(0xFF05564B), fontSize: 14, fontWeight: FontWeight.w600),
+                                  "Description",
+                                  style: GoogleFonts.poppins(
+                                      color: const Color(0xFF05564B),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600),
                                 ),
                               ),
                             ),
@@ -202,16 +219,18 @@ class _details_prestationPageState extends State<details_prestationPage> {
                     ),
                     const SizedBox(height: 15),
                     ElevatedButton(
-                      onPressed: (){},
+                      onPressed: () {},
                       style: ButtonStyle(
-                        minimumSize: MaterialStateProperty.all<Size>(const Size(180, 50)),
-                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        minimumSize: MaterialStateProperty.all<Size>(
+                            const Size(180, 50)),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        backgroundColor:
-                        MaterialStateProperty.all<Color>(const Color(0xFFFF8787)),
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            const Color(0xFFFF8787)),
                       ),
                       child: Text(
                         "Lancer demande",

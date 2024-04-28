@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfileartisanPage extends StatefulWidget {
   const ProfileartisanPage({super.key});
@@ -25,11 +26,29 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
     super.initState();
     day = 0; // Set initial day to 0
   }
+
   void changeDayValue(int newValue) {
     setState(() {
       day = newValue; // Update the value of day
     });
   }
+
+  final ImagePicker _imagePicker = ImagePicker();
+  var _pickedImagePath = null; // var jsp si c ccorrect hna
+  TextEditingController _NomController = TextEditingController();
+  TextEditingController _PrenomController = TextEditingController();
+  TextEditingController _PhoneController = TextEditingController();
+  TextEditingController _EmailController = TextEditingController();
+  TextEditingController _RayonController = TextEditingController();
+  TextEditingController _AdresseController = TextEditingController();
+  bool _isEditing = false;
+
+  void _toggleEditing(bool value) {
+    setState(() {
+      _isEditing = value;
+    });
+  }
+
   bool _showOngoing = true;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
@@ -38,46 +57,54 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
     DateTime(2024, 4, 28),
     DateTime(2024, 4, 29),
   ];
+
   int selectedDayIndex = 0;
   Map<int, Map<TimeOfDay, TimeOfDay>> allHoraires = {
-    0: { // horaire0
-      TimeOfDay(hour: 10, minute: 30):TimeOfDay(hour: 11, minute: 30),
-      TimeOfDay(hour: 13, minute: 30):TimeOfDay(hour: 16, minute: 00),
+    0: {
+      // horaire0
+      TimeOfDay(hour: 10, minute: 30): TimeOfDay(hour: 11, minute: 30),
+      TimeOfDay(hour: 13, minute: 30): TimeOfDay(hour: 16, minute: 00),
     },
-    1: { // horaire1
-      TimeOfDay(hour: 8, minute: 00):TimeOfDay(hour: 9, minute: 30),
-      TimeOfDay(hour: 14, minute: 00):TimeOfDay(hour: 17, minute: 00),
+    1: {
+      // horaire1
+      TimeOfDay(hour: 8, minute: 00): TimeOfDay(hour: 9, minute: 30),
+      TimeOfDay(hour: 14, minute: 00): TimeOfDay(hour: 17, minute: 00),
     },
-    2: { // horaire2
-      TimeOfDay(hour: 8, minute: 00):TimeOfDay(hour: 9, minute: 30),
-      TimeOfDay(hour: 14, minute: 00):TimeOfDay(hour: 17, minute: 00),
+    2: {
+      // horaire2
+      TimeOfDay(hour: 8, minute: 00): TimeOfDay(hour: 9, minute: 30),
+      TimeOfDay(hour: 14, minute: 00): TimeOfDay(hour: 17, minute: 00),
     },
-    3: { // horaire3
-      TimeOfDay(hour: 8, minute: 00):TimeOfDay(hour: 9, minute: 30),
-      TimeOfDay(hour: 14, minute: 00):TimeOfDay(hour: 17, minute: 00),
+    3: {
+      // horaire3
+      TimeOfDay(hour: 8, minute: 00): TimeOfDay(hour: 9, minute: 30),
+      TimeOfDay(hour: 14, minute: 00): TimeOfDay(hour: 17, minute: 00),
     },
-    4: { // horaire4
-      TimeOfDay(hour: 8, minute: 00):TimeOfDay(hour: 9, minute: 30),
-      TimeOfDay(hour: 14, minute: 00):TimeOfDay(hour: 17, minute: 00),
+    4: {
+      // horaire4
+      TimeOfDay(hour: 8, minute: 00): TimeOfDay(hour: 9, minute: 30),
+      TimeOfDay(hour: 14, minute: 00): TimeOfDay(hour: 17, minute: 00),
     },
-    5: { // horaire5
-      TimeOfDay(hour: 8, minute: 00):TimeOfDay(hour: 9, minute: 30),
-      TimeOfDay(hour: 14, minute: 00):TimeOfDay(hour: 17, minute: 00),
+    5: {
+      // horaire5
+      TimeOfDay(hour: 8, minute: 00): TimeOfDay(hour: 9, minute: 30),
+      TimeOfDay(hour: 14, minute: 00): TimeOfDay(hour: 17, minute: 00),
     },
-    6: { // horaire6
-      TimeOfDay(hour: 9, minute: 00):TimeOfDay(hour: 3, minute: 20),
-      TimeOfDay(hour: 1, minute: 00):TimeOfDay(hour: 18, minute: 00),
+    6: {
+      // horaire6
+      TimeOfDay(hour: 9, minute: 00): TimeOfDay(hour: 3, minute: 20),
+      TimeOfDay(hour: 1, minute: 00): TimeOfDay(hour: 18, minute: 00),
     },
-
   };
 
   String _formatTime(TimeOfDay time) {
     return "${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}";
   }
+
   void removeTimeRange(int day, TimeOfDay startTime, TimeOfDay endTime) {
     setState(() {
       allHoraires[day]?.removeWhere((key, value) =>
-      (key.hour == startTime.hour && key.minute == startTime.minute) &&
+          (key.hour == startTime.hour && key.minute == startTime.minute) &&
           (value.hour == endTime.hour && value.minute == endTime.minute));
     });
   }
@@ -108,13 +135,13 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
 
     // Validate hour (0-23) and minute (0-59)
     if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
-      throw FormatException("Invalid time values. Hour must be between 0 and 23, and minute must be between 0 and 59.");
+      throw FormatException(
+          "Invalid time values. Hour must be between 0 and 23, and minute must be between 0 and 59.");
     }
 
     // Return the TimeOfDay object
     return TimeOfDay(hour: hour, minute: minute);
   }
-
 
   Widget build(BuildContext context) {
     Map<TimeOfDay, TimeOfDay> currentHoraire = allHoraires[day] ?? {};
@@ -149,18 +176,34 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  width: 150,
-                  height: 160,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30.0),
-                    color: Colors.grey[200],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(30.0),
-                    child: Image.asset(
-                      'assets/artisan.jpg',
-                      fit: BoxFit.cover,
+                GestureDetector(
+                  onTap: () async {
+                    if (_isEditing) {
+                      final picker = ImagePicker();
+                      final pickedFile = await picker.getImage(
+                        source: ImageSource.gallery,
+                      );
+
+                      if (pickedFile != null) {
+                        setState(() {
+                          File imageFile = File(pickedFile.path);
+                        });
+                      }
+                    }
+                  },
+                  child: Container(
+                    width: 150,
+                    height: 160,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30.0),
+                      color: Colors.grey[200],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(30.0),
+                      child: Image.asset(
+                        'assets/artisan.jpg',
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ),
@@ -174,14 +217,20 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                 children: [
                   Text(
                     "Note",
-                    style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF05564B)),
+                    style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF05564B)),
                   ),
                   Row(
                     children: [
                       SvgPicture.asset("assets/star.svg"),
                       Text(
                         note,
-                        style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF05564B)),
+                        style: GoogleFonts.poppins(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF05564B)),
                       ),
                     ],
                   ),
@@ -196,7 +245,10 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                 children: [
                   Text(
                     "Disponibilité",
-                    style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF05564B)),
+                    style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF05564B)),
                   ),
                   Container(
                     height: 30,
@@ -218,7 +270,9 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                           ),
                         ),
                         Text(
-                          "Disponible", style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600 ),
+                          "Disponible",
+                          style: GoogleFonts.poppins(
+                              fontSize: 12, fontWeight: FontWeight.w600),
                         ),
                       ],
                     ),
@@ -234,7 +288,10 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                 children: [
                   Text(
                     "Domaine",
-                    style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF05564B)),
+                    style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF05564B)),
                   ),
                   Container(
                     height: 30,
@@ -246,7 +303,9 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                     ),
                     child: Center(
                       child: Text(
-                        "Nettoyage", style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600 ),
+                        "Nettoyage",
+                        style: GoogleFonts.poppins(
+                            fontSize: 15, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
@@ -255,16 +314,17 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: (){},
+              onPressed: () {},
               style: ButtonStyle(
-                minimumSize: MaterialStateProperty.all<Size>(const Size(315, 30)),
+                minimumSize:
+                    MaterialStateProperty.all<Size>(const Size(315, 30)),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
                 backgroundColor:
-                MaterialStateProperty.all<Color>(const Color(0xFFFF8787)),
+                    MaterialStateProperty.all<Color>(const Color(0xFFFF8787)),
               ),
               child: Text(
                 "Préstations proposées",
@@ -282,7 +342,10 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "Informations personnelles",
-                  style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF05564B)),
+                  style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF05564B)),
                 ),
               ),
             ),
@@ -293,7 +356,8 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "Nom",
-                  style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600),
+                  style: GoogleFonts.poppins(
+                      fontSize: 15, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -313,11 +377,37 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
-
+                  child: _isEditing
+                      ? TextFormField(
+                          controller: _NomController,
+                          keyboardType: TextInputType.text,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            hintText: "Nom",
+                            hintStyle: GoogleFonts.poppins(
+                              color: const Color(0xFF777777),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 10.0,
+                              horizontal: 16.0,
+                            ),
+                            border: InputBorder.none,
+                          ),
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 16.0),
+                          child: Text(
+                            "Nom",
+                            style: GoogleFonts.poppins(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
                 ),
               ),
             ),
-
             SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -325,7 +415,8 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "Prénom",
-                  style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600),
+                  style: GoogleFonts.poppins(
+                      fontSize: 15, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -345,10 +436,33 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
+                  child: _isEditing
+                      ? TextFormField(
+                          controller: _PrenomController,
+                          keyboardType: TextInputType.text,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            hintText: "Prénom",
+                            hintStyle: GoogleFonts.poppins(
+                              color: const Color(0xFF777777),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 10.0,
+                              horizontal: 16.0,
+                            ),
+                            border: InputBorder.none,
+                          ),
+                        )
+                      : Text(
+                          "Prénom",
+                          style: GoogleFonts.poppins(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                 ),
               ),
             ),
-
             SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -356,7 +470,8 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "Numéro de téléphone",
-                  style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600),
+                  style: GoogleFonts.poppins(
+                      fontSize: 15, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -376,6 +491,30 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
+                  child: _isEditing
+                      ? TextFormField(
+                          controller: _PhoneController,
+                          keyboardType: TextInputType.text,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            hintText: "Numéro Téléphone",
+                            hintStyle: GoogleFonts.poppins(
+                              color: const Color(0xFF777777),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 10.0,
+                              horizontal: 16.0,
+                            ),
+                            border: InputBorder.none,
+                          ),
+                        )
+                      : Text(
+                          "Téléphone",
+                          style: GoogleFonts.poppins(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                 ),
               ),
             ),
@@ -386,7 +525,8 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "Email",
-                  style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600),
+                  style: GoogleFonts.poppins(
+                      fontSize: 15, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -406,6 +546,30 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
+                  child: _isEditing
+                      ? TextFormField(
+                          controller: _EmailController,
+                          keyboardType: TextInputType.text,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            hintText: "Email",
+                            hintStyle: GoogleFonts.poppins(
+                              color: const Color(0xFF777777),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 10.0,
+                              horizontal: 16.0,
+                            ),
+                            border: InputBorder.none,
+                          ),
+                        )
+                      : Text(
+                          "Email",
+                          style: GoogleFonts.poppins(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                 ),
               ),
             ),
@@ -416,7 +580,8 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "Adresse",
-                  style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600),
+                  style: GoogleFonts.poppins(
+                      fontSize: 15, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -436,7 +601,30 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
-
+                  child: _isEditing
+                      ? TextFormField(
+                          controller: _AdresseController,
+                          keyboardType: TextInputType.text,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            hintText: "Adresse",
+                            hintStyle: GoogleFonts.poppins(
+                              color: const Color(0xFF777777),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 10.0,
+                              horizontal: 16.0,
+                            ),
+                            border: InputBorder.none,
+                          ),
+                        )
+                      : Text(
+                          "Adresse",
+                          style: GoogleFonts.poppins(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                 ),
               ),
             ),
@@ -447,7 +635,8 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "Rayon géographique",
-                  style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600),
+                  style: GoogleFonts.poppins(
+                      fontSize: 15, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -467,6 +656,30 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
+                  child: _isEditing
+                      ? TextFormField(
+                          controller: _RayonController,
+                          keyboardType: TextInputType.text,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            hintText: "Rayon",
+                            hintStyle: GoogleFonts.poppins(
+                              color: const Color(0xFF777777),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 10.0,
+                              horizontal: 16.0,
+                            ),
+                            border: InputBorder.none,
+                          ),
+                        )
+                      : Text(
+                          "Rayon ",
+                          style: GoogleFonts.poppins(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                 ),
               ),
             ),
@@ -477,26 +690,33 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   ElevatedButton(
-                    onPressed: (){},
-                    style: ButtonStyle(
-                      minimumSize: MaterialStateProperty.all<Size>(const Size(100, 35)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                      onPressed: () {
+                        if (_isEditing) {
+                          _toggleEditing(false);
+                        } else {
+                          _toggleEditing(true);
+                        }
+                      },
+                      style: ButtonStyle(
+                        minimumSize: MaterialStateProperty.all<Size>(
+                            const Size(100, 35)),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
                         ),
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            const Color(0xFFFF8787)),
                       ),
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(const Color(0xFFFF8787)),
-                    ),
-                    child: Text(
-                      "Editer",
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
+                      child: Text(
+                        _isEditing ? "Valider" : "Editer",
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 18,
+                        ),
+                      )),
                 ],
               ),
             ),
@@ -512,33 +732,38 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: Color(0xFFDCC8C5).withOpacity(0.22),
-                        border: Border.all(color: Color(0xFFDCC8C5), width: 1.5),
+                        border:
+                            Border.all(color: Color(0xFFDCC8C5), width: 1.5),
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
                                 _showOngoing = false;
-                                });
-                                },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: _showOngoing ? Color(0xFF05564B) : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                padding:
-                                EdgeInsets.symmetric(horizontal: 35, vertical: 5),
-                                child: Text(
-                                  'RDV',
-                                  style: TextStyle(
-                                    color: _showOngoing ? Colors.white : Color(0xFFDCC8C5).withOpacity(0.22),
-                                  ),
+                              });
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: _showOngoing
+                                    ? Color(0xFF05564B)
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 35, vertical: 5),
+                              child: Text(
+                                'RDV',
+                                style: TextStyle(
+                                  color: _showOngoing
+                                      ? Colors.white
+                                      : Color(0xFFDCC8C5).withOpacity(0.22),
                                 ),
                               ),
                             ),
+                          ),
                           GestureDetector(
                             onTap: () {
                               setState(() {
@@ -547,15 +772,19 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                             },
                             child: Container(
                               decoration: BoxDecoration(
-                                color: !_showOngoing ? Color(0xFF05564B) : Colors.transparent,
+                                color: !_showOngoing
+                                    ? Color(0xFF05564B)
+                                    : Colors.transparent,
                                 borderRadius: BorderRadius.circular(10.0),
                               ),
-                              padding:
-                              EdgeInsets.symmetric(horizontal: 35, vertical: 5),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 35, vertical: 5),
                               child: Text(
                                 'Horaires',
                                 style: TextStyle(
-                                  color: !_showOngoing ? Colors.white : Color(0xFFDCC8C5).withOpacity(0.22),
+                                  color: !_showOngoing
+                                      ? Colors.white
+                                      : Color(0xFFDCC8C5).withOpacity(0.22),
                                 ),
                               ),
                             ),
@@ -581,13 +810,12 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                   locale: 'en_US',
                   calendarFormat: _calendarFormat,
                   selectedDayPredicate: (DateTime date) {
-                    // Return true if the date should be highlighted, false otherwise
-                    // For example, highlight weekends (Saturday and Sunday)
-                    return date.weekday == DateTime.saturday || date.weekday == DateTime.sunday;
+                    // Return true if the date is in the list of highlightedDates, false otherwise
+                    return highlightedDates.contains(date);
                   },
-
                   calendarStyle: CalendarStyle(
-                    defaultTextStyle: GoogleFonts.poppins(fontSize: 16, color: Colors.black),
+                    defaultTextStyle:
+                        GoogleFonts.poppins(fontSize: 16, color: Colors.black),
                     selectedDecoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: Color(0xFFFF8787),
@@ -600,7 +828,10 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                   headerStyle: HeaderStyle(
                     formatButtonVisible: false,
                     titleCentered: true,
-                    titleTextStyle: GoogleFonts.poppins(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
+                    titleTextStyle: GoogleFonts.poppins(
+                        fontSize: 16,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold),
                   ),
                   availableGestures: AvailableGestures.all,
                   focusedDay: _focusedDay,
@@ -622,7 +853,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           changeDayValue(0);
                         },
                         child: Container(
@@ -630,13 +861,23 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                           width: 50,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: day == 0 ? Color(0xFF05564B) : Color(0xFFD6E3DC),
+                            color: day == 0
+                                ? Color(0xFF05564B)
+                                : Color(0xFFD6E3DC),
                           ),
-                          child: Center(child: Text("Dim", style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),),),
+                          child: Center(
+                            child: Text(
+                              "Dim",
+                              style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                          ),
                         ),
                       ),
                       GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           changeDayValue(1);
                         },
                         child: Container(
@@ -644,13 +885,22 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                           width: 50,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: day == 1 ? Color(0xFF05564B) : Color(0xFFD6E3DC),
+                            color: day == 1
+                                ? Color(0xFF05564B)
+                                : Color(0xFFD6E3DC),
                           ),
-                          child: Center(child: Text("Lun", style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),)),
+                          child: Center(
+                              child: Text(
+                            "Lun",
+                            style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          )),
                         ),
                       ),
                       GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           changeDayValue(2);
                         },
                         child: Container(
@@ -658,13 +908,22 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                           width: 50,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: day == 2 ? Color(0xFF05564B) : Color(0xFFD6E3DC),
+                            color: day == 2
+                                ? Color(0xFF05564B)
+                                : Color(0xFFD6E3DC),
                           ),
-                          child: Center(child: Text("Mar", style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),)),
+                          child: Center(
+                              child: Text(
+                            "Mar",
+                            style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          )),
                         ),
                       ),
                       GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           changeDayValue(3);
                         },
                         child: Container(
@@ -672,13 +931,22 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                           width: 50,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: day == 3 ? Color(0xFF05564B) : Color(0xFFD6E3DC),
+                            color: day == 3
+                                ? Color(0xFF05564B)
+                                : Color(0xFFD6E3DC),
                           ),
-                          child: Center(child: Text("Mer", style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),)),
+                          child: Center(
+                              child: Text(
+                            "Mer",
+                            style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          )),
                         ),
                       ),
                       GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           changeDayValue(4);
                         },
                         child: Container(
@@ -686,13 +954,22 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                           width: 50,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: day == 4 ? Color(0xFF05564B) : Color(0xFFD6E3DC),
+                            color: day == 4
+                                ? Color(0xFF05564B)
+                                : Color(0xFFD6E3DC),
                           ),
-                          child: Center(child: Text("Jeu", style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),)),
+                          child: Center(
+                              child: Text(
+                            "Jeu",
+                            style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          )),
                         ),
                       ),
                       GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           changeDayValue(5);
                         },
                         child: Container(
@@ -700,13 +977,22 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                           width: 50,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: day == 5 ? Color(0xFF05564B) : Color(0xFFD6E3DC),
+                            color: day == 5
+                                ? Color(0xFF05564B)
+                                : Color(0xFFD6E3DC),
                           ),
-                          child: Center(child: Text("Ven", style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),)),
+                          child: Center(
+                              child: Text(
+                            "Ven",
+                            style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          )),
                         ),
                       ),
                       GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           changeDayValue(6);
                         },
                         child: Container(
@@ -714,9 +1000,18 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                           width: 50,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: day == 6 ? Color(0xFF05564B) : Color(0xFFD6E3DC),
+                            color: day == 6
+                                ? Color(0xFF05564B)
+                                : Color(0xFFD6E3DC),
                           ),
-                          child: Center(child: Text("Sam", style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),)),
+                          child: Center(
+                              child: Text(
+                            "Sam",
+                            style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          )),
                         ),
                       ),
                     ],
@@ -731,25 +1026,30 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                       String formattedEndTime = _formatTime(endTime);
 
                       return Container(
-                        padding: EdgeInsets.all(16.0), // Adjust padding as needed
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text('$formattedStartTime', style: GoogleFonts.poppins(fontSize: 16),),
-                            SizedBox(width: 30),
-                            SvgPicture.asset("assets/line.svg"),
-                            SizedBox(width: 30),
-                            Text('$formattedEndTime', style: GoogleFonts.poppins(fontSize: 16),),
-                            SizedBox(width: 40),
-                            GestureDetector(
-                                onTap:(){
-                                  removeTimeRange(day, startTime, endTime);
-                                },
-                                child: SvgPicture.asset("assets/remove.svg")
-                            ),
-                          ],
-                        )
-                      );
+                          padding:
+                              EdgeInsets.all(16.0), // Adjust padding as needed
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '$formattedStartTime',
+                                style: GoogleFonts.poppins(fontSize: 16),
+                              ),
+                              SizedBox(width: 30),
+                              SvgPicture.asset("assets/line.svg"),
+                              SizedBox(width: 30),
+                              Text(
+                                '$formattedEndTime',
+                                style: GoogleFonts.poppins(fontSize: 16),
+                              ),
+                              SizedBox(width: 40),
+                              GestureDetector(
+                                  onTap: () {
+                                    removeTimeRange(day, startTime, endTime);
+                                  },
+                                  child: SvgPicture.asset("assets/remove.svg")),
+                            ],
+                          ));
                     }).toList(),
                   ),
                   SizedBox(height: 30),
@@ -757,120 +1057,146 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GestureDetector(
-                        onTap: (){
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  backgroundColor: Color(0xFFD6E3DC),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  content: Container(
-                                    width: 280.0, // Adjust the width as needed
-                                    height: 290.0, // Adjust the height as needed
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        SizedBox(height: 10),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                                          child: Center(child: Text("Rentrez Votre nouvelle horaire", style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 20),)),
-                                        ),
-                                        SizedBox(height: 20),
-                                        Container(
-                                          width: 100,
-                                          height: 41,
-                                          decoration: BoxDecoration(
-                                            color: Colors.transparent,
-                                            border: Border.all(
-                                              color: const Color(0xFF05564B),
-                                              width: 2,
-                                            ),
-                                            borderRadius: BorderRadius.circular(10),
-                                          ),
-                                          child: TextFormField(
-                                            controller: _debutController,
-                                            keyboardType: TextInputType.datetime,
-                                            decoration: InputDecoration(
-                                              hintText: "10:30",
-                                              hintStyle: GoogleFonts.poppins(
-                                                color: const Color(0xFF000000),
-                                              ),
-                                              contentPadding: const EdgeInsets.symmetric(
-                                                vertical: 10.0,
-                                                horizontal: 16.0,
-                                              ),
-                                              border: InputBorder.none,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(height: 20),
-                                        Container(
-                                          width: 100,
-                                          height: 41,
-                                          decoration: BoxDecoration(
-                                            color: Colors.transparent,
-                                            border: Border.all(
-                                              color: const Color(0xFF05564B),
-                                              width: 2,
-                                            ),
-                                            borderRadius: BorderRadius.circular(10),
-                                          ),
-                                          child: TextFormField(
-                                            controller: _finController,
-                                            keyboardType: TextInputType.datetime,
-                                            decoration: InputDecoration(
-                                              hintText: "16:00",
-                                              hintStyle: GoogleFonts.poppins(
-                                                color: const Color(0xFF000000),
-                                              ),
-                                              contentPadding: const EdgeInsets.symmetric(
-                                                vertical: 10.0,
-                                                horizontal: 16.0,
-                                              ),
-                                              border: InputBorder.none,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(height: 20),
-                                        ElevatedButton(
-                                          onPressed: (){
-                                            String start = _debutController.text;
-                                            String fin = _finController.text;
-                                            TimeOfDay starting = stringToTimeOfDay(start);
-                                            TimeOfDay ending = stringToTimeOfDay(fin);
-                                            addTimeRange(day, starting, ending);
-                                            print("done");
-                                          },
-                                          style: ButtonStyle(
-                                            minimumSize:
-                                            MaterialStateProperty.all<Size>(const Size(115, 35)),
-                                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                              RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(10),
-                                              ),
-                                            ),
-                                            backgroundColor:
-                                            MaterialStateProperty.all<Color>(const Color(0xFF05564B)),
-                                          ),
-                                          child: Text(
-                                            "Valider",
-                                            style: GoogleFonts.poppins(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                          onTap: () {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    backgroundColor: Color(0xFFD6E3DC),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
                                     ),
-                                  ),
-                                );
-                              }
-                          );
-                        },
+                                    content: Container(
+                                      width:
+                                          280.0, // Adjust the width as needed
+                                      height:
+                                          290.0, // Adjust the height as needed
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          SizedBox(height: 10),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 30.0),
+                                            child: Center(
+                                                child: Text(
+                                              "Rentrez Votre nouvelle horaire",
+                                              style: GoogleFonts.poppins(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 20),
+                                            )),
+                                          ),
+                                          SizedBox(height: 20),
+                                          Container(
+                                            width: 100,
+                                            height: 41,
+                                            decoration: BoxDecoration(
+                                              color: Colors.transparent,
+                                              border: Border.all(
+                                                color: const Color(0xFF05564B),
+                                                width: 2,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            child: TextFormField(
+                                              controller: _debutController,
+                                              keyboardType:
+                                                  TextInputType.datetime,
+                                              decoration: InputDecoration(
+                                                hintText: "10:30",
+                                                hintStyle: GoogleFonts.poppins(
+                                                  color:
+                                                      const Color(0xFF000000),
+                                                ),
+                                                contentPadding:
+                                                    const EdgeInsets.symmetric(
+                                                  vertical: 10.0,
+                                                  horizontal: 16.0,
+                                                ),
+                                                border: InputBorder.none,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 20),
+                                          Container(
+                                            width: 100,
+                                            height: 41,
+                                            decoration: BoxDecoration(
+                                              color: Colors.transparent,
+                                              border: Border.all(
+                                                color: const Color(0xFF05564B),
+                                                width: 2,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            child: TextFormField(
+                                              controller: _finController,
+                                              keyboardType:
+                                                  TextInputType.datetime,
+                                              decoration: InputDecoration(
+                                                hintText: "16:00",
+                                                hintStyle: GoogleFonts.poppins(
+                                                  color:
+                                                      const Color(0xFF000000),
+                                                ),
+                                                contentPadding:
+                                                    const EdgeInsets.symmetric(
+                                                  vertical: 10.0,
+                                                  horizontal: 16.0,
+                                                ),
+                                                border: InputBorder.none,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 20),
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              String start =
+                                                  _debutController.text;
+                                              String fin = _finController.text;
+                                              TimeOfDay starting =
+                                                  stringToTimeOfDay(start);
+                                              TimeOfDay ending =
+                                                  stringToTimeOfDay(fin);
+                                              addTimeRange(
+                                                  day, starting, ending);
+                                              print("done");
+                                            },
+                                            style: ButtonStyle(
+                                              minimumSize: MaterialStateProperty
+                                                  .all<Size>(
+                                                      const Size(115, 35)),
+                                              shape: MaterialStateProperty.all<
+                                                  RoundedRectangleBorder>(
+                                                RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                              ),
+                                              backgroundColor:
+                                                  MaterialStateProperty.all<
+                                                          Color>(
+                                                      const Color(0xFF05564B)),
+                                            ),
+                                            child: Text(
+                                              "Valider",
+                                              style: GoogleFonts.poppins(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                });
+                          },
                           child: SvgPicture.asset("assets/add.svg")),
                     ],
                   ),
