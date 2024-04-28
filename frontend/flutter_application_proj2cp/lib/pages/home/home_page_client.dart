@@ -20,8 +20,38 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool _rated = false;
+  bool _rated = true;
   String _comment = '';
+   Map<String, dynamic> _userData = {};
+
+   Future<void> _fetchUserData() async {
+    final url = Uri.parse(
+        'http://192.168.100.7:3000/client/Affichermonprofil'); // Replace with your endpoint
+    try {
+      final response = await http.get(
+        url,
+        headers: {'Authorization': 'Bearer $_token'},
+      );
+
+      if (response.statusCode == 200) {
+        final userDataJson = json.decode(response.body);
+
+        setState(() {
+          _userData = {
+            'Username': userDataJson['Username'] as String,
+             'photo': userDataJson['photo']
+          };
+        });
+        print('_userData: $_userData'); // Debugging print
+      } else {
+        print('Failed to fetch user data');
+        print('Response Status Code: ${response.statusCode}');
+        print('Response Body: ${response.body}');
+      }
+    } catch (error) {
+      print('Error fetching user data: $error');
+    }
+  }
 
   void _onRatingAndCommentSubmit(int rating, String comment) {
     setState(() {
@@ -62,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
       fetchDomaines(),
       fetchEcoServices(),
       fetchTopPrestations(),
+      _fetchUserData()
     ]);
   }
 
@@ -125,8 +156,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 final imageUrl = serviceJson['imagePrestation'] != null
                     ? serviceJson['imagePrestation'] as String
                     : '';
+                
                 //print('Image URL: $imageUrl'); // Debugging statement
-                return Service(image: imageUrl);
+                return Service(
+                  id: serviceJson['id'] as int,
+                  nomPrestation: serviceJson['NomPrestation'] as String,
+                  materiel: serviceJson['Matériel'] as String,
+                  Description: serviceJson['Matériel'] as String,
+                  dureeMax: serviceJson['DuréeMax'] as String,
+                  dureeMin: serviceJson['DuréeMin'] as String,
+                  tarifId: serviceJson['TarifId'] as int,
+                  domaineId: serviceJson['DomaineId'] as int,
+                  ecologique: serviceJson['Ecologique'] as bool,
+                  image: imageUrl,
+                  tarifJourMin: serviceJson['Tarif']['TarifJourMin'] as String,
+                  tarifJourMax: serviceJson['Tarif']['TarifJourMax'] as String,
+                  Unite: serviceJson['Tarif']['Unité'] as String
+                );
               })
               .map((service) => ServiceOffreContainer(
                     service: service,
@@ -162,7 +208,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? serviceJson['imagePrestation'] as String
                     : '';
                 print('Image URL: $imageUrl'); // Debugging statement
-                return Service(image: imageUrl);
+                return Service(
+                  id: serviceJson['id'] as int,
+                  nomPrestation: serviceJson['NomPrestation'] as String,
+                  materiel: serviceJson['Matériel'] as String,
+                  Description: serviceJson['Matériel'] as String,
+                  dureeMax: serviceJson['DuréeMax'] as String,
+                  dureeMin: serviceJson['DuréeMin'] as String,
+                  tarifId: serviceJson['TarifId'] as int,
+                  domaineId: serviceJson['DomaineId'] as int,
+                  ecologique: serviceJson['Ecologique'] as bool,
+                  image: imageUrl,
+                  tarifJourMin: serviceJson['Tarif']['TarifJourMin'] as String,
+                  tarifJourMax: serviceJson['Tarif']['TarifJourMax'] as String,
+                  Unite: serviceJson['Tarif']['Unité'] as String
+                );
               })
               .map((service) => ServiceOffreContainer(
                     service: service,
@@ -186,8 +246,8 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             children: [
               HomeHeader(
-                userName: 'User',
-                profilePictureUrl: 'https://example.com/profile.jpg',
+                userName: _userData['Username'],
+                profilePictureUrl: _userData['photo'],
               ),
               BarRecherche(),
               Padding(
