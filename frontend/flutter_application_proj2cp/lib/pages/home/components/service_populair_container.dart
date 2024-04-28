@@ -1,8 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_proj2cp/details_prestation.dart';
 
 class Service {
   final String image;
-  Service({required this.image});
+  final int id;
+  final String nomPrestation;
+  final String materiel;
+  final String dureeMax;
+  final String dureeMin;
+  final int tarifId;
+  final int domaineId;
+  final bool ecologique;
+  final String Description;
+  final String? tarifJourMin;
+  final String? tarifJourMax;
+  final String Unite;
+  Service({
+    required this.id,
+    required this.Unite,
+    required this.Description,
+    required this.nomPrestation,
+    required this.materiel,
+    required this.dureeMax,
+    required this.dureeMin,
+    required this.tarifId,
+    required this.domaineId,
+    required this.ecologique,
+    required this.image,
+    required this.tarifJourMin,
+    required this.tarifJourMax,
+  });
 }
 
 class ServiceOffreContainer extends StatefulWidget {
@@ -23,7 +50,15 @@ class _ServiceOffreContainerState extends State<ServiceOffreContainer> {
   Widget build(BuildContext context) {
     //print('Image URL: ${widget.service.image}');
     return GestureDetector(
-      onTap: () => {}, //afficher service populair
+      onTap: () => {
+        print("ID de la prestation: ${widget.service.id}"),
+        Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => details_prestationPage(id: widget.service.id,prst: widget.service.nomPrestation,avgtime:'${widget.service.dureeMin} - ${widget.service.dureeMax} ',avgprice:  '${widget.service.tarifJourMin.toString()} da - ${widget.service.tarifJourMin.toString()}',imagePrestation: widget.service.image,Description:widget.service.Description,Unite :widget.service.Unite),
+        ),
+      )
+      }, //afficher service populair
       child: Padding(
         padding: const EdgeInsets.all(9.0),
         child: SizedBox(

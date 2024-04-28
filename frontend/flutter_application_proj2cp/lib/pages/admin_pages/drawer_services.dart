@@ -109,7 +109,21 @@ class _DrawerServicesState extends State<DrawerServices> {
                     ? serviceJson['imagePrestation'] as String
                     : '';
                 //print('Image URL: $imageUrl'); // Debugging statement
-                return Service(image: imageUrl);
+                return Service(
+                  id: serviceJson['id'] as int,
+                  nomPrestation: serviceJson['NomPrestation'] as String,
+                  materiel: serviceJson['Matériel'] as String,
+                  Description: serviceJson['Description'] as String,
+                  dureeMax: serviceJson['DuréeMax'] as String,
+                  dureeMin: serviceJson['DuréeMin'] as String,
+                  tarifId: serviceJson['TarifId'] as int,
+                  domaineId: serviceJson['DomaineId'] as int,
+                  ecologique: serviceJson['Ecologique'] as bool,
+                  image: imageUrl,
+                  tarifJourMin: serviceJson['Tarif']['TarifJourMin'] as String,
+                  tarifJourMax: serviceJson['Tarif']['TarifJourMax'] as String,
+                  Unite: serviceJson['Tarif']['Unité'] as String
+                );
               })
               .map((service) => ServiceOffreContainer(
                     service: service,
@@ -145,7 +159,21 @@ class _DrawerServicesState extends State<DrawerServices> {
                     ? serviceJson['imagePrestation'] as String
                     : '';
                 print('Image URL: $imageUrl'); // Debugging statement
-                return Service(image: imageUrl);
+                return Service(
+                  id: serviceJson['id'] as int,
+                  nomPrestation: serviceJson['NomPrestation'] as String,
+                  materiel: serviceJson['Matériel'] as String,
+                  Description: serviceJson['Matériel'] as String,
+                  dureeMax: serviceJson['DuréeMax'] as String,
+                  dureeMin: serviceJson['DuréeMin'] as String,
+                  tarifId: serviceJson['TarifId'] as int,
+                  domaineId: serviceJson['DomaineId'] as int,
+                  ecologique: serviceJson['Ecologique'] as bool,
+                  image: imageUrl,
+                  tarifJourMin: serviceJson['Tarif']['TarifJourMin'] as String,
+                  tarifJourMax: serviceJson['Tarif']['TarifJourMax'] as String,
+                  Unite: serviceJson['Tarif']['Unité'] as String
+                );
               })
               .map((service) => ServiceOffreContainer(
                     service: service,
