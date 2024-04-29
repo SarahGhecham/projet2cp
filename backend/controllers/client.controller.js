@@ -317,14 +317,14 @@ function updateClientImage(req, res) {
       .json({ success: false, message: 'You must upload an image.' });
   }
 
-  if (req.file.mimetype == 'image/jpeg') {
+  /*if (req.file.mimetype == 'image/jpeg') {
     return res
       .status(400)
       .json({ success: false, message: 'Only JPEG images are supported.' });
-  }
+  }*/
 
     // Construct the image URL for the client
-    const imageURL = `http://192.168.100.7:3000/imageClient/${req.file.filename}`; // changer avec votre adressse ip/10.0.2.2(emulateur)
+    const imageURL = `http://192.168.85.78:3000/imageClient/${req.file.filename}`; // changer avec votre adressse ip/10.0.2.2(emulateur)
 
   // Update the client's photo URL in the database
   models.Client.findByPk(id)
@@ -731,73 +731,75 @@ async function annulerRDV(req, res) {
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
+
 async function ActiviteEncours(req, res) {
-    const clientId = req.params.id;
+  const clientId = req.params.id;
 
-  try {
-    const maintenant = new Date();
+try {
+  const maintenant = new Date();
 
-    const demandes = await models.Demande.findAll({
-      where: { ClientId: clientId },
-    });
+  const demandes = await models.Demande.findAll({
+    where: { ClientId: clientId },
+  });
 
-    const demandeIds = demandes.map((demande) => demande.id);
+  const demandeIds = demandes.map((demande) => demande.id);
 
-        const rdvs = await models.RDV.findAll({
-            where: { DemandeId: demandeIds },
-            attributes: ['id', 'DemandeId', 'annule', 'DateFin', 'HeureFin']
-        });
+      const rdvs = await models.RDV.findAll({
+          where: { DemandeId: demandeIds },
+          attributes: ['id', 'DemandeId', 'annule', 'DateFin', 'HeureFin']
+      });
 
-        const rendezVousEnCours = await Promise.all(rdvs.map(async (rdv) => {
-            const rdvDateFin = new Date(rdv.DateFin);
-            const rdvHeureFin = new Date(`${rdv.DateFin}T${rdv.HeureFin}`);
-        
-            if (rdv.annule) {
-                return null;
-            }
-        
-            if (rdvDateFin > maintenant || (rdvDateFin.getTime() === maintenant.getTime() && rdvHeureFin > maintenant)) {
-                const artisandemande = await models.ArtisanDemande.findOne({ where: { DemandeId: rdv.DemandeId } });
-                if (!artisandemande || !artisandemande.accepte ) {
-                    return null;
-                }
-                return { rdv, artisandemande };
-            } else {
-                return null;
-            }
-        }));
-        
+      const rendezVousEnCours = await Promise.all(rdvs.map(async (rdv) => {
+          const rdvDateFin = new Date(rdv.DateFin);
+          const rdvHeureFin = new Date(`${rdv.DateFin}T${rdv.HeureFin}`);
+      
+          if (rdv.annule) {
+              return null;
+          }
+      
+          if (rdvDateFin > maintenant || (rdvDateFin.getTime() === maintenant.getTime() && rdvHeureFin > maintenant)) {
+              const artisandemande = await models.ArtisanDemande.findOne({ where: { DemandeId: rdv.DemandeId } });
+              if (!artisandemande || !artisandemande.accepte ) {
+                  return null;
+              }
+              return { rdv, artisandemande };
+          } else {
+              return null;
+          }
+      }));
+      
 
-        const rendezVousDetails = await Promise.all(rendezVousEnCours.map(async (rdvArtisan) => {
-            if (!rdvArtisan) {
-                return null; 
-            }
+      const rendezVousDetails = await Promise.all(rendezVousEnCours.map(async (rdvArtisan) => {
+          if (!rdvArtisan) {
+              return null; 
+          }
 
-            const demande = await models.Demande.findByPk(rdvArtisan.rdv.DemandeId, {
-                attributes: ['id',
-                    [models.sequelize.literal("DATE_FORMAT(`Demande`.`createdAt`, '%Y-%m-%d')"), 'date'], 
-            [models.sequelize.literal("DATE_FORMAT(`Demande`.`createdAt`, '%H:%i:%s')"), 'heure'] 
-                ],
-                include: [
-                    {
-                        model: models.Prestation,
-                        attributes: ['nomPrestation', 'imagePrestation'] 
-                    }
-                    
-                ]
-            });
+          const demande = await models.Demande.findByPk(rdvArtisan.rdv.DemandeId, {
+              attributes: ['id',
+                  [models.sequelize.literal("DATE_FORMAT(`Demande`.`createdAt`, '%Y-%m-%d')"), 'date'], 
+          [models.sequelize.literal("DATE_FORMAT(`Demande`.`createdAt`, '%H:%i:%s')"), 'heure'] 
+              ],
+              include: [
+                  {
+                      model: models.Prestation,
+                      attributes: ['nomPrestation', 'imagePrestation'] 
+                  }
+                  
+              ]
+          });
 
-            return { demande, rdv: rdvArtisan.rdv, confirme: rdvArtisan.artisandemande.confirme };
-        }));
+          return { demande, rdv: rdvArtisan.rdv, confirme: rdvArtisan.artisandemande.confirme };
+      }));
 
-        const filteredRendezVousDetails = rendezVousDetails.filter(item => item !== null);
+      const filteredRendezVousDetails = rendezVousDetails.filter(item => item !== null);
 
-        return res.status(200).json(filteredRendezVousDetails);
-    } catch (error) {
-        console.error('Une erreur s\'est produite lors de la récupération des rendez-vous en cours :', error);
-        return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
-    }
+      return res.status(200).json(filteredRendezVousDetails);
+  } catch (error) {
+      console.error('Une erreur s\'est produite lors de la récupération des rendez-vous en cours :', error);
+      return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
+  }
 }
+
 
 
 async function ActiviteTerminee(req, res) {

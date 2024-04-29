@@ -27,7 +27,7 @@ class _SignUpPageState extends State<SignUpPage> {
     final telephone = _telephoneController.text;
     final location = _locationController.text;
 
-    final url = Uri.parse('http://10.0.2.2:3000/client/sign-up');
+    final url = Uri.parse('http://192.168.85.78:3000/client/sign-up');
 
     try {
       final response = await http.post(

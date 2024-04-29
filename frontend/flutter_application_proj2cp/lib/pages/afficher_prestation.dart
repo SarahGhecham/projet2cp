@@ -59,7 +59,7 @@ class _PrestationPageState extends State<PrestationPage> {
     try {
       final response = await http.get(
         Uri.parse(
-            'http://192.168.100.7:3000/client/AfficherPrestations/$domaineId'),
+            'http://192.168.85.78:3000/client/AfficherPrestations/$domaineId'),
       );
 
       if (response.statusCode == 200) {
@@ -76,7 +76,7 @@ class _PrestationPageState extends State<PrestationPage> {
             id: prestationJson['id'] as int,
             nomPrestation: prestationJson['NomPrestation'] as String,
             materiel: prestationJson['Matériel'] as String,
-            Description: prestationJson['Matériel'] as String,
+            Description: prestationJson['Description'] as String,
             dureeMax: prestationJson['DuréeMax'] as String,
             dureeMin: prestationJson['DuréeMin'] as String,
             tarifId: prestationJson['TarifId'] as int,

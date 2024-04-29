@@ -24,7 +24,7 @@ class _LogInPageState extends State<LogInPage> {
     final email = _usernameController.text;
     final password = _passwordController.text;
 
-    final url = Uri.parse('http://192.168.100.7:3000/connexion/login');
+    final url = Uri.parse('http://192.168.85.78:3000/connexion/login');
 
     try {
       final response = await http.post(
