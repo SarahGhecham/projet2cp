@@ -21,38 +21,68 @@ class _LogInPageState extends State<LogInPage> {
   final _passwordController = TextEditingController();
 
   Future<void> _authenticateUser() async {
-    final email = _usernameController.text;
-    final password = _passwordController.text;
+  final email = _usernameController.text;
+  final password = _passwordController.text;
 
-    final url = Uri.parse('http://192.168.85.78:3000/connexion/login');
+  final url = Uri.parse('http://192.168.85.78:3000/connexion/login');
 
-    try {
-      final response = await http.post(
-        url,
-        body: json.encode({'Email': email, 'Motdepasse': password}),
-        headers: {'Content-Type': 'application/json'},
+  try {
+    final response = await http.post(
+      url,
+      body: json.encode({'Email': email, 'Motdepasse': password}),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      var responseData = json.decode(response.body);
+      var token = responseData['token'];
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', token);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const BottomNavBar(),
+        ),
       );
+    } else if (response.statusCode == 401) {
+      var responseData = json.decode(response.body);
+      var errorMessage = responseData['message'];
 
-      if (response.statusCode == 200) {
-        var responseData = json.decode(response.body);
-        var token = responseData['token'];
-        final SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', token);
-
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const BottomNavBar(),
-          ),
-        );
-      } else {
-        print('Authentication failed');
+      if (errorMessage == "adresse e-mail invalide") {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Authentication Failed'),
-            content: const Text('Invalid username or password. Please try again.'),
+            title: const Text('Authentification échouée'),
+            content: const Text("Adresse e-mail invalide. Veuillez réessayer."),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      } else if (errorMessage == "mot de passe incorrect") {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Authentification échouée'),
+            content: const Text('Mot de passe incorrect. Veuillez réessayer.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Authentification échouée'),
+            content: const Text("Nom d'utilisateur ou mot de passe incorrect. Veuillez réessayer."),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -62,10 +92,26 @@ class _LogInPageState extends State<LogInPage> {
           ),
         );
       }
-    } catch (error) {
-      print('Error: $error');
+    } else {
+      print('L\'authentification a échoué');
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Authentification échouée'),
+          content: const Text('Nom d\'utilisateur ou mot de passe incorrect. Veuillez réessayer.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     }
+  } catch (error) {
+    print('Erreur: $error');
   }
+}
 
   @override
   Widget build(BuildContext context) {

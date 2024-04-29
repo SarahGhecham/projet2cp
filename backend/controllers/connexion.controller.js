@@ -47,7 +47,7 @@ function login(req, res) {
             where: { EmailAdmin: email }
         }).then(admin => {
             if (admin === null) {
-                respondWithInvalidCredentials();
+                emailInvalid();
             } else {
                 comparePasswordAndRespond(admin.MotdepasseAdmin, admin.id,1,"Admin");
             }
@@ -90,7 +90,7 @@ function comparePasswordAndRespond(storedPassword, userId, isActive,role) {
                     });
                 }
             } else {
-                respondWithInvalidCredentials();
+                motdepasseIncorrect();
             }
         }
     });
@@ -100,9 +100,14 @@ function comparePasswordAndRespond(storedPassword, userId, isActive,role) {
 
 
     // Fonction réponse avec des informations d'identification invalides
-    function respondWithInvalidCredentials() {
+    function emailInvalid() {
         res.status(401).json({
-            message: "Informations d'identification invalides"
+            message: "adresse e-mail invalide"
+        });
+    }
+    function motdepasseIncorrect(){
+        res.status(401).json({
+            message: "mot de passe incorrect"
         });
     }
 

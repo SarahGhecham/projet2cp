@@ -228,14 +228,14 @@ class _PrestationPageState extends State<PrestationPage> {
                     style: TextStyle(
                       color: Color(0xff05564B),
                       fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                      fontSize: 12,
                     ),
                   ),
                   SizedBox(height: 5),
                   Text(
                     '${_prestations[index].tarifJourMin}DA - ${_prestations[index].tarifJourMax}DA',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
