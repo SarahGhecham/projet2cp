@@ -36,7 +36,11 @@ class _AddPrestationPage2State extends State<AddPrestationPage2> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.only(
+          left: 20.0,
+          right: 20,
+          //bottom: 20,
+        ),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -263,9 +267,10 @@ class _AddPrestationPage2State extends State<AddPrestationPage2> {
                   } else {
                     // Afficher les matériels existants
                     return Padding(
-                      padding: const EdgeInsets.all(10.0),
+                      padding:
+                          const EdgeInsets.only(left: 10.0, top: 10, right: 40),
                       child: Container(
-                        width: 277,
+                        width: 240,
                         height: 45,
                         decoration: BoxDecoration(
                           color: const Color(0xFFDCC8C5).withOpacity(0.22),
@@ -276,11 +281,12 @@ class _AddPrestationPage2State extends State<AddPrestationPage2> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.only(left: 16.0),
+                          padding: const EdgeInsets.only(top: 10.0, left: 15),
                           child: Text(
                             _materiels[index],
                             style: GoogleFonts.poppins(
                               color: Colors.black,
+                              fontSize: 16,
                             ),
                           ),
                         ),
@@ -290,7 +296,7 @@ class _AddPrestationPage2State extends State<AddPrestationPage2> {
                 },
               ),
               SizedBox(
-                height: 230,
+                height: 200,
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 200),
@@ -322,6 +328,9 @@ class _AddPrestationPage2State extends State<AddPrestationPage2> {
                       )),
                 ),
               ),
+              SizedBox(
+                height: 50,
+              )
             ],
           ),
         ),

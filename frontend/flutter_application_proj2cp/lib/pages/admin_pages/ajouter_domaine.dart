@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/ajouter_prestation1.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/drawer_services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -111,8 +112,12 @@ class _AddDomainePageState extends State<AddDomainePage> {
               child: IconButton(
                 icon: Icon(Icons.arrow_back),
                 onPressed: () {
-                  Navigator.pop(
-                      context); // Navigate back when back arrow is pressed
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DrawerServices(),
+                    ),
+                  );
                 },
               ),
             ),
