@@ -59,7 +59,7 @@ class _PrestationPageState extends State<PrestationPage> {
     try {
       final response = await http.get(
         Uri.parse(
-            'http://192.168.100.7:3000/client/AfficherPrestations/$domaineId'),
+            'http://192.168.85.78:3000/client/AfficherPrestations/$domaineId'),
       );
 
       if (response.statusCode == 200) {
