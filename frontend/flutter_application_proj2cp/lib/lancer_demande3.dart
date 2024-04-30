@@ -35,6 +35,7 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
   String _adresse = '';
   String _description = '';
   List<dynamic> coordinates=[];
+  int demandeId=1;
 
   Future<void> fetchData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -45,11 +46,11 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
   final TextEditingController _controller = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
-  void _navigateToNextPage(BuildContext context,List<LatLng> latLngList,String _adresse,LatLng coords) {
+  void _navigateToNextPage(BuildContext context,List<LatLng> latLngList,String _adresse,LatLng coords,int demandeId) {
     Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => DemandelanceePage(coordinates: latLngList,adresse: _adresse,coords: coords,)
+      builder: (context) => DemandelanceePage(coordinates: latLngList,adresse: _adresse,coords: coords,demandeId: demandeId,)
     ),
   );}
 
@@ -347,8 +348,9 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
                     
                     List<dynamic> coordinates = json.decode(response.body)['coordinates'];
                     var clientCoords = json.decode(response.body)['clientCoords'];
+                    var demandeId = json.decode(response.body)['demandeId'];
                     // Maintenant, vous pouvez utiliser la liste de coordonnées comme vous le souhaitez
-                    
+                    print('demande id: $demandeId');
                     print('Coordonnées récupérées: $coordinates');
                     this.coordinates=coordinates;
                     setState(() {
@@ -362,7 +364,7 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
                     
                   });
                     print('couple de coordonnées récupéré: $clientCoords');
-                   _navigateToNextPage(context,latLngList,_adresse,coords);
+                   _navigateToNextPage(context,latLngList,_adresse,coords,demandeId);
                   } else {
                     // La requête a échoué, affichez un message d'erreur ou effectuez d'autres actions
                     print('Erreur lors de la requête POST: ${response.statusCode}');

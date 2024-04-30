@@ -36,6 +36,7 @@ class _LogInPageState extends State<LogInPage> {
       if (response.statusCode == 200) {
         var responseData = json.decode(response.body);
         var token = responseData['token'];
+       // var role=responseData['role'];
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
 

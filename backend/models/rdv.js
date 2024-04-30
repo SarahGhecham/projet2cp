@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     HeureDebut: DataTypes.TIME,
     HeureFin: DataTypes.TIME,
     annule:DataTypes.BOOLEAN,
-    refuse:DataTypes.BOOLEAN,
+    //refuse:DataTypes.BOOLEAN,
     DemandeId:DataTypes.INTEGER
   }, {
     sequelize,
