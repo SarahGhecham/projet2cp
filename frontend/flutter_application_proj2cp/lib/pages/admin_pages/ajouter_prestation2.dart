@@ -2,19 +2,67 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/ajouter_domaine.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/ajouter_prestation1.dart';
+
+import 'package:flutter_application_proj2cp/pages/admin_pages/prestation_info.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/prestation_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class AddPrestationPage2 extends StatefulWidget {
-  const AddPrestationPage2({super.key});
+  const AddPrestationPage2({
+    Key? key,
+    //required this.prestationInfo,
+  }) : super(key: key);
 
   @override
-  State<AddPrestationPage2> createState() => _AddPrestationPage2State();
+  _AddPrestationPage2State createState() => _AddPrestationPage2State();
 }
 
 class _AddPrestationPage2State extends State<AddPrestationPage2> {
+  String _selectedPrixOption = '';
+  String _selectedDureeOption = '';
+  List<String> _materiels = [];
+
   final List<String> _prixOptions = ['Option 1', 'Option 2', 'Option 3'];
   final List<String> _dureeOptions = ['Option A', 'Option B', 'Option C'];
-  List<String> _materiels = [];
+  final TextEditingController _prixController = TextEditingController();
+  final TextEditingController _dureeController = TextEditingController();
+
+  void _navigateToDomainePage() {
+    print("Before fetching prestationInfo");
+
+    final prestationInfoProvider =
+        Provider.of<PrestationInfoProvider>(context, listen: false);
+
+    if (prestationInfoProvider.prestationInfo != null) {
+      final updatedPrestationInfo = PrestationInfo(
+        nomPrestation: prestationInfoProvider.prestationInfo!.nomPrestation,
+        imageFilePrestation:
+            prestationInfoProvider.prestationInfo!.imageFilePrestation,
+        description: prestationInfoProvider.prestationInfo!.description,
+        prix: _selectedPrixOption,
+        duree: _selectedDureeOption,
+        materiels: _materiels,
+      );
+
+      print(
+          "After fetching prestationInfo, nomPrestation: ${updatedPrestationInfo.nomPrestation}");
+
+      prestationInfoProvider.setPrestationInfo(updatedPrestationInfo);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AddDomainePage(),
+        ),
+      );
+    } else {
+      print("PrestationInfo is null or not available.");
+      // Handle the case where prestationInfo is null
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,6 +121,7 @@ class _AddPrestationPage2State extends State<AddPrestationPage2> {
                       children: [
                         Expanded(
                           child: TextFormField(
+                            controller: _prixController,
                             decoration: InputDecoration(
                               hintText: 'Saisir un prix',
                               hintStyle: GoogleFonts.poppins(
@@ -139,6 +188,7 @@ class _AddPrestationPage2State extends State<AddPrestationPage2> {
                       children: [
                         Expanded(
                           child: TextFormField(
+                            controller: _dureeController,
                             decoration: InputDecoration(
                               hintText: 'Saisir une durée',
                               hintStyle: GoogleFonts.poppins(
@@ -302,12 +352,7 @@ class _AddPrestationPage2State extends State<AddPrestationPage2> {
                 padding: const EdgeInsets.only(left: 200),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AddDomainePage(),
-                      ),
-                    );
+                    _navigateToDomainePage();
                   },
                   child: Container(
                       height: 50,
