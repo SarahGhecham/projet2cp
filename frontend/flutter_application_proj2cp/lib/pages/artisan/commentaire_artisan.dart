@@ -8,8 +8,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 
-
-
 class CommentPage extends StatefulWidget {
   @override
   _CommentPageState createState() => _CommentPageState();
