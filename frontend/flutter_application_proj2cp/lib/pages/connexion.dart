@@ -12,6 +12,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 
 
+
+
 class LogInPage extends StatefulWidget {
   const LogInPage({Key? key}) : super(key: key);
 
@@ -27,7 +29,7 @@ class _LogInPageState extends State<LogInPage> {
     final email = _usernameController.text;
     final password = _passwordController.text;
 
-    final url = Uri.parse('http://192.168.100.7:3000/connexion/login');
+    final url = Uri.parse('http://192.168.85.78:3000/connexion/login');
 
     try {
       final response = await http.post(
@@ -39,67 +41,82 @@ class _LogInPageState extends State<LogInPage> {
       if (response.statusCode == 200) {
         var responseData = json.decode(response.body);
         var token = responseData['token'];
-       // var role=responseData['role'];
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
 
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const BottomNavBar(),
-        ),
-      );
-    } else if (response.statusCode == 401) {
-      var responseData = json.decode(response.body);
-      var errorMessage = responseData['message'];
-
-      if (errorMessage == "adresse e-mail invalide") {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Authentification échouée'),
-            content: const Text("Adresse e-mail invalide. Veuillez réessayer."),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
-      } else if (errorMessage == "mot de passe incorrect") {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Authentification échouée'),
-            content: const Text('Mot de passe incorrect. Veuillez réessayer.'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-            ],
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const BottomNavBar(),
           ),
         );
       } else {
-        print('Authentication failed');
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Authentification échouée'),
-            content: const Text("Nom d'utilisateur ou mot de passe incorrect. Veuillez réessayer."),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
+        var responseData = json.decode(response.body);
+        var errorMessage = responseData['message'];
+
+        if (response.statusCode == 401) {
+          if (errorMessage == "adresse e-mail invalide") {
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Authentification échouée'),
+                content: const Text("Adresse e-mail invalide. Veuillez réessayer."),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('OK'),
+                  ),
+                ],
               ),
-            ],
-          ),
-        );
+            );
+          } else if (errorMessage == "mot de passe incorrect") {
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Authentification échouée'),
+                content: const Text('Mot de passe incorrect. Veuillez réessayer.'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('OK'),
+                  ),
+                ],
+              ),
+            );
+          } else {
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Authentification échouée'),
+                content: const Text("Nom d'utilisateur ou mot de passe incorrect. Veuillez réessayer."),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('OK'),
+                  ),
+                ],
+              ),
+            );
+          }
+        } else {
+          print('L\'authentification a échoué');
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Authentification échouée'),
+              content: const Text('Nom d\'utilisateur ou mot de passe incorrect. Veuillez réessayer.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
       }
     } catch (error) {
-      print('Error: $error');
+      print('Erreur: $error');
     }
   }
 
