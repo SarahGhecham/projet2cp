@@ -21,46 +21,105 @@ class _SignUpPageState extends State<SignUpPage> {
   final _emailController = TextEditingController();
 
   Future<void> _signUpUser() async {
-    final username = _usernameController.text;
-    final password = _passwordController.text;
-    final email = _emailController.text;
-    final telephone = _telephoneController.text;
-    final location = _locationController.text;
+  final username = _usernameController.text;
+  final password = _passwordController.text;
+  final email = _emailController.text;
+  final telephone = _telephoneController.text;
+  final location = _locationController.text;
 
-    final url = Uri.parse('http://10.0.2.2:3000/client/sign-up');
+  final url = Uri.parse('http://192.168.85.78:3000/client/sign-up');
 
-    try {
-      final response = await http.post(
-        url,
-        body: json.encode({
-          'Username': username,
-          'MotdepasseClient': password,
-          'EmailClient': email,
-          'AdresseClient': location,
-          'NumeroTelClient': telephone,
-        }),
-        headers: {'Content-Type': 'application/json'},
+  try {
+    final response = await http.post(
+      url,
+      body: json.encode({
+        'Username': username,
+        'MotdepasseClient': password,
+        'EmailClient': email,
+        'AdresseClient': location,
+        'NumeroTelClient': telephone,
+      }),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 201) {
+      var responseData = json.decode(response.body);
+      var token = responseData['token'];
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', token);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const BottomNavBar(),
+        ),
       );
+    } else if (response.statusCode == 400) {
+      var responseData = json.decode(response.body);
+      var errorMessage = responseData['message'];
 
-      if (response.statusCode == 201) {
-        var responseData = json.decode(response.body);
-        var token = responseData['token'];
-        final SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', token);
-        print("trace");
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BottomNavBar(),
-          ),
-        );
-      } else {
-        print('Sign up failed');
+      if (errorMessage.contains("n'est pas rempli")) {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Signup Failed'),
-            content: const Text('Failed to sign up. Please try again.'),
+            title: const Text('Inscription échouée'),
+            content: Text(errorMessage),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      } else if (errorMessage.contains("numéro de téléphone n'a pas le bon format")) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Inscription échouée'),
+            content: Text(errorMessage),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      } else if (errorMessage == "L'adresse saisie est invalide") {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Inscription échouée'),
+            content: Text(errorMessage),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      } else if (errorMessage == 'Compte email déjà existant' || errorMessage == 'Compte email existant') {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Inscription échouée'),
+            content: Text(errorMessage),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Inscription échouée'),
+            content: const Text('Impossible de s\'inscrire. Veuillez réessayer.'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -70,10 +129,26 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
         );
       }
-    } catch (error) {
-      print('Error: $error');
+    } else {
+      print('L\'inscription a échoué');
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Inscription échouée'),
+          content: const Text('Impossible de s\'inscrire. Veuillez réessayer.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     }
+  } catch (error) {
+    print('Error: $error');
   }
+}
 
   @override
   Widget build(BuildContext context) {

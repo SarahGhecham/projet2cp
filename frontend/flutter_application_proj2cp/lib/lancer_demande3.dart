@@ -15,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 
 
+
 class Lancerdemande3Page extends StatefulWidget {
   final int hour;
   final int min;
@@ -112,13 +113,7 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(height: 180),
-            SizedBox(
-              height: 18,
-              width: 25,
-              child: SvgPicture.asset("assets/fleche.svg"),
-            ),
-            const SizedBox(width: 50),
+            const SizedBox(width: 30),
             Container(
               width: 200,
               height: 11,
@@ -132,7 +127,7 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
                 valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF05564B)),
               ),
             ),
-            const SizedBox(width: 50),
+            const SizedBox(width: 60),
             SizedBox(
               height: 16,
               width: 20,
@@ -452,6 +447,7 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
                   print('Erreur lors de lenvoi de la requête POST: $error');
                 });*/
                 
+
                 },
                 style: ButtonStyle(
                   minimumSize:

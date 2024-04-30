@@ -47,7 +47,7 @@ class _ProfileState extends State<Profile> {
 
   Future<void> _fetchUserData() async {
     final url = Uri.parse(
-        'http://192.168.100.7:3000/client/Affichermonprofil'); // Replace with your endpoint
+        'http://192.168.85.78:3000/client/Affichermonprofil'); // Replace with your endpoint
     try {
       final response = await http.get(
         url,
@@ -99,7 +99,7 @@ class _ProfileState extends State<Profile> {
 
   Future<void> updateClientImage(File image, String token) async {
   // Replace "http://localhost:3000" with your server URL
-  String baseUrl = "http://192.168.100.7:3000";
+  String baseUrl = "http://192.168.85.78:3000";
 
   // Construct the endpoint URL
   String endpoint = "$baseUrl/client/updateClientImage";
@@ -144,7 +144,7 @@ class _ProfileState extends State<Profile> {
 
   Future<void> updateClient(Map<String, dynamic> updatedData) async {
     final url = Uri.parse(
-        'http://192.168.100.7:3000/client/updateClient'); // Replace with your endpoint
+        'http://192.168.85.78:3000/client/updateClient'); // Replace with your endpoint
     try {
       final response = await http.patch(
         url,
@@ -167,11 +167,13 @@ class _ProfileState extends State<Profile> {
   }
 
   final ImagePicker _imagePicker = ImagePicker();
+
   var _pickedImagePath = null; // var jsp si c ccorrect hna
   TextEditingController _UsernameController = TextEditingController();
   TextEditingController _numeroController = TextEditingController();
   TextEditingController _gmailController = TextEditingController();
   TextEditingController _addressController = TextEditingController();
+
   void _toggleEditing(bool value) {
     setState(() {
       _isEditing = value;

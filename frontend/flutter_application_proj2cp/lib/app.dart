@@ -18,7 +18,8 @@ import 'package:flutter_application_proj2cp/widgets/bottom_nav_bar.dart';
 import 'package:flutter_application_proj2cp/lancer_demande3.dart';
 import 'package:flutter_application_proj2cp/Web/lancer_demande3Web.dart';
 import 'package:flutter_application_proj2cp/demande_confirmé.dart';
-import 'package:flutter_application_proj2cp/lancer_demande2.dart';
+import 'package:flutter_application_proj2cp/lancer_demande1.dart';
+import 'package:flutter_application_proj2cp/details_prestation.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_application_proj2cp/lancer_demande1.dart';
 import 'package:flutter_application_proj2cp/demande_lancee.dart';
@@ -49,7 +50,7 @@ class App extends StatelessWidget {
             iconTheme: const IconThemeData(color: vertClair),
           ),*/
 
-          home: LogInPage(),
+          home: SignUpPage(),
         );
       },
 

@@ -69,7 +69,7 @@ class _DemandesTerminesState extends State<DemandesTermines> {
   Future<void> fetchDemandesTerminees() async {
     try {
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:3000/client/AfficherActiviteTerminee/3'),
+        Uri.parse('http://192.168.85.78:3000/client/AfficherActiviteTerminee/3'),
       );
 
 
@@ -157,9 +157,9 @@ class _DemandesTerminesState extends State<DemandesTermines> {
                               color: creme,
                               borderRadius: BorderRadius.circular(10),
                               image: DecorationImage(
-                                image: AssetImage(demande.demandeImage),
-                                fit: BoxFit.cover,
-                              ),
+                              image: NetworkImage(demande?.demandeImage ?? ''),
+                              fit: BoxFit.cover,
+                            ),
                             ),
                           ),
                           SizedBox(width: 15.0),
@@ -173,7 +173,7 @@ class _DemandesTerminesState extends State<DemandesTermines> {
                                     textStyle: TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.w500,
-                                      fontSize: 15,
+                                      fontSize: 12,
                                     ),
                                   ),
                                 ),
@@ -184,7 +184,7 @@ class _DemandesTerminesState extends State<DemandesTermines> {
                                     textStyle: TextStyle(
                                       color: Colors.grey,
                                       fontWeight: FontWeight.w400,
-                                      fontSize: 13,
+                                      fontSize: 9,
                                     ),
                                   ),
                                 ),

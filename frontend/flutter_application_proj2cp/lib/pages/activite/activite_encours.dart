@@ -49,7 +49,7 @@ class _DemandesEnCoursState extends State<DemandesEnCours> {
   Future<void> fetchDemandesEnCours() async {
     try {
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:3000/client/AfficherActiviteEncours/3'),
+        Uri.parse('http://192.168.85.78:3000/client/AfficherActiviteEncours/3'),
       );
 
       if (response.statusCode == 200) {
@@ -67,7 +67,7 @@ class _DemandesEnCoursState extends State<DemandesEnCours> {
             final String imagePrestation =
                 demande['Prestation']['imagePrestation'] ?? '';
             final bool status = confirme;
-           
+            print('image $imagePrestation');
             demandes.add(Demande(
               name: name,
               orderTime: '$dateFin, $heureFin',
@@ -98,7 +98,7 @@ class _DemandesEnCoursState extends State<DemandesEnCours> {
         itemBuilder: (context, index) {
           final demande = demandesEnCours[index];
           String iconAsset = demande?.status ?? false
-          ?'assets/icons/confirmee.png'
+              ? 'assets/icons/confirmee.png'
               : 'assets/icons/acceptee.png';
 
           return Container(
@@ -122,8 +122,7 @@ class _DemandesEnCoursState extends State<DemandesEnCours> {
                             color: creme,
                             borderRadius: BorderRadius.circular(10),
                             image: DecorationImage(
-                              image: AssetImage(demande?.demandeImage ??
-                                  ''), // Utilisation de ?. et ??
+                              image: NetworkImage(demande?.demandeImage ?? ''),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -139,7 +138,7 @@ class _DemandesEnCoursState extends State<DemandesEnCours> {
                                   textStyle: TextStyle(
                                     color: Colors.black,
                                     fontWeight: FontWeight.w500,
-                                    fontSize: 15,
+                                    fontSize: 12,
                                   ),
                                 ),
                               ),
@@ -151,7 +150,7 @@ class _DemandesEnCoursState extends State<DemandesEnCours> {
                                   textStyle: TextStyle(
                                     color: Colors.grey,
                                     fontWeight: FontWeight.w400,
-                                    fontSize: 13,
+                                    fontSize: 9,
                                   ),
                                 ),
                               ),

@@ -10,8 +10,11 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
+
+
 class LogInPage extends StatefulWidget {
-  const LogInPage({super.key});
+  const LogInPage({Key? key}) : super(key: key);
+
   @override
   State<LogInPage> createState() => _LogInPageState();
 }
@@ -41,10 +44,42 @@ class _LogInPageState extends State<LogInPage> {
         await prefs.setString('token', token);
 
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const BottomNavBar(),
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const BottomNavBar(),
+        ),
+      );
+    } else if (response.statusCode == 401) {
+      var responseData = json.decode(response.body);
+      var errorMessage = responseData['message'];
+
+      if (errorMessage == "adresse e-mail invalide") {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Authentification échouée'),
+            content: const Text("Adresse e-mail invalide. Veuillez réessayer."),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      } else if (errorMessage == "mot de passe incorrect") {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Authentification échouée'),
+            content: const Text('Mot de passe incorrect. Veuillez réessayer.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
           ),
         );
       } else {
@@ -52,8 +87,8 @@ class _LogInPageState extends State<LogInPage> {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Authentication Failed'),
-            content: const Text('Invalid username or password. Please try again.'),
+            title: const Text('Authentification échouée'),
+            content: const Text("Nom d'utilisateur ou mot de passe incorrect. Veuillez réessayer."),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -274,20 +309,23 @@ class _LogInPageState extends State<LogInPage> {
                     ),
                   ),
                   GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const SignUpPage()));
-                      },
-                      child: Text(
-                        "S'inscrire",
-                        style: GoogleFonts.poppins(
-                          color: const Color(0xFF05564B),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SignUpPage(),
                         ),
-                      )),
+                      );
+                    },
+                    child: Text(
+                      "S'inscrire",
+                      style: GoogleFonts.poppins(
+                        color: const Color(0xFF05564B),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ],
