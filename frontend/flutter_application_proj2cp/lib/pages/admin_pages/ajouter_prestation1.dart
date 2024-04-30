@@ -12,7 +12,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class AddPrestationPage extends StatefulWidget {
-  const AddPrestationPage({Key? key}) : super(key: key);
+  final Function(PrestationInfo) onPrestationAdded;
+
+  const AddPrestationPage({Key? key, required this.onPrestationAdded})
+      : super(key: key);
 
   @override
   _AddPrestationPageState createState() => _AddPrestationPageState();
@@ -42,6 +45,7 @@ class _AddPrestationPageState extends State<AddPrestationPage> {
 
     Provider.of<PrestationInfoProvider>(context, listen: false)
         .setPrestationInfo(prestationInfo);
+    widget.onPrestationAdded(prestationInfo);
 
     Navigator.push(
       context,

@@ -40,11 +40,19 @@ class _AddDomainePageState extends State<AddDomainePage> {
     }
   }
 
+  void _addPrestation(PrestationInfo newPrestation) {
+    setState(() {
+      _prestations.add(newPrestation);
+    });
+  }
+
   void _navigateToAddPrestationPage1() {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AddPrestationPage(),
+        builder: (context) => AddPrestationPage(
+          onPrestationAdded: _addPrestation,
+        ),
       ),
     );
   }
@@ -55,7 +63,9 @@ class _AddDomainePageState extends State<AddDomainePage> {
         Provider.of<PrestationInfoProvider>(context, listen: false);
     final prestationInfo = prestationInfoProvider.prestationInfo;
 
-    if (prestationInfo != null) {}
+    if (prestationInfo != null) {
+      _prestations.add(prestationInfo);
+    }
   }
 
   Future<void> _ajouterDomaine() async {

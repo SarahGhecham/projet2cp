@@ -20,6 +20,7 @@ class AddPrestationPage2 extends StatefulWidget {
 }
 
 class _AddPrestationPage2State extends State<AddPrestationPage2> {
+  //final PrestationInfo prestationInfo;
   String _selectedPrixOption = '';
   String _selectedDureeOption = '';
   List<String> _materiels = [];
