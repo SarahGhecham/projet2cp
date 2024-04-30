@@ -8,7 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:flutter_application_proj2cp/pages/admin_pages/bottom_nav_bar.dart';
 
 
 
@@ -24,12 +24,11 @@ class LogInPage extends StatefulWidget {
 class _LogInPageState extends State<LogInPage> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-
   Future<void> _authenticateUser() async {
     final email = _usernameController.text;
     final password = _passwordController.text;
 
-    final url = Uri.parse('http://192.168.85.78:3000/connexion/login');
+    final url = Uri.parse('http://192.168.100.7:3000/connexion/login');
 
     try {
       final response = await http.post(
@@ -41,15 +40,29 @@ class _LogInPageState extends State<LogInPage> {
       if (response.statusCode == 200) {
         var responseData = json.decode(response.body);
         var token = responseData['token'];
+        var role=responseData['role'];
+        print(role);
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const BottomNavBar(),
-          ),
-        );
+       if (role == "Admin") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BottomNavBarAdmin(), // Remplacez ArtisanPage par le nom de votre page pour les artisans
+            ),
+          );
+        } else if (role == "Client") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BottomNavBar(), // Remplacez ClientPage par le nom de votre page pour les clients
+            ),
+          );
+        } else {
+          print("Artisan");
+          // Si le rôle n'est ni "Artisan" ni "Client", vous pouvez choisir de gérer cela d'une manière appropriée, comme afficher un message d'erreur ou rediriger vers une autre page par défaut.
+        }
       } else {
         var responseData = json.decode(response.body);
         var errorMessage = responseData['message'];

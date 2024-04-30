@@ -49,26 +49,22 @@ class _details_prestationPageState extends State<details_prestationPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Row(
-          children: [
-            const SizedBox(width: 130),
-            Text(
-              "Details",
-              style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
+      title: Text(
+        "Details",
+        style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
       ),
-      body: Align(
-        alignment: Alignment.center,
+      centerTitle: true, // Centrer le titre de l'appbar
+        ),
+      
+      body: Center(
         child: Stack(
           children: [
             Positioned(
               top: 20,
-              left: 50,
+              left: 40,
               child: Container(
                 width: 315, // Adjust the width as needed
-                height: 300, // Adjust the height as needed
+                height: 250, // Adjust the height as needed
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(30.0), // Adjust the border radius as needed
                   color: Colors.grey[200], // Set container background color
@@ -83,10 +79,10 @@ class _details_prestationPageState extends State<details_prestationPage> {
               ),
             ),
             Positioned(
-              left: 57,
-              top: 300,
+              left: 47,
+              top: 290,
               child: Container(
-                height: 460,
+                height: 400,
                 width: 300,
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -180,7 +176,7 @@ class _details_prestationPageState extends State<details_prestationPage> {
                       children: [
                         Positioned(
                           child: Container(
-                            height: 150,
+                            height: 130,
                             width: 270,
                             decoration: BoxDecoration(
                                 color: const Color(0xFFDCC8C5).withOpacity(0.22),
@@ -194,7 +190,10 @@ class _details_prestationPageState extends State<details_prestationPage> {
                               child: Padding(
                                 padding: const EdgeInsets.all(20.0),
                                 child: Text(
-                                  widget.Description, style: GoogleFonts.poppins(),
+                                  widget.Description, 
+                                  style: GoogleFonts.poppins(
+                                  fontSize: 10, // Ajoutez cette ligne pour spécifier la taille de la police
+                                    ),
                                 ),
                               ),
                             ),
@@ -205,7 +204,7 @@ class _details_prestationPageState extends State<details_prestationPage> {
                           child: Transform.translate(
                             offset: const Offset(0, -15),
                             child: Container(
-                              height: 35,
+                              height: 33,
                               width: 110,
                               decoration: BoxDecoration(
                                 color: const Color(0xFFDCC8C5),
@@ -221,7 +220,7 @@ class _details_prestationPageState extends State<details_prestationPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 12),
                     ElevatedButton(
                       onPressed: (){
                         _navigateToNextPage(context);},
