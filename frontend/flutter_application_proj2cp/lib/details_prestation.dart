@@ -83,7 +83,7 @@ class _details_prestationPageState extends State<details_prestationPage> {
           left: 47,
           top: 220,
           child: Container(
-            height: 450,
+            height: 475,
             width: 300,
             decoration: BoxDecoration(
               color: Colors.white,
@@ -227,7 +227,7 @@ class _details_prestationPageState extends State<details_prestationPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: (){
                     _navigateToNextPage(context);
