@@ -6,7 +6,7 @@ const imageUploader = require("../helpers/image_uploader");
 const router=express.Router();
 
 router.post("/creeradmin",adminControllers.Creeradmin);
-router.post("/creerartisan",adminControllers.CreerArtisan);
+router.post("/creerartisan",imageUploader.upload.single('imageArtisan'),adminControllers.CreerArtisan);
 router.get("/:id",adminControllers.show);
 router.get("/Afficher/Artisans",adminControllers.AfficherArtisans);
 router.get("/Afficher/Clients",adminControllers.AfficherClients);
@@ -19,6 +19,7 @@ router.post("/CreerPrestation",imageUploader.upload.single('imagePrestation'),ad
 router.patch("/modifierPrestation",imageUploader.upload.single('imagePrestation'),adminControllers.ModifierPrestation);
 router.post("/AjouterPrestation/:id",auth(), adminControllers.AjouterPrestation);
 router.get("/Obtenir/Statistiques",adminControllers.obtenirStatistiques);
-
+router.get("/o",adminControllers.ActiviteTermineeAndExecuteForAllClients) ;
+router.get("/ob",adminControllers.ActiviteEncoursForAllClients)
 
 module.exports=router;
