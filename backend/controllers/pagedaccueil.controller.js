@@ -17,6 +17,22 @@ function AfficherDomaines(req, res) {
       });
     });
 }
+function AfficherToutesPrestation(req, res) {
+  models.Prestation.findAll()
+    .then((result) => {
+      if (result) res.status(200).json(result);
+      else
+        res.status(404).json({
+          message: 'pas de prestations',
+        });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        message: 'something went wrong',
+        error: error,
+      });
+    });
+}
 
 function AfficherServicesEco(req, res) {
   models.Prestation.findAll({
@@ -99,6 +115,7 @@ async function AfficherTopPrestations(req, res) {
 
 module.exports = {
   AfficherDomaines,
+  AfficherToutesPrestation,
   AfficherServicesEco,
   AfficherTopPrestations,
 };

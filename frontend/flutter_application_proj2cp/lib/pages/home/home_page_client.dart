@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:flutter_application_proj2cp/pages/home/components/home_header.dart';
 import 'package:flutter_application_proj2cp/pages/home/components/service_populair_container.dart';
 import 'package:flutter_application_proj2cp/pages/home/components/domain_container.dart';
-import 'package:flutter_application_proj2cp/pages/home/components/bar_recherche.dart';
+import 'package:flutter_application_proj2cp/pages/home/search_delegate.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
@@ -20,11 +21,52 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  List<Prestation> allPrestations = [];
+  List<Prestation> selectedPrestations = [];
+  List<Prestation> recentPrestations = [];
   bool _rated = true;
   String _comment = '';
-   Map<String, dynamic> _userData = {};
-   final defaultImageUrl = 'http://192.168.100.7:3000/imageClient/1714391607342.jpg';
+  Map<String, dynamic> _userData = {};
+  final defaultImageUrl =
+      'http://192.168.100.7:3000/imageClient/1714391607342.jpg';
 
+  Future<void> fetchAllPrestations() async {
+    final url =
+        Uri.parse('http://10.0.2.2:3000/pageaccueil/AfficherToutesPrestation');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {'Authorization': 'Bearer $_token'},
+      );
+
+      if (response.statusCode == 200) {
+        print("fetched all Prestations");
+        // Parse the JSON response
+        List<dynamic> prestationsData = json.decode(response.body);
+        print(prestationsData);
+        setState(() {
+          allPrestations = prestationsData.map((prestationData) {
+            return Prestation(
+              nom: prestationData['NomPrestation'] ?? '',
+              materiel: prestationData['Matériel'] ?? '',
+              dureeMax: prestationData['DuréeMax'] ?? '',
+              dureeMin: prestationData['DuréeMin'] ?? '',
+              tarifId: prestationData['TarifId'] ?? 0,
+              domaineId: prestationData['domaineId'] ?? 0,
+              ecologique: prestationData['Ecologique'] ?? false,
+              image: prestationData['imagePrestation'] ?? '',
+              description: prestationData['Description'] ?? '',
+            );
+          }).toList();
+        });
+      } else {
+        print('Failed to fetch prestations');
+      }
+    } catch (error) {
+      print('Error fetching prestations: $error');
+    }
+  }
 
   Future<void> _fetchUserData() async {
     final url = Uri.parse(
@@ -86,6 +128,13 @@ class _HomeScreenState extends State<HomeScreen> {
     fetchData();
   }
 
+  void handleSearch(List<Prestation> filteredPrestations) {
+    print('Received filtered prestations: $filteredPrestations');
+    setState(() {
+      selectedPrestations = filteredPrestations;
+    });
+  }
+
   Future<void> fetchData() async {
     final prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('token') ?? '';
@@ -94,7 +143,8 @@ class _HomeScreenState extends State<HomeScreen> {
       fetchDomaines(),
       fetchEcoServices(),
       fetchTopPrestations(),
-      _fetchUserData()
+      _fetchUserData(),
+      fetchAllPrestations(),
     ]);
   }
 
@@ -250,12 +300,50 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             children: [
               HomeHeader(
-                userName: _userData['Username'],
+                userName:
+                    _userData['Username'] ?? '', // Use empty string if null
                 profilePictureUrl: _userData['photo'] != null
-                    ? _userData['photo']
+                    ? _userData['photo'] as String
                     : defaultImageUrl,
               ),
-              BarRecherche(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                child: SizedBox(
+                  height: 40,
+                  child: GestureDetector(
+                      onTap: () => {
+                            showSearch(
+                              context: context,
+                              delegate: DataSearch(
+                                  prestations: allPrestations,
+                                  recentPrestations: recentPrestations),
+                            ),
+                          },
+                      child: Container(
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: vertClair,
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                        child: Row(
+                          children: [
+                            SizedBox(width: 4,),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Image.asset('assets/icons/recherche.png'),
+                            ),
+                            Text(
+                              'Rechercher une prestation...',
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      )),
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 30, 20, 5),
                 child: Align(

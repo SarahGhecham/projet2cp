@@ -18,13 +18,13 @@ class CreerArtisan extends StatefulWidget {
 class _CreerArtisanState extends State<CreerArtisan> {
   final _nomArtisanController = TextEditingController();
   final _prenomArtisanController = TextEditingController();
-  List<Map<String, dynamic>> _domainesOptions = [];
-  List<String> _prestationsOptions = [];
-  List<String> _prestationsChoisis = [];
   final _emailArtisanController = TextEditingController();
   final _passwordArtisanController = TextEditingController();
   final _numTelArtisanController = TextEditingController();
   final _localisationController = TextEditingController();
+  List<Map<String, dynamic>> _domainesOptions = [];
+  List<String> _prestationsOptions = [];
+  List<String> _prestationsChoisis = [];
 
   String? _selectedDomaine;
   int? _selectedDomaineId;
@@ -42,6 +42,45 @@ class _CreerArtisanState extends State<CreerArtisan> {
     await Future.wait([
       fetchDomaines(),
     ]);
+  }
+
+  Future<void> _createArtisan() async {
+    final nom = _nomArtisanController.text;
+    final prenom = _prenomArtisanController.text;
+    final email = _emailArtisanController.text;
+    final adresse = _localisationController.text;
+    final telephone = _numTelArtisanController.text;
+
+    final url = Uri.parse('http://10.0.2.2:3000/admins/creerartisan');
+
+    try {
+      final response = await http.post(
+        url,
+        body: jsonEncode({
+          'NomArtisan': nom,
+          'PrenomArtisan': prenom,
+          'EmailArtisan': email,
+          'AdresseArtisan': adresse,
+          'NumeroTelArtisan': telephone,
+        }),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 201) {
+        var responseData = json.decode(response.body);
+        // Handle successful creation (optional)
+        print('Artisan created successfully');
+      } else if (response.statusCode == 400) {
+        var responseData = json.decode(response.body);
+        var errorMessage = responseData['message'];
+        // Handle specific error cases (e.g., invalid address)
+        print('Failed to create artisan: $errorMessage');
+      } else {
+        print('Failed to create artisan. Status code: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error creating artisan: $error');
+    }
   }
 
   Future<void> fetchDomaines() async {
@@ -506,8 +545,7 @@ class _CreerArtisanState extends State<CreerArtisan> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // Handle 'Terminer' button press
-                      // Perform any final actions here
+                      _createArtisan();
                     },
                     child: Container(
                       padding:
