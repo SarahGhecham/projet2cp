@@ -18,7 +18,7 @@ router.get('/AfficherActiviteEncours',auth(),artisanController.ActiviteEncours);
 router.get('/DetailsRDVTermine',auth(),artisanController.DetailsRDVTermine);
 router.get('/DetailsDemandeConfirmee',auth(),artisanController.DetailsDemandeConfirmee);
 router.get('/ConsulterDemandes',auth(),artisanController.consulterdemandes);
-
+router.get('/ConsulterCommentaires',auth(),artisanController.getCommentaires);
 router.post("/updateArtisanImage",auth(), imageUploader.upload.single('photo'), artisanController.updateArtisanImage);
 
 

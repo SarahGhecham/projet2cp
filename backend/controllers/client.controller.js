@@ -1103,7 +1103,53 @@ async function DetailsRDVTermine(req, res) {
     }
 }
 
+
+async function getCommentaires(req, res) {
+  const artisanId = req.params.ArtisanId;
+  try {
+      
+      const demandesIds = await models.ArtisanDemande.findAll({ where: { ArtisanId: artisanId }, attributes: ['DemandeId'] });
+
+     
+      const demandes = await models.Demande.findAll({ where: { id: demandesIds.map(d => d.DemandeId) }, include: [models.Client, models.Prestation] });
+      console.log(demandes);
+
+      
+      const commentaires = await Promise.all(demandes.map(async (demande) => {
+          const rdv = await models.RDV.findOne({ where: { DemandeId: demande.id } });
+          console.log(rdv);
+          if (!rdv) return null; 
+          const evaluation = await models.Evaluation.findOne({ where: { RDVId: rdv.id } });
+          console.log(evaluation);
+          if (!evaluation) return null; // Si aucune évaluation n'est associée au RDV, passer à la suivante
+          return {
+              commentaire: evaluation.Commentaire,
+              note: evaluation.Note,
+              client: {
+                  id: demande.Client.id,
+                  username: demande.Client.Username,
+                  photo:demande.Client.photo
+                 
+              },
+              prestation: {
+                  id: demande.Prestation.id,
+                  NomPrestation:demande.Prestation.NomPrestation,
+                  Ecologique:demande.Prestation.Ecologique
+              }
+          };
+      }));
+
+      // Filtrer les commentaires nuls (pour les demandes sans RDV ou sans évaluation)
+      const commentairesFiltres = commentaires.filter(commentaire => commentaire !== null);
+
+      res.status(200).json({ commentaires: commentairesFiltres });
+  } catch (error) {
+      res.status(500).json({ message: "Une erreur s'est produite lors de la récupération des commentaires : " + error.message });
+  }
+}
+
 module.exports = {
+  getCommentaires,
     getArtisansForDemand,
     signUp: signUp,
     updateClient:updateClient,
