@@ -44,36 +44,50 @@ async function consulterdemandes(req, res) {
         return res.status(500).json({ message: 'Internal server error' });
     }
 }
-
-
-function AfficherProfil(req,res){
-    const id=req.params.id;
-    models.Artisan.findByPk(id).then(result=>{
-        if(result){
-            const artisanInfo = {
-                NomArtisan: result.NomArtisan,
-                PrenomArtisan: result.PrenomArtisan,
-                EmailArtisan: result.EmailArtisan,
-                AdresseArtisan: result.AdresseArtisan,
-                NumeroTelArtisan: result.NumeroTelArtisan,
-                Disponibilite: result.Disponibilite,
-                photo: result.photo,
-                Note: result.Note
-            };
-            res.status(201).json(artisanInfo);
-        }
-           
-        else
-            res.status(404).json({
-          message:"artisan not found"
-        })
-    }).catch(error=>{
-        res.status(500).json({
-            message:"something went wrong",
-            error : error
-        })
+function AfficherProfil(req, res) {
+    const id = req.params.id;
+    models.Artisan.findByPk(id, {
+        include: [{
+            model: models.Prestation,
+            include: models.Domaine
+        }]
     })
+        .then(result => {
+            if (result) {
+                const artisanInfo = {
+                    NomArtisan: result.NomArtisan,
+                    PrenomArtisan: result.PrenomArtisan,
+                    EmailArtisan: result.EmailArtisan,
+                    AdresseArtisan: result.AdresseArtisan,
+                    NumeroTelArtisan: result.NumeroTelArtisan,
+                    Disponibilite: result.Disponibilite,
+                    photo: result.photo,
+                    Note: result.Note,
+                    RayonKm:result.RayonKm ,
+                    Prestations: result.Prestations.map(prestation => ({
+                        NomPrestation: prestation.NomPrestation,
+                        Matériel: prestation.Matériel,
+                        DuréeMax: prestation.DuréeMax,
+                        DuréeMin: prestation.DuréeMin,
+                        TarifId: prestation.TarifId,
+                        Domaine: prestation.Domaine ? prestation.Domaine.NomDomaine : null,
+                        Ecologique: prestation.Ecologique,
+                        imagePrestation: prestation.imagePrestation,
+                        Description: prestation.Description
+                    }))
+                };
+                res.status(200).json(artisanInfo);
+            } else {
+                res.status(404).json({ message: "Artisan not found" });
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching artisan profile:", error);
+            res.status(500).json({ message: "Something went wrong", error: error });
+        });
 }
+
+
 
 async function updateartisan(req, res) {
     const id = req.userId;
@@ -85,14 +99,14 @@ async function updateartisan(req, res) {
     }
 
     const updatedArtisan = {
-        NomArtisan: req.body.NomArtisan,
-        PrenomArtisan: req.body.PrenomArtisan,
+       
         MotdepasseArtisan: hashedPassword, // Hashed password
-        EmailArtisan: req.body.EmailArtisan,
+    
         AdresseArtisan: req.body.AdresseArtisan,
         NumeroTelArtisan: req.body.NumeroTelArtisan,
-        photo: req.body.photo ,
-        Disponnibilite: req.body.Disponnibilite
+        Disponnibilite: req.body.Disponnibilite ,
+        RayonKm:body.RayonKm ,
+
     };
 
     // Update the Artisan model with the updated data

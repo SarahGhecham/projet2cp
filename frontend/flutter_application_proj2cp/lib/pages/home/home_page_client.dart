@@ -22,13 +22,13 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool _rated = true;
   String _comment = '';
-  Map<String, dynamic> _userData = {};
-  final defaultImageUrl =
-      'http://192.168.85.78:3000/imageClient/1714391607342.jpg';
+   Map<String, dynamic> _userData = {};
+   final defaultImageUrl = 'http://192.168.100.7:3000/imageClient/1714391607342.jpg';
+
 
   Future<void> _fetchUserData() async {
     final url = Uri.parse(
-        'http://192.168.85.78:3000/client/Affichermonprofil'); // Replace with your endpoint
+        'http://192.168.100.7:3000/client/Affichermonprofil'); // Replace with your endpoint
     try {
       final response = await http.get(
         url,
@@ -100,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> fetchDomaines() async {
     final url =
-        Uri.parse('http://192.168.85.78:3000/pageaccueil/AfficherDomaines');
+        Uri.parse('http://192.168.100.7:3000/pageaccueil/AfficherDomaines');
     try {
       final response = await http.get(
         url,
@@ -141,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> fetchEcoServices() async {
     final url = Uri.parse(
-        'http://192.168.85.78:3000/pageaccueil/AfficherPrestationsEco');
+        'http://192.168.100.7:3000/pageaccueil/AfficherPrestationsEco');
     try {
       final response = await http.get(
         url,
@@ -193,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> fetchTopPrestations() async {
     final url = Uri.parse(
-        'http://192.168.85.78:3000/pageaccueil/AfficherPrestationsTop');
+        'http://192.168.100.7:3000/pageaccueil/AfficherPrestationsTop');
     try {
       final response = await http.get(
         url,

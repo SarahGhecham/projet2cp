@@ -359,7 +359,11 @@ function CreerPrestation(req, res) {
     });
 }
 function ModifierPrestation(req, res) {
-  const { PrestationId, Description } = req.body;
+    const {
+        PrestationId,
+        Description ,
+        NomPrestation
+    } = req.body;
 
   // Vérifier si la prestation existe
   models.Prestation.findByPk(PrestationId)
@@ -370,10 +374,13 @@ function ModifierPrestation(req, res) {
           .json({ success: false, message: "La prestation n'existe pas." });
       }
 
-      // Mettre à jour la description si elle est fournie
-      if (Description) {
-        prestation.Description = Description;
-      }
+            // Mettre à jour la description si elle est fournie
+            if (Description) {
+                prestation.Description = Description;
+            }
+            if (NomPrestation) {
+                prestation.NomPrestation = NomPrestation;
+            }
 
       // Mettre à jour l'image si elle est fournie
       if (req.file) {
