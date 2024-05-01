@@ -28,8 +28,10 @@ class _AddPrestationPageState extends State<AddPrestationPage> {
   PrestationInfo _prestationInfo = PrestationInfo(
     nomPrestation: '',
     description: '',
-    prix: '',
-    duree: '',
+    prixMin: '',
+    prixMax: '',
+    dureeMin: '',
+    dureeMax: '',
     materiels: [],
   );
 
@@ -38,8 +40,10 @@ class _AddPrestationPageState extends State<AddPrestationPage> {
       nomPrestation: _prestationController.text,
       imageFilePrestation: _imageFilePrestation,
       description: _descriptionController.text,
-      prix: '',
-      duree: '',
+      prixMin: '',
+      prixMax: '',
+      dureeMin: '',
+      dureeMax: '',
       materiels: [],
     );
 

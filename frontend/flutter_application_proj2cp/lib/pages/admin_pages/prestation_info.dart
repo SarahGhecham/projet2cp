@@ -4,16 +4,20 @@ class PrestationInfo {
   String nomPrestation;
   File? imageFilePrestation;
   String description;
-  String prix;
-  String duree;
+  String prixMin;
+  String prixMax;
+  String dureeMin;
+  String dureeMax;
   List<String> materiels;
 
   PrestationInfo({
     required this.nomPrestation,
     this.imageFilePrestation,
     required this.description,
-    required this.prix,
-    required this.duree,
+    required this.prixMin,
+    required this.prixMax,
+    required this.dureeMin,
+    required this.dureeMax,
     required this.materiels,
   });
 }

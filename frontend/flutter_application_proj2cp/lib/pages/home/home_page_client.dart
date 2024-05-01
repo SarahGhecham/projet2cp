@@ -22,11 +22,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool _rated = true;
   String _comment = '';
-   Map<String, dynamic> _userData = {};
-   final defaultImageUrl = 'http://192.168.85.78:3000/imageClient/1714391607342.jpg';
+  Map<String, dynamic> _userData = {};
+  final defaultImageUrl =
+      'http://192.168.85.78:3000/imageClient/1714391607342.jpg';
 
-
-   Future<void> _fetchUserData() async {
+  Future<void> _fetchUserData() async {
     final url = Uri.parse(
         'http://192.168.85.78:3000/client/Affichermonprofil'); // Replace with your endpoint
     try {
@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() {
           _userData = {
             'Username': userDataJson['Username'] as String,
-             'photo': userDataJson['photo']
+            'photo': userDataJson['photo']
           };
         });
         print('_userData: $_userData'); // Debugging print
@@ -158,23 +158,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 final imageUrl = serviceJson['imagePrestation'] != null
                     ? serviceJson['imagePrestation'] as String
                     : '';
-                
+
                 //print('Image URL: $imageUrl'); // Debugging statement
                 return Service(
-                  id: serviceJson['id'] as int,
-                  nomPrestation: serviceJson['NomPrestation'] as String,
-                  materiel: serviceJson['Matériel'] as String,
-                  Description: serviceJson['Matériel'] as String,
-                  dureeMax: serviceJson['DuréeMax'] as String,
-                  dureeMin: serviceJson['DuréeMin'] as String,
-                  tarifId: serviceJson['TarifId'] as int,
-                  domaineId: serviceJson['DomaineId'] as int,
-                  ecologique: serviceJson['Ecologique'] as bool,
-                  image: imageUrl,
-                  tarifJourMin: serviceJson['Tarif']['TarifJourMin'] as String,
-                  tarifJourMax: serviceJson['Tarif']['TarifJourMax'] as String,
-                  Unite: serviceJson['Tarif']['Unité'] as String
-                );
+                    id: serviceJson['id'] as int,
+                    nomPrestation: serviceJson['NomPrestation'] as String,
+                    materiel: serviceJson['Matériel'] as String,
+                    Description: serviceJson['Matériel'] as String,
+                    dureeMax: serviceJson['DuréeMax'] as String,
+                    dureeMin: serviceJson['DuréeMin'] as String,
+                    tarifId: serviceJson['TarifId'] as int,
+                    domaineId: serviceJson['DomaineId'] as int,
+                    ecologique: serviceJson['Ecologique'] as bool,
+                    image: imageUrl,
+                    tarifJourMin:
+                        serviceJson['Tarif']['TarifJourMin'] as String,
+                    tarifJourMax:
+                        serviceJson['Tarif']['TarifJourMax'] as String,
+                    Unite: serviceJson['Tarif']['Unité'] as String);
               })
               .map((service) => ServiceOffreContainer(
                     service: service,
@@ -211,20 +212,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     : '';
                 print('Image URL: $imageUrl'); // Debugging statement
                 return Service(
-                  id: serviceJson['id'] as int,
-                  nomPrestation: serviceJson['NomPrestation'] as String,
-                  materiel: serviceJson['Matériel'] as String,
-                  Description: serviceJson['Matériel'] as String,
-                  dureeMax: serviceJson['DuréeMax'] as String,
-                  dureeMin: serviceJson['DuréeMin'] as String,
-                  tarifId: serviceJson['TarifId'] as int,
-                  domaineId: serviceJson['DomaineId'] as int,
-                  ecologique: serviceJson['Ecologique'] as bool,
-                  image: imageUrl,
-                  tarifJourMin: serviceJson['Tarif']['TarifJourMin'] as String,
-                  tarifJourMax: serviceJson['Tarif']['TarifJourMax'] as String,
-                  Unite: serviceJson['Tarif']['Unité'] as String
-                );
+                    id: serviceJson['id'] as int,
+                    nomPrestation: serviceJson['NomPrestation'] as String,
+                    materiel: serviceJson['Matériel'] as String,
+                    Description: serviceJson['Matériel'] as String,
+                    dureeMax: serviceJson['DuréeMax'] as String,
+                    dureeMin: serviceJson['DuréeMin'] as String,
+                    tarifId: serviceJson['TarifId'] as int,
+                    domaineId: serviceJson['DomaineId'] as int,
+                    ecologique: serviceJson['Ecologique'] as bool,
+                    image: imageUrl,
+                    tarifJourMin:
+                        serviceJson['Tarif']['TarifJourMin'] as String,
+                    tarifJourMax:
+                        serviceJson['Tarif']['TarifJourMax'] as String,
+                    Unite: serviceJson['Tarif']['Unité'] as String);
               })
               .map((service) => ServiceOffreContainer(
                     service: service,
@@ -249,8 +251,9 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               HomeHeader(
                 userName: _userData['Username'],
-                profilePictureUrl: _userData['photo'] != null ? _userData['photo'] : defaultImageUrl,
-                
+                profilePictureUrl: _userData['photo'] != null
+                    ? _userData['photo']
+                    : defaultImageUrl,
               ),
               BarRecherche(),
               Padding(
@@ -474,4 +477,190 @@ class _RatingPopupState extends State<RatingPopup> {
     );
   }
 }
+/* import 'dart:convert';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/drawer_services.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/drawer_users.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
+class CreerArtisan extends StatefulWidget {
+  const CreerArtisan({Key? key}) : super(key: key);
+
+  @override
+  State<CreerArtisan> createState() => _CreerArtisanState();
+}
+
+class _CreerArtisanState extends State<CreerArtisan> {
+  final _nomArtisanController = TextEditingController();
+  final _prenomArtisanController = TextEditingController();
+  List<Map<String, dynamic>> _domainesOptions = [];
+  List<String> _prestationsOptions = [];
+
+  String? _selectedDomaine;
+  int? _selectedDomaineId;
+  late String _token;
+
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    final prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('token') ?? '';
+    print('Token: $_token');
+    await fetchDomaines();
+  }
+
+  Future<void> fetchDomaines() async {
+    final url = Uri.parse('http://10.0.2.2:3000/pageaccueil/AfficherDomaines');
+    try {
+      final response = await http.get(
+        url,
+        headers: {'Authorization': 'Bearer $_token'},
+      );
+
+      if (response.statusCode == 200) {
+        print("Fetching domaines successful");
+        // Decode JSON response
+        List<dynamic> data = jsonDecode(response.body);
+
+        setState(() {
+          // Extract NomDomaine and DomaineId values from the fetched data
+          _domainesOptions = data.map<Map<String, dynamic>>((domaine) {
+            return {
+              'NomDomaine': domaine['NomDomaine'] as String,
+              'DomaineId': domaine['id'] as int,
+            };
+          }).toList();
+        });
+      } else {
+        // Handle HTTP error
+        print('Failed to load domaines: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Handle network or decoding errors
+      print('Error fetching domaines: $error');
+    }
+  }
+
+  Future<void> fetchPrestationsByDomaine(int domaineId) async {
+    final url = Uri.parse('http://10.0.2.2:3000/prestations/domaines/$domaineId');
+    try {
+      final response = await http.get(
+        url,
+        headers: {'Authorization': 'Bearer $_token'},
+      );
+
+      if (response.statusCode == 200) {
+        print("Fetching prestations for domaine $domaineId successful");
+        // Decode JSON response
+        List<dynamic> data = jsonDecode(response.body);
+
+        setState(() {
+          // Extract NomPrestation values from the fetched data and cast to String
+          _prestationsOptions = data.map<String>((prestation) => prestation['NomPrestation'] as String).toList();
+        });
+      } else {
+        // Handle HTTP error
+        print('Failed to load prestations for domaine $domaineId: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Handle network or decoding errors
+      print('Error fetching prestations for domaine $domaineId: $error');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 30),
+              child: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DrawerUsers(),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 30, left: 20),
+              child: Text(
+                'Ajouter un artisan',
+                style: GoogleFonts.poppins(
+                  textStyle: TextStyle(
+                    fontSize: 23,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Dropdown for selecting Domaine
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: DropdownButton<Map<String, dynamic>>(
+                value: _selectedDomaineId != null
+                    ? _domainesOptions.firstWhere((domaine) => domaine['DomaineId'] == _selectedDomaineId)
+                    : null,
+                hint: Text("Sélectionnez un domaine"),
+                items: _domainesOptions.map((domaine) {
+                  return DropdownMenuItem<Map<String, dynamic>>(
+                    value: domaine,
+                    child: Text(domaine['NomDomaine'] as String),
+                  );
+                }).toList(),
+                onChanged: (selectedDomaine) {
+                  setState(() {
+                    _selectedDomaine = selectedDomaine!['NomDomaine'] as String;
+                    _selectedDomaineId = selectedDomaine['DomaineId'] as int;
+                    _prestationsOptions = []; // Clear prestations options when selecting a new domaine
+                  });
+                  fetchPrestationsByDomaine(_selectedDomaineId!); // Fetch prestations for selected domaine
+                },
+              ),
+            ),
+            // Dropdown for selecting Prestation
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: DropdownButton<String>(
+                value: null,
+                hint: Text("Sélectionnez une prestation"),
+                items: _prestationsOptions.map((prestation) {
+                  return DropdownMenuItem<String>(
+                    value: prestation,
+                    child: Text(prestation),
+                  );
+                }).toList(),
+                onChanged: (selectedPrestation) {
+                  setState(() {
+                    // Handle selected prestation
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+*/

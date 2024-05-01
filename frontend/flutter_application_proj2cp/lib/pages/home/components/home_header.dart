@@ -40,7 +40,7 @@ class HomeHeader extends StatelessWidget {
               },
               child: Padding(
                 padding: const EdgeInsets.only(right: 20.0),
-                child: Image.asset('assets/icons/notif.png'),
+                child: Image.asset('assets/icons/notifs.png'),
               ),
             ),
           ],

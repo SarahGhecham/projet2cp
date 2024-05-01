@@ -21,14 +21,18 @@ class AddPrestationPage2 extends StatefulWidget {
 
 class _AddPrestationPage2State extends State<AddPrestationPage2> {
   //final PrestationInfo prestationInfo;
-  String _selectedPrixOption = '';
-  String _selectedDureeOption = '';
+  String _selectedPrixMinOption = '';
+  String _selectedDureeMinOption = '';
+  String _selectedPrixMaxOption = '';
+  String _selectedDureeMaxOption = '';
   List<String> _materiels = [];
 
   final List<String> _prixOptions = ['Option 1', 'Option 2', 'Option 3'];
   final List<String> _dureeOptions = ['Option A', 'Option B', 'Option C'];
-  final TextEditingController _prixController = TextEditingController();
-  final TextEditingController _dureeController = TextEditingController();
+  final TextEditingController _prixMinController = TextEditingController();
+  final TextEditingController _prixMaxController = TextEditingController();
+  final TextEditingController _dureeMinController = TextEditingController();
+  final TextEditingController _dureeMaxController = TextEditingController();
 
   void _navigateToDomainePage() {
     print("Before fetching prestationInfo");
@@ -42,8 +46,10 @@ class _AddPrestationPage2State extends State<AddPrestationPage2> {
         imageFilePrestation:
             prestationInfoProvider.prestationInfo!.imageFilePrestation,
         description: prestationInfoProvider.prestationInfo!.description,
-        prix: _selectedPrixOption,
-        duree: _selectedDureeOption,
+        prixMin: _selectedPrixMinOption,
+        prixMax: _selectedPrixMaxOption,
+        dureeMin: _selectedDureeMinOption,
+        dureeMax: _selectedDureeMaxOption,
         materiels: _materiels,
       );
 
@@ -86,8 +92,8 @@ class _AddPrestationPage2State extends State<AddPrestationPage2> {
       ),
       body: Padding(
         padding: const EdgeInsets.only(
-          left: 20.0,
-          right: 20,
+          left: 10.0,
+          right: 10,
           //bottom: 20,
         ),
         child: SingleChildScrollView(
@@ -105,62 +111,127 @@ class _AddPrestationPage2State extends State<AddPrestationPage2> {
                   ),
                 ),
               ),
-              Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Container(
-                    height: 45,
-                    width: 300,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFDCC8C5).withOpacity(0.22),
-                      border: Border.all(
-                        color: const Color(0xFFDCC8C5),
-                        width: 2,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller: _prixController,
-                            decoration: InputDecoration(
-                              hintText: 'Saisir un prix',
-                              hintStyle: GoogleFonts.poppins(
-                                color: const Color(0xFF777777),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                vertical: 11.0,
-                                horizontal: 16.0,
-                              ),
-                              border: InputBorder.none,
-                            ),
+              Row(
+                children: [
+                  Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Container(
+                        height: 45,
+                        width: 160,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFDCC8C5).withOpacity(0.22),
+                          border: Border.all(
+                            color: const Color(0xFFDCC8C5),
+                            width: 2,
                           ),
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            items: _prixOptions.map((option) {
-                              return DropdownMenuItem<String>(
-                                value: option,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(right: 10.0),
-                                  child: Text(
-                                    option,
-                                    style: GoogleFonts.poppins(
-                                      color: const Color(0xFF777777),
-                                    ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _prixMinController,
+                                decoration: InputDecoration(
+                                  hintText: 'Min',
+                                  hintStyle: GoogleFonts.poppins(
+                                    color: const Color(0xFF777777),
                                   ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 11.0,
+                                    horizontal: 8.0,
+                                  ),
+                                  border: InputBorder.none,
                                 ),
-                              );
-                            }).toList(),
-                            onChanged: (newValue) {
-                              // Gérer le changement de la valeur sélectionnée
-                            },
-                            icon: const Icon(Icons.arrow_drop_down),
-                          ),
+                              ),
+                            ),
+                            DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                items: _prixOptions.map((option) {
+                                  return DropdownMenuItem<String>(
+                                    value: option,
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 1.0),
+                                      child: Text(
+                                        option,
+                                        style: GoogleFonts.poppins(
+                                          color: const Color(0xFF777777),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: (newValue) {
+                                  // Gérer le changement de la valeur sélectionnée
+                                },
+                                icon: const Icon(Icons.arrow_drop_down),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  )),
+                      )),
+                  SizedBox(
+                    width: 15,
+                  ),
+                  Padding(
+                      padding: const EdgeInsets.all(1.0),
+                      child: Container(
+                        height: 45,
+                        width: 160,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFDCC8C5).withOpacity(0.22),
+                          border: Border.all(
+                            color: const Color(0xFFDCC8C5),
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _prixMaxController,
+                                decoration: InputDecoration(
+                                  hintText: 'Max',
+                                  hintStyle: GoogleFonts.poppins(
+                                    color: const Color(0xFF777777),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 11.0,
+                                    horizontal: 8.0,
+                                  ),
+                                  border: InputBorder.none,
+                                ),
+                              ),
+                            ),
+                            DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                items: _prixOptions.map((option) {
+                                  return DropdownMenuItem<String>(
+                                    value: option,
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 1.0),
+                                      child: Text(
+                                        option,
+                                        style: GoogleFonts.poppins(
+                                          color: const Color(0xFF777777),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: (newValue) {
+                                  // Gérer le changement de la valeur sélectionnée
+                                },
+                                icon: const Icon(Icons.arrow_drop_down),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )),
+                ],
+              ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(15, 25, 30, 0),
                 child: Text(
@@ -172,62 +243,124 @@ class _AddPrestationPage2State extends State<AddPrestationPage2> {
                   ),
                 ),
               ),
-              Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Container(
-                    height: 45,
-                    width: 300,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFDCC8C5).withOpacity(0.22),
-                      border: Border.all(
-                        color: const Color(0xFFDCC8C5),
-                        width: 2,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller: _dureeController,
-                            decoration: InputDecoration(
-                              hintText: 'Saisir une durée',
-                              hintStyle: GoogleFonts.poppins(
-                                color: const Color(0xFF777777),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                vertical: 11.0,
-                                horizontal: 16.0,
-                              ),
-                              border: InputBorder.none,
-                            ),
+              Row(
+                children: [
+                  Padding(
+                      padding: const EdgeInsets.all(13.0),
+                      child: Container(
+                        height: 45,
+                        width: 160,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFDCC8C5).withOpacity(0.22),
+                          border: Border.all(
+                            color: const Color(0xFFDCC8C5),
+                            width: 2,
                           ),
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            items: _dureeOptions.map((option) {
-                              return DropdownMenuItem<String>(
-                                value: option,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(right: 10.0),
-                                  child: Text(
-                                    option,
-                                    style: GoogleFonts.poppins(
-                                      color: const Color(0xFF777777),
-                                    ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _dureeMinController,
+                                decoration: InputDecoration(
+                                  hintText: 'Min',
+                                  hintStyle: GoogleFonts.poppins(
+                                    color: const Color(0xFF777777),
                                   ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 11.0,
+                                    horizontal: 8.0,
+                                  ),
+                                  border: InputBorder.none,
                                 ),
-                              );
-                            }).toList(),
-                            onChanged: (newValue) {
-                              // Gérer le changement de la valeur sélectionnée
-                            },
-                            icon: const Icon(Icons.arrow_drop_down),
-                          ),
+                              ),
+                            ),
+                            DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                items: _dureeOptions.map((option) {
+                                  return DropdownMenuItem<String>(
+                                    value: option,
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 1.0),
+                                      child: Text(
+                                        option,
+                                        style: GoogleFonts.poppins(
+                                          color: const Color(0xFF777777),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: (newValue) {
+                                  // Gérer le changement de la valeur sélectionnée
+                                },
+                                icon: const Icon(Icons.arrow_drop_down),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  )),
+                      )),
+                  Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Container(
+                        height: 45,
+                        width: 160,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFDCC8C5).withOpacity(0.22),
+                          border: Border.all(
+                            color: const Color(0xFFDCC8C5),
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _dureeMaxController,
+                                decoration: InputDecoration(
+                                  hintText: 'Max',
+                                  hintStyle: GoogleFonts.poppins(
+                                    color: const Color(0xFF777777),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 11.0,
+                                    horizontal: 8.0,
+                                  ),
+                                  border: InputBorder.none,
+                                ),
+                              ),
+                            ),
+                            DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                items: _dureeOptions.map((option) {
+                                  return DropdownMenuItem<String>(
+                                    value: option,
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 10.0),
+                                      child: Text(
+                                        option,
+                                        style: GoogleFonts.poppins(
+                                          color: const Color(0xFF777777),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: (newValue) {
+                                  // Gérer le changement de la valeur sélectionnée
+                                },
+                                icon: const Icon(Icons.arrow_drop_down),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )),
+                ],
+              ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(15, 25, 30, 0),
                 child: Text(
@@ -247,7 +380,7 @@ class _AddPrestationPage2State extends State<AddPrestationPage2> {
                     // Champ d'ajout
                     return Padding(
                       padding:
-                          const EdgeInsets.only(left: 10.0, right: 40, top: 10),
+                          const EdgeInsets.only(left: 10.0, right: 15, top: 10),
                       child: GestureDetector(
                         onTap: () {
                           // Afficher une boîte de dialogue pour saisir le nouveau matériel
@@ -347,10 +480,10 @@ class _AddPrestationPage2State extends State<AddPrestationPage2> {
                 },
               ),
               SizedBox(
-                height: 200,
+                height: 250,
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 200),
+                padding: const EdgeInsets.only(left: 230),
                 child: GestureDetector(
                   onTap: () {
                     _navigateToDomainePage();

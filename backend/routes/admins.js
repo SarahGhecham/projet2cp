@@ -19,6 +19,7 @@ router.post("/CreerPrestation",imageUploader.upload.single('imagePrestation'),ad
 router.patch("/modifierPrestation",imageUploader.upload.single('imagePrestation'),adminControllers.ModifierPrestation);
 router.post("/AjouterPrestation/:id",auth(), adminControllers.AjouterPrestation);
 router.get("/Obtenir/Statistiques",adminControllers.obtenirStatistiques);
+router.get("/AfficherPrestationsByDomaine/:domaineId",adminControllers.AfficherPrestationsByDomaine);
 
 
 module.exports=router;
