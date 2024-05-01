@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_application_proj2cp/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Mademande extends StatefulWidget {
@@ -41,7 +42,7 @@ class _MademandePageState extends State<Mademande> {
 
   Future<void> annulerDemande() async {
     // Remplacez 'votre_url_backend/confirmerRDV' par l'URL de votre endpoint backend
-    String url = 'http://192.168.100.7:3000/client/annulerDemande';
+    String url = 'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/annulerDemande';
 
     // Remplacez 'votre_token_jwt' par votre token JWT
     // Créez les en-têtes de la requête avec le token JWT
@@ -73,7 +74,7 @@ class _MademandePageState extends State<Mademande> {
   }
   Future<void> sendPostRequest() async {
     // Remplacez 'votre_url_backend/confirmerRDV' par l'URL de votre endpoint backend
-    String url = 'http://192.168.100.7:3000/client/confirmerRDV';
+    String url = 'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/confirmerRDV';
 
     // Remplacez 'votre_token_jwt' par votre token JWT
     // Créez les en-têtes de la requête avec le token JWT
@@ -124,7 +125,7 @@ class _MademandePageState extends State<Mademande> {
     int demandeId = widget.demandeId;
     print(demandeId);
     final String apiUrl =
-        'http://192.168.100.7:3000/client/demandes/$demandeId/artisans';
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/demandes/$demandeId/artisans';
 
     try {
       final response = await http.get(Uri.parse(apiUrl));

@@ -4,23 +4,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/ajouter_prestation2.dart';
+
+import 'package:flutter_application_proj2cp/pages/admin_pages/prestation_info.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/prestation_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-
-class PrestationData {
-  String nomPrestation = '';
-  File? imageFile;
-  String description = '';
-
-  // Add other relevant data fields for your prestation
-
-  // Consider a constructor to initialize data if needed
-  PrestationData(
-      {this.nomPrestation = '', this.imageFile, this.description = ''});
-}
+import 'package:provider/provider.dart';
 
 class AddPrestationPage extends StatefulWidget {
-  final Function(String) onPrestationAdded;
+  final Function(PrestationInfo) onPrestationAdded;
 
   const AddPrestationPage({Key? key, required this.onPrestationAdded})
       : super(key: key);
@@ -31,22 +23,48 @@ class AddPrestationPage extends StatefulWidget {
 
 class _AddPrestationPageState extends State<AddPrestationPage> {
   final TextEditingController _prestationController = TextEditingController();
-  //File? _imageFile;
-  PrestationData _prestationData = PrestationData();
-  /*void _ajouterPrestation() {
-    final prestation = _prestationController.text;
-    if (prestation.isNotEmpty) {
-      widget.onPrestationAdded(prestation);
-      Navigator.pop(context);
-    }
-  }*/
+  final TextEditingController _descriptionController = TextEditingController();
+  File? _imageFilePrestation;
+  PrestationInfo _prestationInfo = PrestationInfo(
+    nomPrestation: '',
+    description: '',
+    prixMin: '',
+    prixMax: '',
+    dureeMin: '',
+    dureeMax: '',
+    materiels: [],
+  );
+
+  void _navigateToNextPage() {
+    final prestationInfo = PrestationInfo(
+      nomPrestation: _prestationController.text,
+      imageFilePrestation: _imageFilePrestation,
+      description: _descriptionController.text,
+      prixMin: '',
+      prixMax: '',
+      dureeMin: '',
+      dureeMax: '',
+      materiels: [],
+    );
+
+    Provider.of<PrestationInfoProvider>(context, listen: false)
+        .setPrestationInfo(prestationInfo);
+    widget.onPrestationAdded(prestationInfo);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddPrestationPage2(),
+      ),
+    );
+  }
 
   Future<void> _selectImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
-        _prestationData.imageFile = File(pickedFile.path);
+        _prestationInfo.imageFilePrestation = File(pickedFile.path);
       });
     }
   }
@@ -142,8 +160,8 @@ class _AddPrestationPageState extends State<AddPrestationPage> {
                 ),
               ),
               Stack(children: [
-                _prestationData.imageFile != null
-                    ? Image.file(_prestationData.imageFile!)
+                _prestationInfo.imageFilePrestation != null
+                    ? Image.file(_prestationInfo.imageFilePrestation!)
                     : Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: Container(
@@ -243,12 +261,7 @@ class _AddPrestationPageState extends State<AddPrestationPage> {
                 padding: const EdgeInsets.only(left: 200),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AddPrestationPage2(),
-                      ),
-                    );
+                    _navigateToNextPage();
                   },
                   child: Container(
                       height: 50,

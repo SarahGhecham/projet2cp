@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
       });
       Artisan.belongsToMany(models.Prestation, { through: 'ArtisanPrestations' });
       Artisan.belongsToMany(models.Demande, { through: 'ArtisanDemandes' });
+      Artisan.belongsTo(models.Domaine, { foreignKey: 'DomaineId'});
 
     }
   }
@@ -32,6 +33,7 @@ module.exports = (sequelize, DataTypes) => {
     EmailArtisan: DataTypes.STRING,
     AdresseArtisan: DataTypes.STRING,
     NumeroTelArtisan: DataTypes.STRING,
+    DomaineId: DataTypes.INTEGER,
     ActifArtisan: {
       type: DataTypes.BOOLEAN,
       defaultValue: true 

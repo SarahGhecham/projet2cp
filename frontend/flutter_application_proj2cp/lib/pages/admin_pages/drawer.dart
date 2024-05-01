@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/drawer_services.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/drawer_users.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/page_acceuil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -118,7 +119,7 @@ class _DrawerDashState extends State<DrawerDash> {
       case 2:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => UsersScreen()),
+          MaterialPageRoute(builder: (context) => DrawerUsers()),
         );
         break;
       case 3:
@@ -131,19 +132,6 @@ class _DrawerDashState extends State<DrawerDash> {
   }
 }
 
-class UsersScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Users'),
-      ),
-      body: Center(
-        child: Text('Users Screen'),
-      ),
-    );
-  }
-}
 
 class OrdersScreen extends StatelessWidget {
   @override

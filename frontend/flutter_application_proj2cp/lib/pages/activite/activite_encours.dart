@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart' as http;
+import 'package:flutter_application_proj2cp/config.dart';
 
 class Demande {
   final String name;
@@ -49,7 +50,7 @@ class _DemandesEnCoursState extends State<DemandesEnCours> {
   Future<void> fetchDemandesEnCours() async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.85.78:3000/client/AfficherActiviteEncours/3'),
+        Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/AfficherActiviteEncours/3'),
       );
 
       if (response.statusCode == 200) {

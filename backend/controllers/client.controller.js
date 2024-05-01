@@ -102,6 +102,76 @@ async function getArtisansForDemand(req, res) {
 }
 
 
+async function getArtisansForDemand(req, res) {
+    const demandeId = req.params.demandeId;
+
+    try {
+        // Find the demande associated with the given ID
+        const demande = await models.Demande.findByPk(demandeId);
+
+        // Find the RDV associated with the demande
+        const rdv = await models.RDV.findOne({
+            where: { DemandeId: demandeId }
+        });
+
+        // Find the prestation associated with the demande
+        const prestation = await demande.getPrestation();
+
+        // Find all ArtisanDemande entries where accepte=true and DemandeId matches
+        const artisandemandes = await models.ArtisanDemande.findAll({
+            where: {
+                DemandeId: demandeId,
+                accepte: true
+            }
+        });
+
+        // Check if any ArtisanDemande entries are found
+        if (!artisandemandes || artisandemandes.length === 0) {
+            return res.status(404).json({ message: `No artisans found for demande with ID ${demandeId} where accepte=true.` });
+        }
+
+        // Get all artisan IDs from the found ArtisanDemande entries
+        const artisanIds = artisandemandes.map(artdem => artdem.ArtisanId);
+
+        // Find all artisans with the retrieved IDs
+        const artisans = await models.Artisan.findAll({
+            where: { id: artisanIds }
+        });
+
+        // Prepare the response data
+        const artisansData = artisans.map(artisan => ({
+            id: artisan.id,
+            nom: artisan.NomArtisan,
+            prenom: artisan.PrenomArtisan,
+            photo: artisan.photo,
+            note: artisan.Note
+        }));
+
+        // Combine additional demande, prestation, and rdv attributes with artisansData
+        const combinedData = {
+            demande: {
+                id: demande.id,
+                description: demande.Description,
+                localisation: demande.Localisation
+            },
+            prestation: {
+                id: prestation.id,
+                imagePrestation: prestation.imagePrestation
+            },
+            rdv: {
+                id: rdv.id,
+                dateDebut: rdv ? rdv.DateDebut : null,
+                heureDebut: rdv ? rdv.HeureDebut : null
+            },
+            artisans: artisansData
+        };
+
+        return res.status(200).json(combinedData);
+    } catch (error) {
+        console.error('Error retrieving artisans for demande:', error);
+        return res.status(500).json({ message: 'Failed to retrieve artisans for demande', error: error.message });
+    }
+}
 
 async function signUp(req, res) {
   try {
@@ -733,6 +803,7 @@ async function annulerRDV(req, res) {
 }
 
 
+
 async function annulerDemande(req, res) {
   const demandeId = req.body.demandeId;
 
@@ -819,8 +890,6 @@ try {
       return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
   }
 }
-
-
 
 async function ActiviteTerminee(req, res) {
     const clientId = req.params.id;
@@ -1104,7 +1173,53 @@ async function DetailsRDVTermine(req, res) {
     }
 }
 
+
+async function getCommentaires(req, res) {
+  const artisanId = req.params.ArtisanId;
+  try {
+      
+      const demandesIds = await models.ArtisanDemande.findAll({ where: { ArtisanId: artisanId }, attributes: ['DemandeId'] });
+
+     
+      const demandes = await models.Demande.findAll({ where: { id: demandesIds.map(d => d.DemandeId) }, include: [models.Client, models.Prestation] });
+      console.log(demandes);
+
+      
+      const commentaires = await Promise.all(demandes.map(async (demande) => {
+          const rdv = await models.RDV.findOne({ where: { DemandeId: demande.id } });
+          console.log(rdv);
+          if (!rdv) return null; 
+          const evaluation = await models.Evaluation.findOne({ where: { RDVId: rdv.id } });
+          console.log(evaluation);
+          if (!evaluation) return null; // Si aucune évaluation n'est associée au RDV, passer à la suivante
+          return {
+              commentaire: evaluation.Commentaire,
+              note: evaluation.Note,
+              client: {
+                  id: demande.Client.id,
+                  username: demande.Client.Username,
+                  photo:demande.Client.photo
+                 
+              },
+              prestation: {
+                  id: demande.Prestation.id,
+                  NomPrestation:demande.Prestation.NomPrestation,
+                  Ecologique:demande.Prestation.Ecologique
+              }
+          };
+      }));
+
+      // Filtrer les commentaires nuls (pour les demandes sans RDV ou sans évaluation)
+      const commentairesFiltres = commentaires.filter(commentaire => commentaire !== null);
+
+      res.status(200).json({ commentaires: commentairesFiltres });
+  } catch (error) {
+      res.status(500).json({ message: "Une erreur s'est produite lors de la récupération des commentaires : " + error.message });
+  }
+}
+
 module.exports = {
+  getCommentaires,
     getArtisansForDemand,
     signUp: signUp,
     updateClient:updateClient,

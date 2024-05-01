@@ -23,6 +23,7 @@ router.get('/AfficherPrestations/:id',clientController.AfficherPrestations);
 router.get('/DetailsDemandeConfirmee',auth(),clientController.DetailsDemandeConfirmee);
 router.get('/DetailsRDVTermine',auth(),clientController.DetailsRDVTermine);
 router.get('/demandes/:demandeId/artisans', clientController.getArtisansForDemand);
+router.get('/ConsulterCommentaires/:ArtisanId',clientController.getCommentaires);
 
 
 module.exports = router;

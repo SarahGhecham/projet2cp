@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:ffi';
 
-
+import 'package:flutter_application_proj2cp/config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -69,7 +69,7 @@ class _DemandesTerminesState extends State<DemandesTermines> {
   Future<void> fetchDemandesTerminees() async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.85.78:3000/client/AfficherActiviteTerminee/3'),
+        Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/AfficherActiviteTerminee/3'),
       );
 
 
