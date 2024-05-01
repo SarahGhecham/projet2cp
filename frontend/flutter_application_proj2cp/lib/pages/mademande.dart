@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_application_proj2cp/config.dart';
 
 class Mademande extends StatefulWidget {
   @override
@@ -22,7 +23,7 @@ class _MademandePageState extends State<Mademande> {
   DateTime dateDebut1 = DateTime(0, 0, 0, 0, 0);
   Future<void> sendPostRequest() async {
     // Remplacez 'votre_url_backend/confirmerRDV' par l'URL de votre endpoint backend
-    String url = 'http://192.168.100.7:3000/client/confirmerRDV';
+    String url = 'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/confirmerRDV';
 
     // Remplacez 'votre_token_jwt' par votre token JWT
     String token =

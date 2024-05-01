@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:flutter_application_proj2cp/config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/ajouter_domaine.dart';
@@ -91,7 +91,7 @@ class _DrawerServicesState extends State<DrawerServices> {
 
   Future<void> fetchEcoServices() async {
     final url = Uri.parse(
-        'http://192.168.100.7:3000/pageaccueil/AfficherPrestationsEco');
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/pageaccueil/AfficherPrestationsEco');
     try {
       final response = await http.get(
         url,

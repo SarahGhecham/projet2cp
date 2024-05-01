@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'package:http/http.dart' as http;
 import 'package:flutter_application_proj2cp/config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:http/http.dart' as http;
 
 class Demande {
   final String name;
@@ -21,36 +21,31 @@ class Demande {
   });
 }
 
-class ActiviteEncours {
-  final dynamic rdv;
-  final dynamic demande;
-  final bool status;
+class DemandesEnCoursArtisan extends StatefulWidget {
 
-  ActiviteEncours({
-    required this.rdv,
-    required this.demande,
-    required this.status,
-  });
-}
-
-class DemandesEnCours extends StatefulWidget {
   @override
-  _DemandesEnCoursState createState() => _DemandesEnCoursState();
+  _DemandesEnCoursArtisanState createState() => _DemandesEnCoursArtisanState();
 }
 
-class _DemandesEnCoursState extends State<DemandesEnCours> {
+class _DemandesEnCoursArtisanState extends State<DemandesEnCoursArtisan> {
   List<Demande?> demandesEnCours = [];
+    late String _token;
 
   @override
   void initState() {
     super.initState();
-    fetchDemandesEnCours();
+    fetchDemandesArtisanEnCours();
+  }
+  Future<void> fetchData() async {
+    final prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('token') ?? '';
+    print('Token: $_token');
   }
 
-  Future<void> fetchDemandesEnCours() async {
-    try {
+Future<void> fetchDemandesArtisanEnCours() async {
+  try {
       final response = await http.get(
-        Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/AfficherActiviteEncours/3'),
+        Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/artisan/AfficherActiviteEncours'),
       );
 
       if (response.statusCode == 200) {
@@ -70,6 +65,7 @@ class _DemandesEnCoursState extends State<DemandesEnCours> {
             final bool status = confirme;
             print('image $imagePrestation');
             demandes.add(Demande(
+            
               name: name,
               orderTime: '$dateFin, $heureFin',
               demandeImage: imagePrestation,
@@ -88,7 +84,8 @@ class _DemandesEnCoursState extends State<DemandesEnCours> {
     } catch (error) {
       print('Error fetching demandes en cours: $error');
     }
-  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +131,7 @@ class _DemandesEnCoursState extends State<DemandesEnCours> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                demande?.name ?? '', // Utilisation de ?. et ??
+                                demande?.name ?? '',
                                 style: GoogleFonts.poppins(
                                   textStyle: TextStyle(
                                     color: Colors.black,
@@ -145,8 +142,7 @@ class _DemandesEnCoursState extends State<DemandesEnCours> {
                               ),
                               SizedBox(height: 20),
                               Text(
-                                demande?.orderTime ??
-                                    '', // Utilisation de ?. et ??
+                                demande?.orderTime ?? '',
                                 style: GoogleFonts.poppins(
                                   textStyle: TextStyle(
                                     color: Colors.grey,
@@ -162,13 +158,13 @@ class _DemandesEnCoursState extends State<DemandesEnCours> {
                     ),
                   ),
                   Positioned(
-                    right: 16.0, // Ajustez le padding ici
+                    right: 16.0,
                     top: 20,
                     child: Image.asset(
                       iconAsset,
                       width: 20,
                       height: 20,
-                    ), // Ajoutez l'icône ici
+                    ),
                   ),
                 ],
               ),

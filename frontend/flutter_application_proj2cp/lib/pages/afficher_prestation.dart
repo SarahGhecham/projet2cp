@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:flutter_application_proj2cp/details_prestation.dart';
+import 'package:flutter_application_proj2cp/config.dart';
 
 class Prestation {
   final int id;
@@ -59,7 +60,7 @@ class _PrestationPageState extends State<PrestationPage> {
     try {
       final response = await http.get(
         Uri.parse(
-            'http://192.168.85.78:3000/client/AfficherPrestations/$domaineId'),
+            'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/AfficherPrestations/$domaineId'),
       );
 
       if (response.statusCode == 200) {

@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:flutter_application_proj2cp/config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -57,7 +57,7 @@ class _AddDomainePageState extends State<AddDomainePage> {
     // Prepare the request data
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse('http://10.0.2.2:3000/admins/AjouterDomaine'),
+      Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/AjouterDomaine'),
     );
 
     // Attach the image file to the request

@@ -3,6 +3,8 @@ import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:flutter_application_proj2cp/pages/activite/activite_client.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/bottom_nav_bar.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/ajouter_domaine.dart';
+import 'package:flutter_application_proj2cp/pages/artisan/activiteArtisan_encours.dart';
+import 'package:flutter_application_proj2cp/pages/artisan/activiteArtisan_termine.dart';
 import 'package:flutter_application_proj2cp/pages/connexion.dart';
 import 'package:flutter_application_proj2cp/Web/connexionweb.dart';
 import 'package:flutter_application_proj2cp/pages/entree/pagesentree.dart';
@@ -29,6 +31,8 @@ import 'package:flutter_application_proj2cp/details_prestation.dart';
 import 'package:flutter_application_proj2cp/rendez-vous_terminée.dart';
 import 'package:flutter_application_proj2cp/pages/artisan/detail_demande_lancee.dart';
 import 'package:flutter_application_proj2cp/pages/artisan/rendez_vous_termine_artisan.dart';
+import 'package:flutter_application_proj2cp/pages/artisan/activiteArtisan_encours.dart';
+import 'package:flutter_application_proj2cp/pages/artisan/activite_artisan.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -50,7 +54,7 @@ class App extends StatelessWidget {
             iconTheme: const IconThemeData(color: vertClair),
           ),*/
 
-          home: SignUpPage(),
+          home: LogInPage(),
         );
       },
 
