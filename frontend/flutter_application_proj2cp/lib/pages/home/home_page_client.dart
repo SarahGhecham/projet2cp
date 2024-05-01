@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rating_dialog/rating_dialog.dart';
+import 'package:flutter_application_proj2cp/config.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -70,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _fetchUserData() async {
     final url = Uri.parse(
-        'http://192.168.100.7:3000/client/Affichermonprofil'); // Replace with your endpoint
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/Affichermonprofil'); // Replace with your endpoint
     try {
       final response = await http.get(
         url,
@@ -150,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> fetchDomaines() async {
     final url =
-        Uri.parse('http://192.168.100.7:3000/pageaccueil/AfficherDomaines');
+        Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/pageaccueil/AfficherDomaines');
     try {
       final response = await http.get(
         url,
@@ -191,7 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> fetchEcoServices() async {
     final url = Uri.parse(
-        'http://192.168.100.7:3000/pageaccueil/AfficherPrestationsEco');
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/pageaccueil/AfficherPrestationsEco');
     try {
       final response = await http.get(
         url,
@@ -243,7 +244,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> fetchTopPrestations() async {
     final url = Uri.parse(
-        'http://192.168.100.7:3000/pageaccueil/AfficherPrestationsTop');
+
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/pageaccueil/AfficherPrestationsTop');
+
     try {
       final response = await http.get(
         url,
