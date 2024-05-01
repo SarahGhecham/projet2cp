@@ -4,6 +4,8 @@ const bcryptjs = require('bcryptjs');
 //const upload = require('../helpers/image_uploader');
 const imageUploader = require('../helpers/image_uploader');
 const axios = require('axios');
+const jwt = require('jsonwebtoken');
+const artisan = require('../models/artisan');
 
 function Creeradmin(req, res) {
   bcryptjs.genSalt(10, function (err, salt) {
@@ -32,7 +34,7 @@ function Creeradmin(req, res) {
   });
 }
 
-async function CreerArtisan(req, res) {
+/*async function CreerArtisan(req, res) {
   const Cleapi = 'AIzaSyDRCkJohH9RkmMIgpoNB2KBlLF6YMOOmmk';
   const address = req.body.AdresseArtisan;
   const isAddressValid = await validateAddress(address, Cleapi);
@@ -118,7 +120,7 @@ async function CreerArtisan(req, res) {
         error: error,
       });
     });
-}
+}*/
 async function validateAddress(address, Cleapi) {
   try {
     const encodedAddress = encodeURIComponent(address);
@@ -522,6 +524,140 @@ async function AfficherPrestationsByDomaine(req, res) {
     res.status(500).json({
       message:
         "Une erreur s'est produite lors de la récupération des noms de prestations pour ce domaine.",
+    });
+  }
+}
+
+
+async function CreerArtisan(req, res) {
+  try {
+    const requiredFields = [
+      'NomArtisan',
+      'PrenomArtisan',
+      'MotdepasseArtisan',
+      'EmailArtisan',
+      'AdresseArtisan',
+      'NumeroTelArtisan',
+      'DomaineId',
+      'prestationsIds'
+    ];
+    console.log("Requête reçue :", req.body);
+    for (const field of requiredFields) {
+      console.log(`Champ '${field}' :`, req.body[field]);
+      if (!req.body[field]) {
+        return res
+          .status(400)
+          .json({ message: `Le champ '${field}' n'est pas rempli!` });
+      }
+    }
+    const phonePattern = /^[0-9]{10}$/;
+    if (!phonePattern.test(req.body.NumeroTelArtisan)) {
+      return res
+        .status(400)
+        .json({ message: "Le numéro de téléphone n'a pas le bon format" });
+    }
+
+    const Cleapi = 'AIzaSyDRCkJohH9RkmMIgpoNB2KBlLF6YMOOmmk';
+    const address = req.body.AdresseArtisan;
+
+    const isAddressValid = await validateAddress(address, Cleapi);
+
+    if (!isAddressValid) {
+      return res.status(400).json({ message: "L'adresse saisie est invalide" });
+    }
+    console.log("Validation de l'adresse :", isAddressValid);
+    // const apiKey = '2859b334b5cf4296976a534dbe5e69a7';
+    const email = req.body.EmailArtisan
+
+    //const response = await axios.get(`https://api.zerobounce.net/v2/validate?api_key=${apiKey}&email=${email}`);
+
+    // if (response.data.status === 'valid') {
+    models.Client.findOne({ where: { EmailClient: email } })
+      .then((result) => {
+        if (result) {
+          res.status(409).json({ message: 'Compte email déjà existant' });
+        } else {
+          models.Artisan.findOne({ where: { EmailArtisan: email } })
+            .then((result) => {
+              if (result) {
+                res.status(409).json({ message: 'Compte email existant' });
+              } else {
+                bcryptjs.genSalt(10, function (err, salt) {
+                  bcryptjs.hash(
+                    req.body.MotdepasseArtisan,
+                    salt,
+                    function (err, hash) {
+                      const Artisan = {
+                        NomArtisan: req.body.NomArtisan,
+                        PrenomArtisan:req.body.PrenomArtisan,
+                        MotdepasseArtisan: hash,
+                        EmailArtisan: email,
+                        AdresseArtisan: req.body.AdresseArtisan,
+                        NumeroTelArtisan: req.body.NumeroTelArtisan,
+                        DomaineId: req.body.DomaineId
+                      };
+                      models.Artisan.create(Artisan)
+                        .then((result) => {
+
+                          const artisanId = result.id; // Identifiant de l'artisan créé
+                          console.log(artisanId)
+
+                    // Parcourir la liste des prestations et associer chaque prestation à l'artisan
+                    const prestationsIds = req.body.prestationsIds; 
+
+                    // Créer des entrées dans la table de jointure pour chaque prestation
+                    const associations = prestationsIds.map((prestationId) => {
+                      return { ArtisanId: artisanId, PrestationId: prestationId };
+                    });
+
+                    // Insérer les associations dans la table de jointure
+                    models.ArtisanPrestation.bulkCreate(associations)
+                      .then(() => {
+                        // Envoyer la réponse une fois que toutes les associations ont été créées avec succès
+                        res.status(201).json({
+                          message: 'Inscription artisan réussie et prestations associées',
+                          Artisan: Artisan,
+                          Prestations: prestationsIds,
+                        });
+                      })
+                      .catch((error) => {
+                        // Gérer les erreurs liées à la création des associations
+                        res.status(500).json({
+                          message: "Une erreur s'est produite lors de l'association des prestations à l'artisan",
+                          error: error,
+                        });
+                      });})
+
+                        .catch((error) => {
+                          res.status(500).json({
+                            message:
+                              "Une erreur s'est produite lors de la création de l'artisan",
+                            error: error,
+                          });
+                        });
+                    }
+                  );
+                });
+              }
+            })
+            .catch((error) => {
+              res
+                .status(500)
+                .json({ message: 'Something went wrong', error: error });
+            });
+        }
+      })
+      .catch((error) => {
+        res.status(500).json({ message: 'Something went wrong', error: error });
+      });
+    // } else {
+    //res.status(400).json({ message: "Email invalide" });
+    // }
+  } catch (error) {
+    console.error("Erreur lors de la validation de l'e-mail :", error);
+    res.status(500).json({
+      message: "Erreur lors de la validation de l'e-mail",
+      error: error,
     });
   }
 }

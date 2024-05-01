@@ -6,7 +6,7 @@ const imageUploader = require("../helpers/image_uploader");
 const router=express.Router();
 
 router.post("/creeradmin",adminControllers.Creeradmin);
-router.post("/creerartisan",imageUploader.upload.single('imageArtisan'),adminControllers.CreerArtisan);
+router.post("/creerartisan",adminControllers.CreerArtisan);
 router.get("/:id",adminControllers.show);
 router.get("/Afficher/Artisans",adminControllers.AfficherArtisans);
 router.get("/Afficher/Clients",adminControllers.AfficherClients);
