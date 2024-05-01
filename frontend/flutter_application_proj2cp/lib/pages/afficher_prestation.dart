@@ -60,7 +60,9 @@ class _PrestationPageState extends State<PrestationPage> {
     try {
       final response = await http.get(
         Uri.parse(
+
             'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/AfficherPrestations/$domaineId'),
+
       );
 
       if (response.statusCode == 200) {
@@ -189,7 +191,7 @@ class _PrestationPageState extends State<PrestationPage> {
         Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => details_prestationPage(id: _prestations[index].id,prst: _prestations[index].nomPrestation,avgtime:'${_prestations[index].dureeMin} - ${_prestations[index].dureeMax} ',avgprice:  '${_prestations[index].tarifJourMin.toString()} da - ${_prestations[index].tarifJourMin.toString()}',imagePrestation: _prestations[index].imagePrestation,Description:_prestations[index].Description,Unite :_prestations[index].Unite),
+          builder: (context) => details_prestationPage(id: _prestations[index].id,prst: _prestations[index].nomPrestation,avgtime:'${_prestations[index].dureeMin} - ${_prestations[index].dureeMax} ',avgprice:  '${_prestations[index].tarifJourMin.toString()} - ${_prestations[index].tarifJourMin.toString()} da',imagePrestation: _prestations[index].imagePrestation,Description:_prestations[index].Description,Unite :_prestations[index].Unite),
         ),
       );
       },

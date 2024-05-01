@@ -5,36 +5,84 @@ import 'package:intl/intl.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_application_proj2cp/config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Mademande extends StatefulWidget {
+  final int demandeId;
+  @override
+  const Mademande({Key? key,required this.demandeId});
   @override
   _MademandePageState createState() => _MademandePageState();
 }
 
 class _MademandePageState extends State<Mademande> {
+  late String _token;
   List<dynamic> artisans = [];
   bool ecologique = true;
   String description = '';
   String localisation = '';
   String imagePrestation = '';
+  String nomPrestation='';
   String Date = '';
   String Heure = '';
   String dateDebut = '';
   DateTime dateDebut1 = DateTime(0, 0, 0, 0, 0);
+  String dureeMax='';
+  String dureeMin='';
+  int rdvId=0;
+  int artisanId=0;
+  
+  Future<void> fetchData() async {
+    final prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('token') ?? '';
+    print('Token: $_token');
+    await Future.wait([sendPostRequest()]);
+  }
+
+
+  Future<void> annulerDemande() async {
+    // Remplacez 'votre_url_backend/confirmerRDV' par l'URL de votre endpoint backend
+    String url = 'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/annulerDemande';
+
+    // Remplacez 'votre_token_jwt' par votre token JWT
+    // Créez les en-têtes de la requête avec le token JWT
+    Map<String, String> headers = {
+      
+      'Content-Type': 'application/json', // Spécifiez le type de contenu JSON
+    };
+    Map<String, dynamic> data = {'demandeId':widget.demandeId};
+
+    String jsonData = jsonEncode(data);
+    // Envoyez la requête POST avec les en-têtes
+    try {
+      var response =
+          await http.post(Uri.parse(url), headers: headers, body: jsonData);
+
+      // Vérifiez le code de statut de la réponse
+      if (response.statusCode == 200) {
+        // Réussite de la requête
+        print('Requête POST réussie');
+      } else {
+        // Échec de la requête
+        print(
+            'Échec de la requête POST avec le code de statut: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Gestion des erreurs
+      print('Erreur lors de l\'envoi de la requête POST: $error');
+    }
+  }
   Future<void> sendPostRequest() async {
     // Remplacez 'votre_url_backend/confirmerRDV' par l'URL de votre endpoint backend
     String url = 'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/confirmerRDV';
 
     // Remplacez 'votre_token_jwt' par votre token JWT
-    String token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjksIkVtYWlsIjoiZW1haWxmaWN0aWYiLCJpYXQiOjE3MTExMTQyOTJ9.16B5UsfYcOMBfrx4jjcXRwqcRkFqI0MpJfko5QoWNuQ';
-
     // Créez les en-têtes de la requête avec le token JWT
     Map<String, String> headers = {
-      'Authorization': 'Bearer $token',
+      
       'Content-Type': 'application/json', // Spécifiez le type de contenu JSON
     };
-    Map<String, dynamic> data = {'rdvId': 9, 'artisanId': 1};
+    Map<String, dynamic> data = {'rdvId': rdvId, 'artisanId': artisanId};
 
     String jsonData = jsonEncode(data);
     // Envoyez la requête POST avec les en-têtes
@@ -74,29 +122,46 @@ class _MademandePageState extends State<Mademande> {
   }
 
   Future<void> fetchArtisansData() async {
-    int demandeId = 36;
+    int demandeId = widget.demandeId;
+    print(demandeId);
     final String apiUrl =
-        'http://192.168.151.173:3000/client/demandes/$demandeId/artisans';
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/demandes/$demandeId/artisans';
 
     try {
       final response = await http.get(Uri.parse(apiUrl));
+      print('Response data: $response');
 
       if (response.statusCode == 200) {
         Map<String, dynamic> responseData = json.decode(response.body);
+         print('Response data: $responseData');
 
         setState(() {
           artisans = responseData['artisans'];
+          final tarifJourMin = 
+              responseData['tarif']['TarifJourMin'].toString();
+          
+          final tarifJourMax = 
+              responseData['tarif']['TarifJourMax'].toString();
+          final Unite=responseData['tarif']['Unité'];
+          prix='${tarifJourMin}-${tarifJourMax}    da/${Unite}';
+          print('Response data: $artisans');
           description = responseData['demande']?['description'] ?? 'null';
+          urgente = responseData['demande']?['Urgente'] ;
           localisation = responseData['demande']?['localisation'] ?? 'null';
           imagePrestation =
               responseData['prestation']?['imagePrestation'] ?? 'null';
+          nomPrestation=responseData['prestation']?['nomPrestation'];
+          rdvId=responseData['rdv']?['id'];
           dateDebut = responseData['rdv']?['dateDebut'];
           dateDebut1 = DateTime.parse(dateDebut);
           Date =
               '${dateDebut1.year}-${dateDebut1.month.toString().padLeft(2, '0')}-${dateDebut1.day.toString().padLeft(2, '0')}';
 
           Heure =
-              '${dateDebut1.hour.toString().padLeft(2, '0')}:${dateDebut1.minute.toString().padLeft(2, '0')}';
+             '${dateDebut1.hour.toString().padLeft(2, '0')}:${dateDebut1.minute.toString().padLeft(2, '0')}';
+          dureeMax= responseData['prestation']?['DureeMax'] as String;
+          dureeMin= responseData['prestation']?['DureeMin'] as String;
+          duree='${dureeMin}-${dureeMax}';
         });
       } else {
         throw Exception('Failed to load artisans');
@@ -163,7 +228,7 @@ class _MademandePageState extends State<Mademande> {
                                     text: TextSpan(
                                       children: [
                                         TextSpan(
-                                          text: "Peinture de Murs et Plafonds",
+                                          text: nomPrestation,
                                           style: GoogleFonts.lato(
                                             color: const Color(0xFF05564B),
                                             fontSize: 18,
@@ -197,11 +262,20 @@ class _MademandePageState extends State<Mademande> {
                                   ),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(8.0),
-                                    child: Image.asset(
-                                      'assets/prestation_peinture.jpg',
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
+                                    child: imagePrestation != null
+                                        ? Image.network(
+                                          imagePrestation, // Utilisez l'URL de la photo de profil
+                                          width: 168,
+                                          height: 174,
+                                          fit: BoxFit.cover,
+                                        )
+                                        : Image.asset(
+                                            'assets/images/l.png',
+                                            width: 168,
+                                            height: 174,
+                                            fit: BoxFit.cover,
+                                          ),
+                                          ),
                                 ),
                               ],
                             ),
@@ -231,14 +305,14 @@ class _MademandePageState extends State<Mademande> {
                                         ),
                                         SizedBox(width: 15),
                                         Text(
-                                          date,
+                                          Date,
                                           style: GoogleFonts.lato(
                                             fontSize: 13, // Adjusted font size
                                           ),
                                         ),
                                         SizedBox(width: 10),
                                         Text(
-                                          heure,
+                                          Heure,
                                           style: GoogleFonts.lato(
                                             color: Color(0xFF777777),
                                             fontSize: 13, // Adjusted font size
@@ -277,7 +351,7 @@ class _MademandePageState extends State<Mademande> {
                                         ),
                                         SizedBox(width: 14),
                                         Text(
-                                          adresse,
+                                          localisation,
                                           style: GoogleFonts.lato(
                                             fontSize: 13, // Adjusted font size
                                           ),
@@ -394,6 +468,7 @@ class _MademandePageState extends State<Mademande> {
                       SizedBox(width: 50),
                       GestureDetector(
                           onTap: () {
+                            annulerDemande();
                             // Fonction de rappel pour gérer l'action de clic
                             // Mettre ici le code pour annuler la demande
                           },
@@ -401,7 +476,7 @@ class _MademandePageState extends State<Mademande> {
                             height: 16,
                             width: 107,
                             decoration: BoxDecoration(
-                              color: Color(0xffE52E22)
+                              color: Color.fromARGB(255, 171, 54, 44)
                                   .withOpacity(0.83), // Couleur de fond rouge
                               borderRadius: BorderRadius.circular(
                                   8), // Bordure arrondie pour le conteneur
@@ -435,7 +510,16 @@ class _MademandePageState extends State<Mademande> {
                     itemCount: artisans.length,
                     itemBuilder: (context, index) {
                       bool isFirstItem = index == 0;
-                      return Container(
+                      return GestureDetector(
+                            onTap: () {
+                              // Récupérer l'ID de l'artisan lorsque l'utilisateur clique
+                              var selectedArtisanId = artisans[index]['id'];
+                              print('ID de l\'artisan sélectionné : $selectedArtisanId');
+                              
+                              // Ensuite, vous pouvez utiliser selectedArtisanId dans votre requête
+                              // (envoyer une requête HTTP ou effectuer toute autre opération nécessaire)
+                            },
+                      child: Container(
                         height: 77,
                         width: 323,
                         margin: isFirstItem
@@ -562,7 +646,7 @@ class _MademandePageState extends State<Mademande> {
                             ),
                           ],
                         ),
-                      );
+                      ));
                     },
                   ),
                 ],

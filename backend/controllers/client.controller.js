@@ -74,26 +74,26 @@ async function getArtisansForDemand(req, res) {
             prestation: {
                 id: prestation.id,
                 imagePrestation: prestation.imagePrestation,
-                nomPrestation : prestation.nomPrestation,
+                nomPrestation : prestation.NomPrestation,
                 Ecologique: prestation.Ecologique,
-                DureeMin : prestation.DureeMin,
-                DureeMax : prestation.DureeMax,
+                DureeMin : prestation.DuréeMin,
+                DureeMax : prestation.DuréeMax,
             },
             tarif: {
                 // Utilisez les détails du tarif récupéré à partir de la base de données
                 TarifJourMin: tarif ? tarif.TarifJourMin: null,
                 TarifJourMax: tarif ? tarif.TarifJourMax : null,
+                Unité: tarif.Unité,
             },
             
             rdv: {
                 id: rdv.id,
                 dateDebut: rdv ? rdv.DateDebut : null,
                 heureDebut: rdv ? rdv.HeureDebut : null,
-               
             },
             artisans: artisansData
         };
-
+        console.log(artisansData);
         return res.status(200).json(combinedData);
     } catch (error) {
         console.error('Error retrieving artisans for demande:', error);
@@ -528,7 +528,7 @@ async function lancerdemande(req, res) {
 
         return res.status(201).json({
             message: `La demande a été créée avec succès et associée au client et à la prestation.`,
-            demande: nouvelleDemande,
+            demandeId: nouvelleDemande.id,
             coordinates,
             clientCoords: clientCoords,
             rdv
@@ -675,7 +675,7 @@ async function creerRDV(req,demandeId) {
 async function confirmerRDV(req, res) {
     const rdvId = req.body.rdvId;
     const artisanId = req.body.artisanId;
-
+   console.log("ok");
     try {
         const rdv = await models.RDV.findByPk(rdvId);
 
@@ -731,6 +731,28 @@ async function annulerRDV(req, res) {
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
+
+
+
+async function annulerDemande(req, res) {
+  const demandeId = req.body.demandeId;
+
+    try {
+        const demande = await models.RDV.findByPk(demandeId);
+        if (!demande) {
+            return res.status(404).json({ message: `La demande avec l'ID ${demandeId} n'existe pas.` });
+        }
+
+        // Supprimer les autres relations avec le même rdvId mais un artisanId différent
+        await models.ArtisanDemande.destroy({ where: { DemandeId: demandeId} });
+        await models.Demande.destroy({ where: { id: demandeId} });
+        return res.status(200).json({ message: `La demande avec l'ID ${demandeId} a été annulé avec succès.`, demande});
+    } catch (error) {
+        console.error("Erreur lors de l'annulation de la demande :", error);
+        return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
+    }
+}
+
 async function ActiviteEncours(req, res) {
   const clientId = req.params.id;
 
@@ -1098,5 +1120,6 @@ module.exports = {
     AfficherProfil,
     DetailsDemandeConfirmee,
     DetailsRDVTermine,
-    updateClientImage
+    updateClientImage,
+    annulerDemande
 }

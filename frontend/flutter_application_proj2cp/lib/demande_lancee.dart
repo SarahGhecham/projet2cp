@@ -5,14 +5,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_application_proj2cp/pages/mademande.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class DemandelanceePage extends StatefulWidget {
   final List <LatLng> coordinates;
   final String adresse;
   final LatLng coords;
+  final int demandeId;
   @override
-  const DemandelanceePage({Key? key,required this.coordinates,required this.adresse,required this.coords}): super(key: key);
+  const DemandelanceePage({Key? key,required this.coordinates,required this.adresse,required this.coords,required this.demandeId}): super(key: key);
 
   @override
   State<DemandelanceePage> createState() => _DemandelanceePageState();
@@ -22,6 +24,13 @@ class _DemandelanceePageState extends State<DemandelanceePage> {
 
   //List <LatLng> coordinates = [];
   //var adresse = "Oued Smar";//la le l'adresse (appellation)
+  void _navigateToNextPage(BuildContext context,int demandeId) {
+    Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => Mademande(demandeId: demandeId,)
+    ),
+  );}
    @override
   void initState() {
     super.initState();
@@ -99,7 +108,7 @@ class _DemandelanceePageState extends State<DemandelanceePage> {
                       ),
                       SizedBox(height: 30),
                       ElevatedButton(
-                        onPressed: (){},
+                        onPressed: (){_navigateToNextPage(context,widget.demandeId);},
                         style: ButtonStyle(
                           minimumSize: MaterialStateProperty.all<Size>(const Size(315, 55)),
                           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -111,7 +120,7 @@ class _DemandelanceePageState extends State<DemandelanceePage> {
                           MaterialStateProperty.all<Color>(const Color(0xFF05564B)),
                         ),
                         child: Text(
-                          "Suivant",
+                          "Voir ma demande",
                           style: GoogleFonts.poppins(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,

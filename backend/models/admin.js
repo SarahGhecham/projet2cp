@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     PrenomAdmin: DataTypes.STRING,
     EmailAdmin: DataTypes.STRING,
     MotdepasseAdmin: DataTypes.STRING,
-    ActifAdmin: DataTypes.BOOLEAN
+    //ActifAdmin: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Admin',

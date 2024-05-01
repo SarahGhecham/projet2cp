@@ -49,208 +49,214 @@ class _details_prestationPageState extends State<details_prestationPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Row(
-          children: [
-            const SizedBox(width: 130),
-            Text(
-              "Details",
-              style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
+      title: Text(
+        "Details",
+        style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
       ),
-      body: Align(
-        alignment: Alignment.center,
-        child: Stack(
-          children: [
-            Positioned(
-              top: 20,
-              left: 50,
-              child: Container(
-                width: 315, // Adjust the width as needed
-                height: 300, // Adjust the height as needed
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30.0), // Adjust the border radius as needed
-                  color: Colors.grey[200], // Set container background color
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30.0), // Match the container's border radius
-                  child: Image.network(
-                    widget.imagePrestation,
-                    fit: BoxFit.cover,
-                  ),
-                ),
+      centerTitle: true, // Centrer le titre de l'appbar
+        ),
+      
+     
+  body: Center(
+    child: Stack(
+      children: [
+        Positioned(
+          top: 10,
+          left: 40,
+          child: Container(
+            width: 315,
+            height: 180,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(30.0),
+              color: Colors.grey[200],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(30.0),
+              child: Image.network(
+                widget.imagePrestation,
+                fit: BoxFit.cover,
               ),
             ),
-            Positioned(
-              left: 57,
-              top: 300,
-              child: Container(
-                height: 460,
-                width: 300,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(
+          ),
+        ),
+        Positioned(
+          left: 47,
+          top: 220,
+          child: Container(
+            height: 475,
+            width: 300,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(
+                color: const Color(0xFFDCC8C5),
+                width: 2,
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                const SizedBox(height: 10),
+                Container(
+                  height: 50,
+                  width: 270,
+                  decoration: BoxDecoration(
                     color: const Color(0xFFDCC8C5),
-                    width: 2,
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  borderRadius: BorderRadius.circular(16),
+                  child: Center(
+                    child: Text(
+                      widget.prst, 
+                      style: GoogleFonts.poppins(color: const Color(0xFF05564B), fontSize: 14, fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 10),
-                    Container(
-                      height: 50,
-                      width: 270,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFDCC8C5),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Center(
-                        child: Text(
-                          widget.prst, style: GoogleFonts.poppins(color: const Color(0xFF05564B), fontSize: 14, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
-                      child: Row(
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+                  child: Row(
+                    children: [
+                      SvgPicture.asset("assets/clock.svg"),
+                      const SizedBox(width: 10),
+                      Text(
+                        widget.avgtime, 
+                        style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Row(
+                    children: [
+                      Column(
                         children: [
-                          SvgPicture.asset("assets/clock.svg"),
-                          const SizedBox(width: 10),
+                          SvgPicture.asset("assets/money.svg"),
+                        ],
+                      ),
+                      const SizedBox(width: 10),
+                      Column(
+                        children: [
+                          const SizedBox(height: 5),
                           Text(
-                            widget.avgtime, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
-                          )
+                            widget.avgprice, 
+                            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
+                          ),
                         ],
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Row(
+                      Column(
                         children: [
-                          Column(
-                            children: [
-                              SvgPicture.asset("assets/money.svg"),
-                            ],
-                          ),
-                          const SizedBox(width: 10),
-                          Column(
-                            children: [
-                              const SizedBox(height: 5),
-                              Text(
-                                widget.avgprice, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
-                              ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              const SizedBox(height: 5),
-                              Text(
-                                "/${widget.Unite}", style: GoogleFonts.poppins(fontSize: 14),
-                              ),
-                            ],
+                          const SizedBox(height: 5),
+                          Text(
+                            "/${widget.Unite}", 
+                            style: GoogleFonts.poppins(fontSize: 14),
                           ),
                         ],
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-                      child: Row(
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+                  child: Row(
+                    children: [
+                      Column(
                         children: [
-                          Column(
-                            children: [
-                              SvgPicture.asset("assets/outils.svg"),
-                            ],
-                          ),
-                          const SizedBox(width: 10),
-                          Column(
-                            children: [
-                              const SizedBox(height: 5),
-                              Text(
-                                outils, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
-                              ),
-                            ],
+                          SvgPicture.asset("assets/outils.svg"),
+                        ],
+                      ),
+                      const SizedBox(width: 10),
+                      Column(
+                        children: [
+                          const SizedBox(height: 5),
+                          Text(
+                            outils, 
+                            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
                           ),
                         ],
                       ),
-                    ),
-                    const SizedBox(height: 30),
-                    Stack(
-                      children: [
-                        Positioned(
-                          child: Container(
-                            height: 150,
-                            width: 270,
-                            decoration: BoxDecoration(
-                                color: const Color(0xFFDCC8C5).withOpacity(0.22),
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color: const Color(0xFFDCC8C5),
-                                  width: 2,
-                                )
-                            ),
-                            child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(20.0),
-                                child: Text(
-                                  widget.Description, style: GoogleFonts.poppins(),
-                                ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 30),
+                Stack(
+                  children: [
+                    Positioned(
+                      child: Container(
+                        height: 150,
+                        width: 270,
+                        decoration: BoxDecoration(
+                            color: const Color(0xFFDCC8C5).withOpacity(0.22),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: const Color(0xFFDCC8C5),
+                              width: 2,
+                            )
+                        ),
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Text(
+                              widget.Description, 
+                              style: GoogleFonts.poppins(
+                                fontSize: 10,
                               ),
                             ),
                           ),
                         ),
-                        Positioned(
-                          left: 10,
-                          child: Transform.translate(
-                            offset: const Offset(0, -15),
-                            child: Container(
-                              height: 35,
-                              width: 110,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFDCC8C5),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "Description", style: GoogleFonts.poppins(color: const Color(0xFF05564B), fontSize: 14, fontWeight: FontWeight.w600),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                    const SizedBox(height: 15),
-                    ElevatedButton(
-                      onPressed: (){
-                        _navigateToNextPage(context);},
-                      style: ButtonStyle(
-                        minimumSize: MaterialStateProperty.all<Size>(const Size(180, 50)),
-                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
+                    Positioned(
+                      left: 10,
+                      child: Transform.translate(
+                        offset: const Offset(0, -15),
+                        child: Container(
+                          height: 40,
+                          width: 110,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFDCC8C5),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                        ),
-                        backgroundColor:
-                        MaterialStateProperty.all<Color>(const Color(0xFFFF8787)),
-                      ),
-                      child: Text(
-                        "Lancer demande",
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                          child: Center(
+                            child: Text(
+                              "Description", 
+                              style: GoogleFonts.poppins(color: const Color(0xFF05564B), fontSize: 14, fontWeight: FontWeight.w600),
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ],
                 ),
-              ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: (){
+                    _navigateToNextPage(context);
+                  },
+                  style: ButtonStyle(
+                    minimumSize: MaterialStateProperty.all<Size>(const Size(180, 50)),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFFFF8787)),
+                  ),
+                  child: Text(
+                    "Lancer demande",
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
+      ],
+    ),
+  ),
     );
   }
 }

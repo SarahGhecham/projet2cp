@@ -7,8 +7,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 
-
-
 class CommentPage2 extends StatefulWidget {
   @override
   _CommentPage2State createState() => _CommentPage2State();
@@ -263,3 +261,4 @@ class CommentCard extends StatelessWidget {
     );
   }
 }
+

@@ -101,7 +101,7 @@ async function updateartisan(req, res) {
     const updatedArtisan = {
        
         MotdepasseArtisan: hashedPassword, // Hashed password
-        
+    
         AdresseArtisan: req.body.AdresseArtisan,
         NumeroTelArtisan: req.body.NumeroTelArtisan,
         Disponnibilite: req.body.Disponnibilite ,

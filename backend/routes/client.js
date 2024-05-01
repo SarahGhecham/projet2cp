@@ -11,8 +11,9 @@ router.patch('/updateClient',auth(),clientController.updateClient);
 router.post('/updateClientImage' ,auth(),imageUploader.upload.single('image'), clientController.updateClientImage);
 router.post('/lancerdemande',auth(),clientController.lancerdemande);
 router.post('/creerRDV',auth(),clientController.creerRDV);
-router.post('/confirmerRDV',auth(),clientController.confirmerRDV);
-router.post('/annulerRDV',auth(),clientController.annulerRDV);
+router.post('/confirmerRDV',clientController.confirmerRDV);
+router.post('/annulerRDV',clientController.annulerRDV);
+router.post('/annulerDemande',clientController.annulerDemande);
 router.get('/AffcherArtisan',auth(),clientController.AfficherArtisan);
 router.get('/Affichermonprofil',auth(),clientController.AfficherProfil)
 //router.get('/test',clientController.test);
