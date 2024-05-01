@@ -45,7 +45,7 @@ async function consulterdemandes(req, res) {
     }
 }
 function AfficherProfil(req, res) {
-    const id = req.params.id;
+    const id = req.userId;
     models.Artisan.findByPk(id, {
         include: [{
             model: models.Prestation,
@@ -101,7 +101,6 @@ async function updateartisan(req, res) {
     const updatedArtisan = {
        
         MotdepasseArtisan: hashedPassword, // Hashed password
-    
         AdresseArtisan: req.body.AdresseArtisan,
         NumeroTelArtisan: req.body.NumeroTelArtisan,
         Disponnibilite: req.body.Disponnibilite ,

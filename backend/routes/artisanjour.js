@@ -3,9 +3,9 @@ const artisanJourController = require('../controllers/artisanjour.controller');
 
 const router = express.Router();
 
-router.post('/addJourToArtisan/:artisanId', artisanJourController.addJourToArtisan);
+router.post('/addJourToArtisan',auth(), artisanJourController.addJourToArtisan);
 router.patch('/modifyJour/:jourId', artisanJourController.modifyJour);
-router.delete('/deleteJourFromArtisan/:artisanId/:jourId', artisanJourController.deleteJourFromArtisan);
-router.get('/:artisanId',artisanJourController.displayplanningofArtisan);
+router.delete('/deleteJourFromArtisan/:jourId',auth(),artisanJourController.deleteJourFromArtisan);
+router.get('/',auth(),artisanJourController.displayplanningofArtisan);
 
 module.exports = router;

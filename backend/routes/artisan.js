@@ -6,7 +6,7 @@ const imageUploader = require("../helpers/image_uploader");
 
 const router = express.Router();
 
-router.get('/Affichermonprofil/:id', artisanController.AfficherProfil) ;
+router.get('/Affichermonprofil/',auth(), artisanController.AfficherProfil) ;
 router.patch('/updateartisan',auth(),artisanController.updateartisan);
 router.post('/accepterRDV',auth(),artisanController.accepterRDV);
 router.post('/refuserRDV',auth(),artisanController.refuserRDV);
@@ -19,7 +19,7 @@ router.get('/DetailsRDVTermine',auth(),artisanController.DetailsRDVTermine);
 router.get('/DetailsDemandeConfirmee',auth(),artisanController.DetailsDemandeConfirmee);
 router.get('/ConsulterDemandes',auth(),artisanController.consulterdemandes);
 
-router.post("/updateArtisanImage/:id", imageUploader.upload.single('photo'), artisanController.updateArtisanImage);
+router.post("/updateArtisanImage",auth(), imageUploader.upload.single('photo'), artisanController.updateArtisanImage);
 
 
 module.exports = router;
