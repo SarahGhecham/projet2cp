@@ -733,6 +733,7 @@ async function annulerRDV(req, res) {
 }
 
 
+
 async function annulerDemande(req, res) {
   const demandeId = req.body.demandeId;
 
@@ -819,8 +820,6 @@ try {
       return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
   }
 }
-
-
 
 async function ActiviteTerminee(req, res) {
     const clientId = req.params.id;

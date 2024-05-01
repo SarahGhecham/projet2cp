@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_application_proj2cp/config.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:convert';
@@ -144,7 +144,7 @@ class _ProfileState extends State<Profile> {
 
   Future<void> updateClient(Map<String, dynamic> updatedData) async {
     final url = Uri.parse(
-        'http://192.168.85.78:3000/client/updateClient'); // Replace with your endpoint
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/updateClient'); // Replace with your endpoint
     try {
       final response = await http.patch(
         url,

@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_application_proj2cp/config.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/bottom_nav_bar.dart';
 
 
@@ -28,7 +29,8 @@ class _LogInPageState extends State<LogInPage> {
     final email = _usernameController.text;
     final password = _passwordController.text;
 
-    final url = Uri.parse('http://192.168.100.7:3000/connexion/login');
+  final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/connexion/login');
+
 
     try {
       final response = await http.post(

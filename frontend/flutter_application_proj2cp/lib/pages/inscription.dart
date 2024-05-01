@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_application_proj2cp/config.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -27,7 +28,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final telephone = _telephoneController.text;
   final location = _locationController.text;
 
-  final url = Uri.parse('http://192.168.85.78:3000/client/sign-up');
+  final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/sign-up');
 
   try {
     final response = await http.post(
