@@ -824,6 +824,6 @@ module.exports = {
   ModifierPrestation,
   AfficherPrestationsByDomaine: AfficherPrestationsByDomaine,
   ActiviteEncoursForAllClients ,
-  ActiviteTermineeAndExecuteForAllClients
+  ActiviteTermineeAndExecuteForAllClients,
   AfficherArtisansEtClients
 };
