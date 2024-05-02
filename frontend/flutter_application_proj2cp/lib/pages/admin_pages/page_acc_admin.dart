@@ -62,6 +62,7 @@ class _HomePageAdminState extends State<HomePageAdmin> {
     print('Token: $_token');
     await Future.wait([
       _loadStatistics(),
+      _fetchUserData(),
     ]);
   }
 
@@ -87,23 +88,21 @@ class _HomePageAdminState extends State<HomePageAdmin> {
     }
   }
 
-  /*Future<void> _fetchUserData() async {
-    final url = Uri.parse('http://10.0.2.2:3000/artisan/Affichermonprofil');
+  Future<void> _fetchUserData() async {
+    final url = Uri.parse('http://10.0.2.2:3000/admins/1');
     try {
       final response = await http.get(
         url,
-        headers: {'Authorization': 'Bearer $_token'},
       );
 
       if (response.statusCode == 200) {
         final userDataJson = jsonDecode(response.body);
 
-        final nom = userDataJson['NomArtisan'] as String;
-        final prenom = userDataJson['PrenomArtisan'] as String;
-        final photoUrl = userDataJson['photo'] as String;
+        final nom = userDataJson['NomAdmin'] as String;
+        final prenom = userDataJson['PrenomAdmin'] as String;
 
         setState(() {
-          _headerAdmin.setData(nom, prenom, photoUrl);
+          _headerAdmin.setData(nom, prenom, defaultImageUrl);
         });
         print('User data fetched: $_headerAdmin');
       } else {
@@ -115,7 +114,7 @@ class _HomePageAdminState extends State<HomePageAdmin> {
       print('Error fetching user data: $error');
     }
   }
-*/
+
   void onPageSelected(int index) {
     setState(() {
       _currentPageIndex = index;
@@ -143,7 +142,7 @@ class _HomePageAdminState extends State<HomePageAdmin> {
                   ),
                 ),
                 Text(
-                  'Salut ${_headerAdmin.nomAdmin} ${_headerAdmin.prenomAdmin}',
+                  'Salut ${_headerAdmin.prenomAdmin.substring(0, 1).toUpperCase()}. ${_headerAdmin.nomAdmin}',
                   style: GoogleFonts.poppins(
                     fontSize: 20,
                     fontWeight: FontWeight.w400,

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/drawer_services.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/drawer_users.dart';
-import 'package:flutter_application_proj2cp/pages/admin_pages/page_acceuil.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/page_acc_admin.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 
 class DrawerDash extends StatefulWidget {
@@ -107,7 +108,7 @@ class _DrawerDashState extends State<DrawerDash> {
       case 0:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => HomeScreenAdmin()),
+          MaterialPageRoute(builder: (context) => HomePageAdmin()),
         );
         break;
       case 1:
