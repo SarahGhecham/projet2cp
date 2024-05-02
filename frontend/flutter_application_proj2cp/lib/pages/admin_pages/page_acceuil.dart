@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/drawer.dart';
@@ -58,8 +61,36 @@ class _HomeScreenAdminState extends State<HomeScreenAdmin> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _currentPageIndex = 0;
+  int _nombreClients = 0;
+  int _nombreArtisans = 0;
+  int _nombreDemandes = 0;
 
   String selectedFilter = 'Jour'; // Initialize with default filter
+  @override
+  void initState() {
+    super.initState();
+    _loadStatistics(); // Load statistics when the widget initializes
+  }
+
+  Future<void> _loadStatistics() async {
+    try {
+      final response = await http
+          .get(Uri.parse('http://10.0.2.2:3000/admins/obtenirStatistiques'));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          _nombreClients = data['nombreClients'];
+          _nombreArtisans = data['nombreArtisans'];
+          _nombreDemandes = data['nombreDemandes'];
+        });
+      } else {
+        throw Exception('Failed to load statistics');
+      }
+    } catch (e) {
+      print('Error loading statistics: $e');
+    }
+  }
 
   void updateChartData(String filter) {
     setState(() {
@@ -249,34 +280,21 @@ class _HomeScreenAdminState extends State<HomeScreenAdmin> {
                 ],
               ),
               SizedBox(height: 10), // Spacer between the two rows
-              Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceEvenly, // Space evenly
-                children: [
-                  // Options icon with adjusted padding
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 25.0), // Adjusted padding
-                    child: GestureDetector(
-                      onTap: () {
-                        _scaffoldKey.currentState?.openDrawer();
-                      },
-                      child: SizedBox(
-                        width: 30, // Adjusted width
-                        height: 30,
-                        child: Image.asset(
-                          'assets/icons/options.png',
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+              Padding(
+                padding: const EdgeInsets.only(left: 25.0), // Adjusted padding
+                child: GestureDetector(
+                  onTap: () {
+                    _scaffoldKey.currentState?.openDrawer();
+                  },
+                  child: SizedBox(
+                    width: 30, // Adjusted width
+                    height: 30,
+                    child: Image.asset(
+                      'assets/icons/options.png',
+                      fit: BoxFit.cover,
                     ),
                   ),
-                  // Search bar with expanded flex
-                  Expanded(
-                    flex: 2, // Give search bar more space (optional)
-                    child: BarRecherche(),
-                  ),
-                ],
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(30, 30, 20, 5),

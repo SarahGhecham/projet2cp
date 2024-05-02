@@ -344,9 +344,7 @@ class _DrawerUsersState extends State<DrawerUsers> {
                     ],
                   ),
                 ),
-                SizedBox(
-                  height: 80,
-                ),
+                
                 SizedBox(
                   height: MediaQuery.of(context).size.height -
                       kToolbarHeight -
