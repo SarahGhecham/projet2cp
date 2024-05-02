@@ -17,8 +17,6 @@ class HeaderAdmin {
   });
 }
 
-
-
 class CustomChartTitle extends StatelessWidget {
   final String title;
   final IconData iconData;
@@ -241,7 +239,11 @@ class _HomeScreenAdminState extends State<HomeScreenAdmin> {
                     },
                     child: Padding(
                       padding: const EdgeInsets.only(right: 20.0),
-                      child: Image.asset('assets/icons/notif.png'),
+                      child: Image.asset(
+                        'assets/icons/notifs.png',
+                        height: 30,
+                        width: 30,
+                      ),
                     ),
                   ),
                 ],
