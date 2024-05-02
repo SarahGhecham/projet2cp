@@ -3,6 +3,7 @@ import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:flutter_application_proj2cp/pages/activite/activite_client.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/bottom_nav_bar.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/ajouter_domaine.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/page_acc_admin.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/page_acceuil.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/profil_admin.dart';
 
@@ -68,7 +69,7 @@ class App extends StatelessWidget {
               iconTheme: const IconThemeData(color: vertClair),
             ),*/
 
-            home: DrawerUsers(),
+            home: BottomNavBarAdmin(),
           ),
         );
       },
