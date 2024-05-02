@@ -167,9 +167,7 @@ function updateArtisanImage(req, res) {
         });
 }
 
-module.exports = {
-    updateArtisanImage: updateArtisanImage
-};
+
 
 async function accepterRDV(req, res) {
     const rdvId = req.body.rdvId;
@@ -694,6 +692,7 @@ async function getCommentaires(req, res) {
   
 module.exports = {
     updateartisan:updateartisan,
+    updateArtisanImage: updateArtisanImage,
     getCommentaires,
     accepterRDV:accepterRDV,
     refuserRDV:refuserRDV,
