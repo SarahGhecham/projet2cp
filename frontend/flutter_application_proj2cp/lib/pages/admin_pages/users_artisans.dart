@@ -25,6 +25,7 @@ class ArtisansList extends StatefulWidget {
 class _ArtisansListState extends State<ArtisansList> {
   List<Artisan?> _artisans = [];
   late String _token;
+  final defaultPfp = AssetImage('assets/pdp_user.jpg');
 
   @override
   @override
