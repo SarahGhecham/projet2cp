@@ -8,6 +8,23 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+class Prestation {
+  final int id;
+  final String nomPrestation;
+
+  Prestation({
+    required this.id,
+    required this.nomPrestation,
+  });
+
+  factory Prestation.fromJson(Map<String, dynamic> json) {
+    return Prestation(
+      id: json['id'],
+      nomPrestation: json['NomPrestation'],
+    );
+  }
+}
+
 class CreerArtisan extends StatefulWidget {
   const CreerArtisan({super.key});
 
@@ -18,17 +35,18 @@ class CreerArtisan extends StatefulWidget {
 class _CreerArtisanState extends State<CreerArtisan> {
   final _nomArtisanController = TextEditingController();
   final _prenomArtisanController = TextEditingController();
-  final _emailArtisanController = TextEditingController();
   final _passwordArtisanController = TextEditingController();
+
+  final _emailArtisanController = TextEditingController();
   final _numTelArtisanController = TextEditingController();
   final _localisationController = TextEditingController();
   List<Map<String, dynamic>> _domainesOptions = [];
-  List<String> _prestationsOptions = [];
-  List<String> _prestationsChoisis = [];
+  List<Prestation> _prestationsOptions = [];
+  List<Prestation> _prestationsChoisis = [];
 
   String? _selectedDomaine;
   int? _selectedDomaineId;
-  String? _selectedPrestation;
+  Prestation? _selectedPrestation;
   late String _token;
   void initState() {
     super.initState();
@@ -50,6 +68,15 @@ class _CreerArtisanState extends State<CreerArtisan> {
     final email = _emailArtisanController.text;
     final adresse = _localisationController.text;
     final telephone = _numTelArtisanController.text;
+    final motDePaase = _passwordArtisanController.text;
+    final domaineId = _selectedDomaineId;
+    final prestationsIds =
+        _prestationsChoisis.map((prestation) => prestation.id).toList();
+    print(prestationsIds);
+    if (prestationsIds.isEmpty) {
+      print('Error: prestationsIds list is empty');
+      return;
+    }
 
     final url = Uri.parse('http://10.0.2.2:3000/admins/creerartisan');
 
@@ -59,9 +86,12 @@ class _CreerArtisanState extends State<CreerArtisan> {
         body: jsonEncode({
           'NomArtisan': nom,
           'PrenomArtisan': prenom,
+          'MotdepasseArtisan': motDePaase,
           'EmailArtisan': email,
           'AdresseArtisan': adresse,
           'NumeroTelArtisan': telephone,
+          'DomaineId': domaineId,
+          'prestationsIds': prestationsIds,
         }),
         headers: {'Content-Type': 'application/json'},
       );
@@ -129,14 +159,8 @@ class _CreerArtisanState extends State<CreerArtisan> {
         List<dynamic> data = jsonDecode(response.body);
 
         setState(() {
-          _prestationsOptions = data.map<String>((prestation) {
-            if (prestation is Map<String, dynamic>) {
-              return prestation['NomPrestation']?.toString() ?? '';
-            } else if (prestation is String) {
-              return prestation;
-            } else {
-              return '';
-            }
+          _prestationsOptions = data.map<Prestation>((prestation) {
+            return Prestation.fromJson(prestation);
           }).toList();
         });
       } else {
@@ -447,7 +471,7 @@ class _CreerArtisanState extends State<CreerArtisan> {
                       padding: EdgeInsets.only(left: 10),
                       //width: double.infinity,
                       child: DropdownButton<String>(
-                        value: _selectedPrestation,
+                        value: _selectedPrestation?.nomPrestation,
                         hint: Text(
                           "Types des prestations", // Your hint text here
                           style: TextStyle(
@@ -458,17 +482,26 @@ class _CreerArtisanState extends State<CreerArtisan> {
 
                         items: _prestationsOptions.map((prestation) {
                           return DropdownMenuItem<String>(
-                            value: prestation,
-                            child: Text(prestation),
+                            value: prestation.nomPrestation,
+                            child: Text(prestation.nomPrestation),
                           );
                         }).toList(),
                         onChanged: (selectedPrestation) {
                           setState(() {
-                            _selectedPrestation = selectedPrestation;
-                            if (selectedPrestation != null &&
+                            _selectedPrestation =
+                                _prestationsOptions.firstWhere(
+                              (prestation) =>
+                                  prestation.nomPrestation ==
+                                  selectedPrestation,
+                              orElse: () => Prestation(
+                                  id: -1,
+                                  nomPrestation:
+                                      ''), // Provide a default Prestation or handle appropriately
+                            );
+                            if (_selectedPrestation != null &&
                                 !_prestationsChoisis
-                                    .contains(selectedPrestation)) {
-                              _prestationsChoisis.add(selectedPrestation);
+                                    .contains(_selectedPrestation!)) {
+                              _prestationsChoisis.add(_selectedPrestation!);
                             }
                           });
                         },
@@ -479,9 +512,9 @@ class _CreerArtisanState extends State<CreerArtisan> {
                 )),
             Padding(
               padding: const EdgeInsets.only(bottom: 20.0),
-              child: Container(
+              child: SizedBox(
                 height: 120,
-                width: 300, // Adjust the height as needed
+                width: 300,
                 child: ListView.builder(
                   itemCount: _prestationsChoisis.length,
                   itemBuilder: (context, index) {
@@ -494,7 +527,7 @@ class _CreerArtisanState extends State<CreerArtisan> {
                         child: Container(
                           child: Chip(
                             label: Text(
-                              _prestationsChoisis[index],
+                              _prestationsChoisis[index].nomPrestation,
                               style: GoogleFonts.poppins(
                                 color: kBlack,
                                 fontSize: 16,

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:flutter_application_proj2cp/pages/activite/activite_client.dart';
-import 'package:flutter_application_proj2cp/pages/admin_pages/page_acceuil.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/drawer_services.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/page_acc_admin.dart';
+
+import 'package:flutter_application_proj2cp/pages/admin_pages/profil_admin.dart';
 import 'package:flutter_application_proj2cp/pages/afficher_prestation.dart';
 
 import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
@@ -19,7 +22,9 @@ class _BottomNavBarAdminState extends State<BottomNavBarAdmin> {
 
   // Define your page views
   final List<Widget> _pages = [
-    HomeScreenAdmin(),
+    HomePageAdmin(),
+    DrawerServices(),
+    ProfileAdmin(),
     //Activite(),
     //PrestationPage(),
     //Profile(),
@@ -69,7 +74,7 @@ class _BottomNavBarAdminState extends State<BottomNavBarAdmin> {
                       onTap: () => _onItemTapped(1),
                       child: Image.asset(
                         _selectedIndex == 1
-                            ? 'assets/images/chat_filled.png'
+                            ? 'assets/images/chatfilled.png'
                             : 'assets/images/chat_outline.png',
                         width: 27,
                         height: 27,
