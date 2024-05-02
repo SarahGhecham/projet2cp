@@ -3,6 +3,7 @@ import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:flutter_application_proj2cp/pages/activite/activite_client.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/bottom_nav_bar.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/ajouter_domaine.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/profil_admin.dart';
 
 import 'package:flutter_application_proj2cp/pages/artisan/activiteArtisan_encours.dart';
 import 'package:flutter_application_proj2cp/pages/artisan/activiteArtisan_termine.dart';
@@ -19,6 +20,7 @@ import 'package:flutter_application_proj2cp/widgets/bottom_nav_bar.dart';
 
 import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/creer_artisan.dart';
 import 'package:get/get.dart';
 import 'package:flutter_application_proj2cp/widgets/bottom_nav_bar.dart';
 import 'package:flutter_application_proj2cp/lancer_demande3.dart';
@@ -65,7 +67,7 @@ class App extends StatelessWidget {
               iconTheme: const IconThemeData(color: vertClair),
             ),*/
 
-            home: LogInPage(),
+            home: BottomNavBarAdmin(),
           ),
         );
       },

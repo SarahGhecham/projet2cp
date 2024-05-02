@@ -183,12 +183,10 @@ function DesactiverClient(req, res) {
       res.status(200).json({ message: 'Client désactivé avec succès' });
     })
     .catch((error) => {
-      res
-        .status(500)
-        .json({
-          message: 'Erreur lors de la désactivation du client',
-          error: error,
-        });
+      res.status(500).json({
+        message: 'Erreur lors de la désactivation du client',
+        error: error,
+      });
     });
 }
 
@@ -204,12 +202,10 @@ function DesactiverArtisan(req, res) {
       res.status(200).json({ message: 'Artisan désactivé avec succès' });
     })
     .catch((error) => {
-      res
-        .status(500)
-        .json({
-          message: "Erreur lors de la désactivation de l'Artisan",
-          error: error,
-        });
+      res.status(500).json({
+        message: "Erreur lors de la désactivation de l'Artisan",
+        error: error,
+      });
     });
 }
 
@@ -248,12 +244,10 @@ function AjouterDomaine(req, res) {
   const { NomDomaine } = req.body;
 
   if (!req.file) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: 'Veuillez télécharger une image pour le domaine.',
-      });
+    return res.status(400).json({
+      success: false,
+      message: 'Veuillez télécharger une image pour le domaine.',
+    });
   }
 
   const imageURL = `http://localhost:3000/imageDomaine/${req.file.filename}`;
@@ -269,12 +263,10 @@ function AjouterDomaine(req, res) {
         .json({ success: true, domaine: nouveauDomaine, imageURL: imageURL });
     })
     .catch((error) => {
-      res
-        .status(500)
-        .json({
-          success: false,
-          message: "Une erreur s'est produite lors de l'ajout du domaine.",
-        });
+      res.status(500).json({
+        success: false,
+        message: "Une erreur s'est produite lors de l'ajout du domaine.",
+      });
     });
 }
 function CreerTarif(req, res) {
@@ -303,11 +295,9 @@ function CreerTarif(req, res) {
         "Une erreur s'est produite lors de la création du tarif:",
         error
       );
-      return res
-        .status(500)
-        .json({
-          message: "Une erreur s'est produite lors de la création du tarif.",
-        });
+      return res.status(500).json({
+        message: "Une erreur s'est produite lors de la création du tarif.",
+      });
     });
 }
 function CreerPrestation(req, res) {
@@ -322,12 +312,10 @@ function CreerPrestation(req, res) {
     Description,
   } = req.body;
   if (!req.file) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: 'Veuillez télécharger une image pour le domaine.',
-      });
+    return res.status(400).json({
+      success: false,
+      message: 'Veuillez télécharger une image pour le domaine.',
+    });
   }
   const imageURL = `http://localhost:3000/imagePrestation/${req.file.filename}`;
   const imagePrestation = imageURL;
@@ -352,20 +340,14 @@ function CreerPrestation(req, res) {
         "Une erreur s'est produite lors de la création de la prestation:",
         error
       );
-      return res
-        .status(500)
-        .json({
-          message:
-            "Une erreur s'est produite lors de la création de la prestation.",
-        });
+      return res.status(500).json({
+        message:
+          "Une erreur s'est produite lors de la création de la prestation.",
+      });
     });
 }
 function ModifierPrestation(req, res) {
-    const {
-        PrestationId,
-        Description ,
-        NomPrestation
-    } = req.body;
+  const { PrestationId, Description, NomPrestation } = req.body;
 
   // Vérifier si la prestation existe
   models.Prestation.findByPk(PrestationId)
@@ -376,13 +358,13 @@ function ModifierPrestation(req, res) {
           .json({ success: false, message: "La prestation n'existe pas." });
       }
 
-            // Mettre à jour la description si elle est fournie
-            if (Description) {
-                prestation.Description = Description;
-            }
-            if (NomPrestation) {
-                prestation.NomPrestation = NomPrestation;
-            }
+      // Mettre à jour la description si elle est fournie
+      if (Description) {
+        prestation.Description = Description;
+      }
+      if (NomPrestation) {
+        prestation.NomPrestation = NomPrestation;
+      }
 
       // Mettre à jour l'image si elle est fournie
       if (req.file) {
@@ -394,25 +376,21 @@ function ModifierPrestation(req, res) {
       prestation
         .save()
         .then(() => {
-          return res
-            .status(200)
-            .json({
-              success: true,
-              message: 'Prestation modifiée avec succès.',
-            });
+          return res.status(200).json({
+            success: true,
+            message: 'Prestation modifiée avec succès.',
+          });
         })
         .catch((error) => {
           console.error(
             "Une erreur s'est produite lors de la modification de la prestation:",
             error
           );
-          return res
-            .status(500)
-            .json({
-              success: false,
-              message:
-                "Une erreur s'est produite lors de la modification de la prestation.",
-            });
+          return res.status(500).json({
+            success: false,
+            message:
+              "Une erreur s'est produite lors de la modification de la prestation.",
+          });
         });
     })
     .catch((error) => {
@@ -420,13 +398,11 @@ function ModifierPrestation(req, res) {
         "Une erreur s'est produite lors de la recherche de la prestation:",
         error
       );
-      return res
-        .status(500)
-        .json({
-          success: false,
-          message:
-            "Une erreur s'est produite lors de la recherche de la prestation.",
-        });
+      return res.status(500).json({
+        success: false,
+        message:
+          "Une erreur s'est produite lors de la recherche de la prestation.",
+      });
     });
 }
 
@@ -446,11 +422,9 @@ async function AjouterPrestation(req, res) {
     }
 
     if (!prestation.id) {
-      return res
-        .status(404)
-        .json({
-          message: "La prestation spécifiée n'a pas d'identifiant valide.",
-        });
+      return res.status(404).json({
+        message: "La prestation spécifiée n'a pas d'identifiant valide.",
+      });
     }
 
     await models.ArtisanPrestation.create({
@@ -466,12 +440,10 @@ async function AjouterPrestation(req, res) {
       "Une erreur s'est produite lors de l'ajout de la prestation à l'artisan:",
       error
     );
-    return res
-      .status(500)
-      .json({
-        message:
-          "Une erreur s'est produite lors de l'ajout de la prestation à l'artisan.",
-      });
+    return res.status(500).json({
+      message:
+        "Une erreur s'est produite lors de l'ajout de la prestation à l'artisan.",
+    });
   }
 }
 
@@ -502,19 +474,20 @@ async function AfficherPrestationsByDomaine(req, res) {
 
   try {
     const prestations = await models.Prestation.findAll({
-      where: { DomaineId: domaineId }, 
-      attributes: ['NomPrestation'], 
+      where: { DomaineId: domaineId },
+      attributes: ['NomPrestation', 'id'],
     });
 
     if (prestations.length > 0) {
-      const nomPrestations = prestations.map(
-        (prestation) => prestation.NomPrestation
-      );
+      const nomPrestations = prestations.map((prestation) => ({
+        NomPrestation: prestation.NomPrestation,
+        id: prestation.id,
+      }));
       res.status(200).json(nomPrestations);
     } else {
-      res.status(404).json({
-        message: 'Aucune prestation trouvée pour ce domaine.',
-      });
+      res
+        .status(404)
+        .json({ message: 'Aucune prestation trouvée pour ce domaine.' });
     }
   } catch (error) {
     console.error(
@@ -528,7 +501,6 @@ async function AfficherPrestationsByDomaine(req, res) {
   }
 }
 
-
 async function CreerArtisan(req, res) {
   try {
     const requiredFields = [
@@ -539,9 +511,9 @@ async function CreerArtisan(req, res) {
       'AdresseArtisan',
       'NumeroTelArtisan',
       'DomaineId',
-      'prestationsIds'
+      'prestationsIds',
     ];
-    console.log("Requête reçue :", req.body);
+    console.log('Requête reçue :', req.body);
     for (const field of requiredFields) {
       console.log(`Champ '${field}' :`, req.body[field]);
       if (!req.body[field]) {
@@ -567,7 +539,7 @@ async function CreerArtisan(req, res) {
     }
     console.log("Validation de l'adresse :", isAddressValid);
     // const apiKey = '2859b334b5cf4296976a534dbe5e69a7';
-    const email = req.body.EmailArtisan
+    const email = req.body.EmailArtisan;
 
     //const response = await axios.get(`https://api.zerobounce.net/v2/validate?api_key=${apiKey}&email=${email}`);
 
@@ -589,44 +561,51 @@ async function CreerArtisan(req, res) {
                     function (err, hash) {
                       const Artisan = {
                         NomArtisan: req.body.NomArtisan,
-                        PrenomArtisan:req.body.PrenomArtisan,
+                        PrenomArtisan: req.body.PrenomArtisan,
                         MotdepasseArtisan: hash,
                         EmailArtisan: email,
                         AdresseArtisan: req.body.AdresseArtisan,
                         NumeroTelArtisan: req.body.NumeroTelArtisan,
-                        DomaineId: req.body.DomaineId
+                        DomaineId: req.body.DomaineId,
                       };
                       models.Artisan.create(Artisan)
                         .then((result) => {
-
                           const artisanId = result.id; // Identifiant de l'artisan créé
-                          console.log(artisanId)
+                          console.log(artisanId);
 
-                    // Parcourir la liste des prestations et associer chaque prestation à l'artisan
-                    const prestationsIds = req.body.prestationsIds; 
+                          // Parcourir la liste des prestations et associer chaque prestation à l'artisan
+                          const prestationsIds = req.body.prestationsIds;
 
-                    // Créer des entrées dans la table de jointure pour chaque prestation
-                    const associations = prestationsIds.map((prestationId) => {
-                      return { ArtisanId: artisanId, PrestationId: prestationId };
-                    });
+                          // Créer des entrées dans la table de jointure pour chaque prestation
+                          const associations = prestationsIds.map(
+                            (prestationId) => {
+                              return {
+                                ArtisanId: artisanId,
+                                PrestationId: prestationId,
+                              };
+                            }
+                          );
 
-                    // Insérer les associations dans la table de jointure
-                    models.ArtisanPrestation.bulkCreate(associations)
-                      .then(() => {
-                        // Envoyer la réponse une fois que toutes les associations ont été créées avec succès
-                        res.status(201).json({
-                          message: 'Inscription artisan réussie et prestations associées',
-                          Artisan: Artisan,
-                          Prestations: prestationsIds,
-                        });
-                      })
-                      .catch((error) => {
-                        // Gérer les erreurs liées à la création des associations
-                        res.status(500).json({
-                          message: "Une erreur s'est produite lors de l'association des prestations à l'artisan",
-                          error: error,
-                        });
-                      });})
+                          // Insérer les associations dans la table de jointure
+                          models.ArtisanPrestation.bulkCreate(associations)
+                            .then(() => {
+                              // Envoyer la réponse une fois que toutes les associations ont été créées avec succès
+                              res.status(201).json({
+                                message:
+                                  'Inscription artisan réussie et prestations associées',
+                                Artisan: Artisan,
+                                Prestations: prestationsIds,
+                              });
+                            })
+                            .catch((error) => {
+                              // Gérer les erreurs liées à la création des associations
+                              res.status(500).json({
+                                message:
+                                  "Une erreur s'est produite lors de l'association des prestations à l'artisan",
+                                error: error,
+                              });
+                            });
+                        })
 
                         .catch((error) => {
                           res.status(500).json({
