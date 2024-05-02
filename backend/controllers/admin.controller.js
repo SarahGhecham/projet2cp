@@ -141,7 +141,7 @@ async function validateAddress(address, Cleapi) {
 function AfficherArtisans(req, res) {
   models.Artisan.findAll()
     .then((result) => {
-      if (result) res.status(201).json(result);
+      if (result) res.status(200).json(result);
       else
         res.status(404).json({
           message: "pas d'artisans",
@@ -157,7 +157,7 @@ function AfficherArtisans(req, res) {
 function AfficherClients(req, res) {
   models.Client.findAll()
     .then((result) => {
-      if (result) res.status(201).json(result);
+      if (result) res.status(200).json(result);
       else
         res.status(404).json({
           message: 'pas de clients',

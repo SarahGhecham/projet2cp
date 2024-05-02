@@ -512,9 +512,9 @@ class _CreerArtisanState extends State<CreerArtisan> {
                 )),
             Padding(
               padding: const EdgeInsets.only(bottom: 20.0),
-              child: Container(
+              child: SizedBox(
                 height: 120,
-                width: 300, // Adjust the height as needed
+                width: 300,
                 child: ListView.builder(
                   itemCount: _prestationsChoisis.length,
                   itemBuilder: (context, index) {
