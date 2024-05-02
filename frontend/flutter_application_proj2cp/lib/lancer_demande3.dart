@@ -15,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 
 
+
 class Lancerdemande3Page extends StatefulWidget {
   final int hour;
   final int min;
@@ -35,6 +36,7 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
   String _adresse = '';
   String _description = '';
   List<dynamic> coordinates=[];
+  int demandeId=1;
 
   Future<void> fetchData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -45,11 +47,11 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
   final TextEditingController _controller = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
-  void _navigateToNextPage(BuildContext context,List<LatLng> latLngList,String _adresse,LatLng coords) {
+  void _navigateToNextPage(BuildContext context,List<LatLng> latLngList,String _adresse,LatLng coords,int demandeId) {
     Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => DemandelanceePage(coordinates: latLngList,adresse: _adresse,coords: coords,)
+      builder: (context) => DemandelanceePage(coordinates: latLngList,adresse: _adresse,coords: coords,demandeId: demandeId,)
     ),
   );}
 
@@ -111,13 +113,7 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(height: 180),
-            SizedBox(
-              height: 18,
-              width: 25,
-              child: SvgPicture.asset("assets/fleche.svg"),
-            ),
-            const SizedBox(width: 50),
+            const SizedBox(width: 30),
             Container(
               width: 200,
               height: 11,
@@ -131,7 +127,7 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
                 valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF05564B)),
               ),
             ),
-            const SizedBox(width: 50),
+            const SizedBox(width: 60),
             SizedBox(
               height: 16,
               width: 20,
@@ -347,8 +343,9 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
                     
                     List<dynamic> coordinates = json.decode(response.body)['coordinates'];
                     var clientCoords = json.decode(response.body)['clientCoords'];
+                    var demandeId = json.decode(response.body)['demandeId'];
                     // Maintenant, vous pouvez utiliser la liste de coordonnées comme vous le souhaitez
-                    
+                    print('demande id: $demandeId');
                     print('Coordonnées récupérées: $coordinates');
                     this.coordinates=coordinates;
                     setState(() {
@@ -362,7 +359,7 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
                     
                   });
                     print('couple de coordonnées récupéré: $clientCoords');
-                   _navigateToNextPage(context,latLngList,_adresse,coords);
+                   _navigateToNextPage(context,latLngList,_adresse,coords,demandeId);
                   } else {
                     // La requête a échoué, affichez un message d'erreur ou effectuez d'autres actions
                     print('Erreur lors de la requête POST: ${response.statusCode}');
@@ -450,6 +447,7 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
                   print('Erreur lors de lenvoi de la requête POST: $error');
                 });*/
                 
+
                 },
                 style: ButtonStyle(
                   minimumSize:

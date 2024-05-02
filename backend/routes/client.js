@@ -11,8 +11,9 @@ router.patch('/updateClient',auth(),clientController.updateClient);
 router.post('/updateClientImage' ,auth(),imageUploader.upload.single('image'), clientController.updateClientImage);
 router.post('/lancerdemande',auth(),clientController.lancerdemande);
 router.post('/creerRDV',auth(),clientController.creerRDV);
-router.post('/confirmerRDV',auth(),clientController.confirmerRDV);
-router.post('/annulerRDV',auth(),clientController.annulerRDV);
+router.post('/confirmerRDV',clientController.confirmerRDV);
+router.post('/annulerRDV',clientController.annulerRDV);
+router.post('/annulerDemande',clientController.annulerDemande);
 router.get('/AffcherArtisan',auth(),clientController.AfficherArtisan);
 router.get('/Affichermonprofil',auth(),clientController.AfficherProfil)
 //router.get('/test',clientController.test);
@@ -23,6 +24,7 @@ router.get('/AfficherPrestations/:id',clientController.AfficherPrestations);
 router.get('/DetailsDemandeConfirmee',auth(),clientController.DetailsDemandeConfirmee);
 router.get('/DetailsRDVTermine',auth(),clientController.DetailsRDVTermine);
 router.get('/demandes/:demandeId/artisans', clientController.getArtisansForDemand);
+router.get('/ConsulterCommentaires/:ArtisanId',clientController.getCommentaires);
 
 
 module.exports = router;

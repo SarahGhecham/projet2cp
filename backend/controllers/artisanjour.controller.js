@@ -3,7 +3,7 @@ const models = require('../models');
 async function addJourToArtisan(req, res) {
     try {
         // Extract the artisan ID and jour data from the request body
-        const artisanId = req.params.artisanId;
+        const artisanId = req.userId;
         const jourData = {
             jour: req.body.jour, 
             HeureDebut: req.body.HeureDebut,
@@ -64,7 +64,7 @@ async function modifyJour(req, res) {
 }
 
 async function deleteJourFromArtisan(req, res) {
-    const artisanId = req.params.artisanId;
+    const artisanId = req.userId;
     const jourId = req.params.jourId;
 
     try {
@@ -105,7 +105,7 @@ async function deleteJourFromArtisan(req, res) {
 
 async function displayplanningofArtisan(req, res) {
     try {
-        const artisanId = req.params.artisanId;
+        const artisanId = req.userId;
 
         // Find the artisan by ID
         const artisan = await models.Artisan.findByPk(artisanId);

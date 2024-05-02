@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:flutter_application_proj2cp/config.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -47,7 +47,7 @@ class _ProfileState extends State<Profile> {
 
   Future<void> _fetchUserData() async {
     final url = Uri.parse(
-        'http://192.168.100.7:3000/client/Affichermonprofil'); // Replace with your endpoint
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/Affichermonprofil'); // Replace with your endpoint
     try {
       final response = await http.get(
         url,
@@ -65,8 +65,13 @@ class _ProfileState extends State<Profile> {
             'NumeroTelClient': userDataJson['NumeroTelClient'] as String,
             'Points': userDataJson['Points'],
             'Service_account': userDataJson['Service_account'],
-             'photo': userDataJson['photo']
+            'photo': userDataJson['photo']
           };
+          _UsernameController.text = _userData['Username'];
+          _numeroController.text = _userData['NumeroTelClient'];
+          _gmailController.text = _userData['EmailClient'];
+          _addressController.text = _userData['AdresseClient'];
+          _pickedImagePath = _userData['photo'];
         });
         print('_userData: $_userData'); // Debugging print
       } else {
@@ -98,59 +103,61 @@ class _ProfileState extends State<Profile> {
   }
 
   Future<void> updateClientImage(File image, String token) async {
-  // Replace "http://localhost:3000" with your server URL
-  String baseUrl = "http://192.168.100.7:3000";
+    // Replace "http://localhost:3000" with your server URL
+    String baseUrl =
+        "http://${AppConfig.serverAddress}:${AppConfig.serverPort}";
 
-  // Construct the endpoint URL
-  String endpoint = "$baseUrl/client/updateClientImage";
+    // Construct the endpoint URL
+    String endpoint = "$baseUrl/client/updateClientImage";
 
-  try {
-    // Create a multipart request
-    var request = http.MultipartRequest('POST', Uri.parse(endpoint));
-    print(image.path);
+    try {
+      // Create a multipart request
+      var request = http.MultipartRequest('POST', Uri.parse(endpoint));
+      print(image.path);
 
-    // Attach the image file to the request
-    request.files.add(await http.MultipartFile.fromPath('image', image.path));
+      // Attach the image file to the request
+      request.files.add(await http.MultipartFile.fromPath('image', image.path));
 
-    // Add Authorization header with token
-    request.headers['Authorization'] = 'Bearer $token';
+      // Add Authorization header with token
+      request.headers['Authorization'] = 'Bearer $token';
 
-    // Send the request
-    var streamedResponse = await request.send();
+      // Send the request
+      var streamedResponse = await request.send();
 
-    // Check the response status
-    if (streamedResponse.statusCode == 200) {
-      // Image uploaded successfully, parse the response
-      var response = await streamedResponse.stream.bytesToString();
-      var data = jsonDecode(response);
+      // Check the response status
+      if (streamedResponse.statusCode == 200) {
+        // Image uploaded successfully, parse the response
+        var response = await streamedResponse.stream.bytesToString();
+        var data = jsonDecode(response);
 
-      if (data['success'] == true) {
-        // Client image updated successfully
-        print('Client image updated successfully');
+        if (data['success'] == true) {
+          // Client image updated successfully
+          print('Client image updated successfully');
+        } else {
+          // Image upload failed
+          print('Failed to update client image: ${data['message']}');
+        }
       } else {
-        // Image upload failed
-        print('Failed to update client image: ${data['message']}');
+        // Request failed
+        print('Request failed with status: ${streamedResponse.statusCode}');
       }
-    } else {
-      // Request failed
-      print('Request failed with status: ${streamedResponse.statusCode}');
+    } catch (e) {
+      // Handle errors
+      print('Error: $e');
     }
-  } catch (e) {
-    // Handle errors
-    print('Error: $e');
   }
-}
-
 
   Future<void> updateClient(Map<String, dynamic> updatedData) async {
     final url = Uri.parse(
-        'http://192.168.100.7:3000/client/updateClient'); // Replace with your endpoint
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/updateClient'); // Replace with your endpoint
     try {
       final response = await http.patch(
         url,
         body: json.encode(updatedData),
-        headers: {'Content-Type': 'application/json','Authorization': 'Bearer $_token'},
-
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_token'
+        },
       );
 
       if (response.statusCode == 200) {
@@ -167,11 +174,13 @@ class _ProfileState extends State<Profile> {
   }
 
   final ImagePicker _imagePicker = ImagePicker();
+
   var _pickedImagePath = null; // var jsp si c ccorrect hna
   TextEditingController _UsernameController = TextEditingController();
   TextEditingController _numeroController = TextEditingController();
   TextEditingController _gmailController = TextEditingController();
   TextEditingController _addressController = TextEditingController();
+
   void _toggleEditing(bool value) {
     setState(() {
       _isEditing = value;
@@ -194,9 +203,9 @@ class _ProfileState extends State<Profile> {
         ? _addressController.text
         : _userData['AdresseClient'];
 
-     _userData['photo'] = _pickedImagePath;
+    _userData['photo'] = _pickedImagePath;
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -256,11 +265,12 @@ class _ProfileState extends State<Profile> {
                             borderRadius: BorderRadius.circular(14),
                             child: _userData['photo'] != null
                                 ? Image.network(
-                                  _userData['photo'], // Utilisez l'URL de la photo de profil
-                                  width: 168,
-                                  height: 174,
-                                  fit: BoxFit.cover,
-                                )
+                                    _userData[
+                                        'photo'], // Utilisez l'URL de la photo de profil
+                                    width: 168,
+                                    height: 174,
+                                    fit: BoxFit.cover,
+                                  )
                                 : Image.asset(
                                     'assets/images/l.png',
                                     width: 168,
@@ -297,7 +307,7 @@ class _ProfileState extends State<Profile> {
                                   if (pickedFile != null) {
                                     setState(() {
                                       File imageFile = File(pickedFile.path);
-                                      updateClientImage(imageFile,_token);
+                                      updateClientImage(imageFile, _token);
                                     });
                                   }
                                 }
@@ -607,6 +617,7 @@ class _ProfileState extends State<Profile> {
                                             setState(() {
                                               _showSuggestions = true;
                                               _suggestionSelected = false;
+                                              _addressErrorText = '';
                                             });
                                             _scrollController?.animateTo(
                                               _scrollController?.position
@@ -647,78 +658,78 @@ class _ProfileState extends State<Profile> {
                           SizedBox(
                             height: 4,
                           ), // Add some space between TextFormField and Text
-                          _isEditing && _addressErrorText.isNotEmpty
-                              ? Text(
-                                  _addressErrorText,
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                    fontSize: 12,
-                                  ),
-                                )
-                              : SizedBox(),
-                          Stack(
-                            alignment: Alignment.topCenter,
-                            children: [
-                              Visibility(
-                                visible: _showSuggestions,
-                                child: Container(
-                                  width:
-                                      277, // Match the width of the address field
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: Colors.grey,
-                                      width: 1,
+                          if (_isEditing && _addressErrorText.isNotEmpty)
+                            Text(
+                              _addressErrorText,
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 12,
+                              ),
+                            )
+                          else
+                            Stack(
+                              alignment: Alignment.topCenter,
+                              children: [
+                                Visibility(
+                                  visible: _isEditing && _showSuggestions,
+                                  child: Container(
+                                    width:
+                                        277, // Match the width of the address field
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Colors.grey,
+                                        width: 1,
+                                      ),
+                                      borderRadius: BorderRadius.circular(10),
                                     ),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: ListView.separated(
-                                    padding: EdgeInsets.zero,
-                                    controller: _scrollController,
-                                    separatorBuilder:
-                                        (BuildContext context, int index) {
-                                      return Divider(
-                                        color: Color(0xFFDCC8C5),
-                                        thickness: 2.0,
-                                      );
-                                    },
-                                    shrinkWrap: true,
-                                    itemCount: _predictions.length,
-                                    itemBuilder: (context, index) {
-                                      return ListTile(
-                                        contentPadding: EdgeInsets.symmetric(
-                                            vertical:
-                                                10), // Adjust vertical padding
-                                        title: Text(
-                                          _predictions[index]["description"],
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        onTap: () {
-                                          _addressController.text =
-                                              _predictions[index]
-                                                  ["description"];
-                                          setState(() {
-                                            _showSuggestions = false;
-                                            _suggestionSelected = true;
-                                            _addressErrorText = '';
-                                          });
-                                        },
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                top: 0,
-                                child: Visibility(
-                                  visible: _showSuggestions,
-                                  child: Icon(
-                                    Icons.arrow_downward,
-                                    color: Colors.grey,
+                                    child: ListView.separated(
+                                      padding: EdgeInsets.zero,
+                                      controller: _scrollController,
+                                      separatorBuilder:
+                                          (BuildContext context, int index) {
+                                        return Divider(
+                                          color: Color(0xFFDCC8C5),
+                                          thickness: 1.0,
+                                        );
+                                      },
+                                      shrinkWrap: true,
+                                      itemCount: _predictions.length,
+                                      itemBuilder: (context, index) {
+                                        return ListTile(
+                                          contentPadding: EdgeInsets.symmetric(
+                                              vertical:
+                                                  10), // Adjust vertical padding
+                                          title: Text(
+                                            _predictions[index]["description"],
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          onTap: () {
+                                            _addressController.text =
+                                                _predictions[index]
+                                                    ["description"];
+                                            setState(() {
+                                              _showSuggestions = false;
+                                              _suggestionSelected = true;
+                                              _addressErrorText = '';
+                                            });
+                                          },
+                                        );
+                                      },
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
+                                Positioned(
+                                  top: 0,
+                                  child: Visibility(
+                                    visible: _showSuggestions,
+                                    child: Icon(
+                                      Icons.arrow_downward,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
                         ],
                       ),
                     ),
@@ -732,4 +743,3 @@ class _ProfileState extends State<Profile> {
     );
   }
 }
-

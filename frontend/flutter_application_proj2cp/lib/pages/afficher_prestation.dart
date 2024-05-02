@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:flutter_application_proj2cp/details_prestation.dart';
+import 'package:flutter_application_proj2cp/config.dart';
 
 class Prestation {
   final int id;
@@ -59,7 +60,9 @@ class _PrestationPageState extends State<PrestationPage> {
     try {
       final response = await http.get(
         Uri.parse(
-            'http://192.168.100.7:3000/client/AfficherPrestations/$domaineId'),
+
+            'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/AfficherPrestations/$domaineId'),
+
       );
 
       if (response.statusCode == 200) {
@@ -76,7 +79,7 @@ class _PrestationPageState extends State<PrestationPage> {
             id: prestationJson['id'] as int,
             nomPrestation: prestationJson['NomPrestation'] as String,
             materiel: prestationJson['Matériel'] as String,
-            Description: prestationJson['Matériel'] as String,
+            Description: prestationJson['Description'] as String,
             dureeMax: prestationJson['DuréeMax'] as String,
             dureeMin: prestationJson['DuréeMin'] as String,
             tarifId: prestationJson['TarifId'] as int,
@@ -188,7 +191,7 @@ class _PrestationPageState extends State<PrestationPage> {
         Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => details_prestationPage(id: _prestations[index].id,prst: _prestations[index].nomPrestation,avgtime:'${_prestations[index].dureeMin} - ${_prestations[index].dureeMax} ',avgprice:  '${_prestations[index].tarifJourMin.toString()} da - ${_prestations[index].tarifJourMin.toString()}',imagePrestation: _prestations[index].imagePrestation,Description:_prestations[index].Description,Unite :_prestations[index].Unite),
+          builder: (context) => details_prestationPage(id: _prestations[index].id,prst: _prestations[index].nomPrestation,avgtime:'${_prestations[index].dureeMin} - ${_prestations[index].dureeMax} ',avgprice:  '${_prestations[index].tarifJourMin.toString()} - ${_prestations[index].tarifJourMin.toString()} da',imagePrestation: _prestations[index].imagePrestation,Description:_prestations[index].Description,Unite :_prestations[index].Unite),
         ),
       );
       },
@@ -228,14 +231,14 @@ class _PrestationPageState extends State<PrestationPage> {
                     style: TextStyle(
                       color: Color(0xff05564B),
                       fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                      fontSize: 12,
                     ),
                   ),
                   SizedBox(height: 5),
                   Text(
                     '${_prestations[index].tarifJourMin}DA - ${_prestations[index].tarifJourMax}DA',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

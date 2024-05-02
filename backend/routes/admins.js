@@ -16,8 +16,12 @@ router.delete("/:id",adminControllers.destroy);
 router.post("/AjouterDomaine",imageUploader.upload.single('imageDomaine'),adminControllers.AjouterDomaine);
 router.post("/CreerTarif",adminControllers.CreerTarif);
 router.post("/CreerPrestation",imageUploader.upload.single('imagePrestation'),adminControllers.CreerPrestation);
+router.patch("/modifierPrestation",imageUploader.upload.single('imagePrestation'),adminControllers.ModifierPrestation);
 router.post("/AjouterPrestation/:id",auth(), adminControllers.AjouterPrestation);
 router.get("/Obtenir/Statistiques",adminControllers.obtenirStatistiques);
+//router.get("/ActiviteTerminespourtous",adminControllers.ActiviteTermineeAndExecuteForAllClients) ;
+//router.get("/ActiviteEncourspourtout",adminControllers.ActiviteEncoursForAllClients);
+router.get("/AfficherPrestationsByDomaine/:domaineId",adminControllers.AfficherPrestationsByDomaine);
 
 
 module.exports=router;
