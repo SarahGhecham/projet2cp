@@ -47,7 +47,7 @@ class _ProfileState extends State<Profile> {
 
   Future<void> _fetchUserData() async {
     final url = Uri.parse(
-        'http://192.168.85.78:3000/client/Affichermonprofil'); // Replace with your endpoint
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/Affichermonprofil'); // Replace with your endpoint
     try {
       final response = await http.get(
         url,
@@ -99,7 +99,7 @@ class _ProfileState extends State<Profile> {
 
   Future<void> updateClientImage(File image, String token) async {
   // Replace "http://localhost:3000" with your server URL
-  String baseUrl = "http://192.168.85.78:3000";
+  String baseUrl = "http://${AppConfig.serverAddress}:${AppConfig.serverPort}:3000";
 
   // Construct the endpoint URL
   String endpoint = "$baseUrl/client/updateClientImage";

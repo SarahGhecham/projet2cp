@@ -5,7 +5,7 @@ import 'package:flutter_application_proj2cp/pages/afficher_prestation.dart';
 
 import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
 import 'package:flutter_application_proj2cp/pages/profile_screen.dart';
-
+import 'package:flutter_application_proj2cp/pages/chat_screen.dart';
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});
 
@@ -20,6 +20,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   final List<Widget> _pages = [
     HomeScreen(),
     Activite(),
+    ChatScreen(),
     //PrestationPage(),
     Profile(),
   ];

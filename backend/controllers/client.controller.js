@@ -271,14 +271,14 @@ async function updateClient(req, res) {
     const id = req.userId;
 
   // Hash the new password if provided
-  let hashedPassword = null;
+  /*let hashedPassword = null;
   if (req.body.MotdepasseClient) {
     hashedPassword = await bcrypt.hash(req.body.MotdepasseClient, 10);
-  }
+  }*/
 
     const updatedClient = {
         Username:req.body.Username ,
-        MotdepasseClient: hashedPassword, // Hashed password
+        //MotdepasseClient: hashedPassword, // Hashed password
         EmailClient: req.body.EmailClient,
         AdresseClient: req.body.AdresseClient,
         NumeroTelClient: req.body.NumeroTelClient,   
