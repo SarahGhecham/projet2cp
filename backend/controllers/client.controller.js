@@ -14,10 +14,11 @@ const { sequelize } = require('sequelize');
 
 async function getArtisansForDemand(req, res) {
     const demandeId = req.params.demandeId;
-
     try {
         // Find the demande associated with the given ID
+        console.log(demandeId);
         const demande = await models.Demande.findByPk(demandeId);
+        console.log(demande);
 
         // Find the RDV associated with the demande
         const rdv = await models.RDV.findOne({
@@ -25,7 +26,11 @@ async function getArtisansForDemand(req, res) {
         });
 
         // Find the prestation associated with the demande
-        const prestation = await demande.getPrestation();
+        const PrestationId = demande.PrestationId;
+       console.log(PrestationId);
+        // Utilisez l'ID du tarif pour récupérer les détails du tarif
+        const prestation = await models.Prestation.findByPk(PrestationId);
+        console.log(prestation);
 
         // Find all ArtisanDemande entries where accepte=true and DemandeId matches
         const artisandemandes = await models.ArtisanDemande.findAll({
@@ -59,9 +64,10 @@ async function getArtisansForDemand(req, res) {
 
         // Récupérez l'ID du tarif à partir de la prestation
         const tarifId = prestation.TarifId;
-
+       console.log(tarifId);
         // Utilisez l'ID du tarif pour récupérer les détails du tarif
         const tarif = await models.Tarif.findByPk(tarifId);
+        console.log(tarif);
 
         // Combine additional demande, prestation, and rdv attributes with artisansData
         const combinedData = {

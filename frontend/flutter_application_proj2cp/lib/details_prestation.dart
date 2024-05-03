@@ -30,11 +30,11 @@ class _details_prestationPageState extends State<details_prestationPage> {
     print(widget.id);
     print(widget.imagePrestation); // Assuming domaineId is available
   }
-  void _navigateToNextPage(BuildContext context) {
+  void _navigateToNextPage(BuildContext context,String prst) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => Lancerdemande1Page(),
+        builder: (context) => Lancerdemande1Page(nomprest: prst,),
       ),
     );}
 
@@ -230,7 +230,7 @@ class _details_prestationPageState extends State<details_prestationPage> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: (){
-                    _navigateToNextPage(context);
+                    _navigateToNextPage(context,widget.prst);
                   },
                   style: ButtonStyle(
                     minimumSize: MaterialStateProperty.all<Size>(const Size(180, 50)),

@@ -22,9 +22,10 @@ class Lancerdemande3Page extends StatefulWidget {
   final bool urgent;
   final heureMinutes;
   final jour;
+  final nomprst;
   
   @override
-  Lancerdemande3Page({Key? key, required this.hour, required this.min,required this.urgent,required this.heureMinutes,this.jour}) : super(key: key);
+  Lancerdemande3Page({Key? key, required this.hour, required this.min,required this.urgent,required this.heureMinutes,this.jour,required this.nomprst}) : super(key: key);
 
   @override
   State<Lancerdemande3Page> createState() => _Lancerdemande3PageState();
@@ -32,7 +33,7 @@ class Lancerdemande3Page extends StatefulWidget {
 
 class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
   late String _token;
-  var nomprest = "Peinture des murs et plafonds";
+  var nomprest = "";
   String _adresse = '';
   String _description = '';
   List<dynamic> coordinates=[];
@@ -115,7 +116,7 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
           children: [
             const SizedBox(width: 30),
             Container(
-              width: 200,
+              width: 170,
               height: 11,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
@@ -144,7 +145,7 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Text(
-                nomprest,
+                widget.nomprst,
                 style: GoogleFonts.poppins(fontSize: 18),
               ),
             ),
@@ -319,7 +320,7 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
                         ElevatedButton(
                           onPressed: () {
                             Map<String, dynamic> body = {
-                  'nomPrestation': nomprest,
+                  'nomPrestation': widget.nomprst,
                   'description':'$_description',
                   'urgente': widget.urgent, // Ajoutez la valeur de l'urgence ici
                   'dateDebut': '${widget.jour.toString()}',  // Ajoutez la valeur de la date de début ici
