@@ -12,7 +12,106 @@ const nodemailer = require('nodemailer');
 const { geocode, calculateRouteDistance } = require('./maps');
 const { sequelize } = require('sequelize');
 
-async function getArtisansForDemand(req, res) {
+async function rechercherDemandeParId(req, res) {
+  const demandeId = req.params.demandeId; // Obtenez l'ID de la demande à partir des paramètres de la requête
+  try {
+    // Recherchez la demande dans la base de données en utilisant le modèle Demande
+    const demande = await Demande.findByPk(demandeId);
+    console.log(demande);
+    if (!demande) {
+      // Si la demande n'est pas trouvée, renvoyez une réponse avec un statut 404 (Not Found)
+      return res.status(404).json({ message: 'Demande non trouvée' });
+    }
+    const rdv = await models.RDV.findOne({
+      where: { DemandeId: demandeId }
+    });
+    console.log(rdv);
+
+    const PrestationId = demande.PrestationId;
+       console.log(PrestationId);
+        // Utilisez l'ID du tarif pour récupérer les détails du tarif
+        const prestation = await models.Prestation.findByPk(PrestationId);
+        console.log(prestation);
+
+        // Find all ArtisanDemande entries where accepte=true and DemandeId matches
+        const artisandemandes = await models.ArtisanDemande.findAll({
+            where: {
+                DemandeId: demandeId,
+                accepte: true
+            }
+        });
+        if (!artisandemandes) {
+          return res.status(404).json({ message: `No artisans found for demande with ID ${demandeId} where accepte=true.` });
+      }
+
+      // Get all artisan IDs from the found ArtisanDemande entries
+      const artisanIds = artisandemandes.map(artdem => artdem.ArtisanId);
+
+      // Find all artisans with the retrieved IDs
+      const artisans = await models.Artisan.findAll({
+          where: { id: artisanIds }
+      });
+      console.log(artisans);
+
+
+      const artisansData = artisans.map(artisan => ({
+        id: artisan.id,
+        nom: artisan.NomArtisan,
+        prenom: artisan.PrenomArtisan,
+        photo: artisan.photo,
+        note: artisan.Note
+    }));
+
+    // Récupérez l'ID du tarif à partir de la prestation
+    const tarifId = prestation.TarifId;
+   console.log(tarifId);
+    // Utilisez l'ID du tarif pour récupérer les détails du tarif
+    const tarif = await models.Tarif.findByPk(tarifId);
+    console.log(tarif);
+
+    // Combine additional demande, prestation, and rdv attributes with artisansData
+    const combinedData = {
+        demande: {
+            id: demande.id,
+            description: demande.Description,
+            localisation: demande.Localisation,
+            Urgente: demande.Urgente
+        },
+        prestation: {
+            id: prestation.id,
+            imagePrestation: prestation.imagePrestation,
+            nomPrestation : prestation.NomPrestation,
+            Ecologique: prestation.Ecologique,
+            DureeMin : prestation.DuréeMin,
+            DureeMax : prestation.DuréeMax,
+        },
+        tarif: {
+            // Utilisez les détails du tarif récupéré à partir de la base de données
+            TarifJourMin: tarif ? tarif.TarifJourMin: null,
+            TarifJourMax: tarif ? tarif.TarifJourMax : null,
+            Unité: tarif.Unité,
+        },
+        
+        rdv: {
+            id: rdv.id,
+            dateDebut: rdv ? rdv.DateDebut : null,
+            heureDebut: rdv ? rdv.HeureDebut : null,
+        },
+        artisans: artisansData
+    };
+    console.log(combinedData);
+
+
+    // Si la demande est trouvée, renvoyez ses attributs dans la réponse
+    return res.status(200).json(combinedData);
+  } catch (error) {
+    // Gérez les erreurs de manière appropriée
+    console.error('Erreur lors de la recherche de la demande :', error);
+    return res.status(500).json({ message: 'Erreur lors de la recherche de la demande' });
+  }
+}
+
+/*async function getArtisansForDemand(req, res) {
     const demandeId = req.params.demandeId;
     try {
         // Find the demande associated with the given ID
@@ -99,13 +198,13 @@ async function getArtisansForDemand(req, res) {
             },
             artisans: artisansData
         };
-        console.log(artisansData);
+        console.log(combinedData);
         return res.status(200).json(combinedData);
     } catch (error) {
         console.error('Error retrieving artisans for demande:', error);
         return res.status(500).json({ message: 'Failed to retrieve artisans for demande', error: error.message });
     }
-}
+}*/
 
 
 async function getArtisansForDemand(req, res) {
@@ -1347,5 +1446,6 @@ module.exports = {
     DetailsDemandeConfirmee,
     DetailsRDVTermine,
     updateClientImage,
-    annulerDemande
+    annulerDemande,
+    rechercherDemandeParId
 }

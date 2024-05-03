@@ -250,7 +250,7 @@ class _Lancerdemande2PageState extends State<Lancerdemande2Page> {
     });
   }
   DateTime today = DateTime.now();
-  void _navigateToNextPage(BuildContext context) {
+  void _navigateToNextPage(BuildContext context,String nomprst) {
     TimeOfDay heureMinutes = stringToTimeOfDay(_heuredebutController.text);
     if (heureMinutes.toString().isEmpty) {
       heureMinutes = stringToTimeOfDay("10:00"); // Valeur par dÃ©faut si aucun texte n'est saisi
@@ -258,7 +258,7 @@ class _Lancerdemande2PageState extends State<Lancerdemande2Page> {
     Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => Lancerdemande3Page(hour: widget.hour, min: widget.min,urgent: widget.urgent,heureMinutes:heureMinutes.toString(),jour:dateOnly,nomprst: widget.nomprest,),
+      builder: (context) => Lancerdemande3Page(hour: widget.hour, min: widget.min,urgent: widget.urgent,heureMinutes:heureMinutes.toString(),jour:dateOnly,nomprst: nomprst,),
     ),
   );}
   @override
@@ -380,7 +380,7 @@ class _Lancerdemande2PageState extends State<Lancerdemande2Page> {
             const SizedBox(height: 80),
             Center(
               child: ElevatedButton(
-                onPressed: () => _navigateToNextPage(context),
+                onPressed: () => _navigateToNextPage(context,widget.nomprest),
                 style: ButtonStyle(
                   minimumSize: MaterialStateProperty.all<Size>(const Size(315, 55)),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(

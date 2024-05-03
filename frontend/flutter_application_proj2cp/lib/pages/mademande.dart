@@ -127,7 +127,7 @@ class _MademandePageState extends State<Mademande> {
     print(demandeId);
     print('Avant la requête HTTP');
     final String apiUrl =
-        'http://192.168.100.7:3000/client/demandes/156/artisans';
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/demandes/${demandeId}/artisans';
     print(" 3  ${apiUrl}");
     print('Avant la requête HTTP');
     try {

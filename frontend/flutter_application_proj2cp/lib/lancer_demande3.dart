@@ -37,7 +37,7 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
   String _adresse = '';
   String _description = '';
   List<dynamic> coordinates=[];
-  int demandeId=1;
+  //int demandeId=1;
 
   Future<void> fetchData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -79,6 +79,7 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
     
 
     print('Valeur de hour : ${widget.hour}');
+    print(widget.nomprst);
     
     String heureMinute = "${widget.hour}:${widget.min.toString().padLeft(2, '0')}";
 
@@ -360,6 +361,11 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
                     
                   });
                     print('couple de coordonnées récupéré: $clientCoords');
+                    if (clientCoords is Map) {
+                        coords= LatLng(clientCoords["latitude"], clientCoords["longitude"]);
+                      } else {
+                        throw FormatException("L'élément n'est pas une carte contenant latitude et longitude");
+                      }
                    _navigateToNextPage(context,latLngList,_adresse,coords,demandeId);
                   } else {
                     // La requête a échoué, affichez un message d'erreur ou effectuez d'autres actions
