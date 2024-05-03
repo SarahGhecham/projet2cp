@@ -24,6 +24,7 @@ async function consulterdemandes(req, res) {
             return {
                 id: demand.id,
                 nomDemande: demand.nom,
+                urgente:demand.urgente,
                 client: {
                     id: client.id,
                     emailClient: client.EmailClient,
@@ -33,6 +34,7 @@ async function consulterdemandes(req, res) {
                 prestation: {
                     id: prestation.id,
                     nomPrestation: prestation.NomPrestation,
+                    Ecologique:prestation.Ecologique,
                     // we can Add more prestation attributes as needed
                 }
             };
