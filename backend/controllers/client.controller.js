@@ -1103,7 +1103,7 @@ async function ActiviteTerminee(req, res) {
     }
   }
   async function ActiviteTermineeNonEvaluee(req, res) {
-    const clientId = req.params.id;
+    const clientId = req.Userid;
   
     try {
       const maintenant = new Date();
@@ -1383,7 +1383,7 @@ async function DetailsRDVTermine(req, res) {
 
 
 async function getCommentaires(req, res) {
-  const artisanId = req.params.ArtisanId;
+  const artisanId = req.artisanId;
   try {
       
       const demandesIds = await models.ArtisanDemande.findAll({ where: { ArtisanId: artisanId }, attributes: ['DemandeId'] });
