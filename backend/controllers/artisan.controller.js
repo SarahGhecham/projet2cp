@@ -45,7 +45,7 @@ async function consulterdemandes(req, res) {
     }
 }
 function AfficherProfil(req, res) {
-    const id = req.userId;
+    const id = req.params.id;
     models.Artisan.findByPk(id, {
         include: [{
             model: models.Prestation,
@@ -54,6 +54,10 @@ function AfficherProfil(req, res) {
     })
         .then(result => {
             if (result) {
+                let domaine = null; // Domaine par défaut
+                if (result.Prestations.length > 0 && result.Prestations[0].Domaine) {
+                    domaine = result.Prestations[0].Domaine.NomDomaine; // Premier domaine rencontré
+                }
                 const artisanInfo = {
                     NomArtisan: result.NomArtisan,
                     PrenomArtisan: result.PrenomArtisan,
@@ -64,17 +68,8 @@ function AfficherProfil(req, res) {
                     photo: result.photo,
                     Note: result.Note,
                     RayonKm:result.RayonKm ,
-                    Prestations: result.Prestations.map(prestation => ({
-                        NomPrestation: prestation.NomPrestation,
-                        Matériel: prestation.Matériel,
-                        DuréeMax: prestation.DuréeMax,
-                        DuréeMin: prestation.DuréeMin,
-                        TarifId: prestation.TarifId,
-                        Domaine: prestation.Domaine ? prestation.Domaine.NomDomaine : null,
-                        Ecologique: prestation.Ecologique,
-                        imagePrestation: prestation.imagePrestation,
-                        Description: prestation.Description
-                    }))
+                    Domaine: domaine, // Afficher le domaine
+                    Prestations: result.Prestations.map(prestation => prestation.NomPrestation) // Afficher seulement les noms des prestations
                 };
                 res.status(200).json(artisanInfo);
             } else {
