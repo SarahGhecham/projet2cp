@@ -171,6 +171,22 @@ function AfficherClients(req, res) {
     });
 }
 
+function AfficherArtisansEtClients(req, res) {
+  Promise.all([models.Artisan.findAll(), models.Client.findAll()])
+    .then((results) => {
+      const artisans = results[0];
+      const clients = results[1];
+      res.status(200).json({ artisans: artisans, clients: clients });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        message: 'something went wrong',
+        error: error,
+      });
+    });
+}
+
+
 function DesactiverClient(req, res) {
   const comptedesactive = {
     EmailClient: req.body.EmailClient,
@@ -227,7 +243,7 @@ function show(req, res) {
   const id = req.params.id;
   models.Admin.findByPk(id)
     .then((result) => {
-      if (result) res.status(201).json(result);
+      if (result) res.status(200).json(result);
       else
         res.status(404).json({
           message: 'admin not found',
@@ -642,6 +658,7 @@ async function CreerArtisan(req, res) {
 }
 
 
+
 async function ActiviteTermineeAndExecuteForAllClients() {
   try {
       
@@ -807,5 +824,6 @@ module.exports = {
   ModifierPrestation,
   AfficherPrestationsByDomaine: AfficherPrestationsByDomaine,
   ActiviteEncoursForAllClients ,
-  ActiviteTermineeAndExecuteForAllClients
+  ActiviteTermineeAndExecuteForAllClients,
+  AfficherArtisansEtClients
 };

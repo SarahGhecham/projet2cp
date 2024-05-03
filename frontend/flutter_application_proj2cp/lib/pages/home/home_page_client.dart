@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> fetchAllPrestations() async {
     final url =
-        Uri.parse('http://10.0.2.2:3000/pageaccueil/AfficherToutesPrestation');
+        Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/pageaccueil/AfficherToutesPrestation');
 
     try {
       final response = await http.get(

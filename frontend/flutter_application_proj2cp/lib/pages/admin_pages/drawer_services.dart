@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'package:flutter_application_proj2cp/config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/ajouter_domaine.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/drawer.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/search_bar.dart';
 import 'package:flutter_application_proj2cp/pages/home/components/domain_container.dart';
 import 'package:flutter_application_proj2cp/pages/home/components/service_populair_container.dart';
+import 'package:flutter_application_proj2cp/pages/home/search_delegate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
@@ -21,6 +23,9 @@ class _DrawerServicesState extends State<DrawerServices> {
   List<Widget> domainWidgets = [];
   List<Widget> ecoServiceWidgets = [];
   List<Widget> topPrestationWidgets = [];
+  List<Prestation> allPrestations = [];
+  List<Prestation> selectedPrestations = [];
+  List<Prestation> recentPrestations = [];
   late String _token;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _currentPageIndex = 1;
@@ -45,6 +50,7 @@ class _DrawerServicesState extends State<DrawerServices> {
       fetchDomaines(),
       fetchEcoServices(),
       fetchTopPrestations(),
+      fetchAllPrestations(),
     ]);
   }
 
@@ -110,20 +116,21 @@ class _DrawerServicesState extends State<DrawerServices> {
                     : '';
                 //print('Image URL: $imageUrl'); // Debugging statement
                 return Service(
-                  id: serviceJson['id'] as int,
-                  nomPrestation: serviceJson['NomPrestation'] as String,
-                  materiel: serviceJson['Matériel'] as String,
-                  Description: serviceJson['Description'] as String,
-                  dureeMax: serviceJson['DuréeMax'] as String,
-                  dureeMin: serviceJson['DuréeMin'] as String,
-                  tarifId: serviceJson['TarifId'] as int,
-                  domaineId: serviceJson['DomaineId'] as int,
-                  ecologique: serviceJson['Ecologique'] as bool,
-                  image: imageUrl,
-                  tarifJourMin: serviceJson['Tarif']['TarifJourMin'] as String,
-                  tarifJourMax: serviceJson['Tarif']['TarifJourMax'] as String,
-                  Unite: serviceJson['Tarif']['Unité'] as String
-                );
+                    id: serviceJson['id'] as int,
+                    nomPrestation: serviceJson['NomPrestation'] as String,
+                    materiel: serviceJson['Matériel'] as String,
+                    Description: serviceJson['Description'] as String,
+                    dureeMax: serviceJson['DuréeMax'] as String,
+                    dureeMin: serviceJson['DuréeMin'] as String,
+                    tarifId: serviceJson['TarifId'] as int,
+                    domaineId: serviceJson['DomaineId'] as int,
+                    ecologique: serviceJson['Ecologique'] as bool,
+                    image: imageUrl,
+                    tarifJourMin:
+                        serviceJson['Tarif']['TarifJourMin'] as String,
+                    tarifJourMax:
+                        serviceJson['Tarif']['TarifJourMax'] as String,
+                    Unite: serviceJson['Tarif']['Unité'] as String);
               })
               .map((service) => ServiceOffreContainer(
                     service: service,
@@ -160,20 +167,21 @@ class _DrawerServicesState extends State<DrawerServices> {
                     : '';
                 print('Image URL: $imageUrl'); // Debugging statement
                 return Service(
-                  id: serviceJson['id'] as int,
-                  nomPrestation: serviceJson['NomPrestation'] as String,
-                  materiel: serviceJson['Matériel'] as String,
-                  Description: serviceJson['Matériel'] as String,
-                  dureeMax: serviceJson['DuréeMax'] as String,
-                  dureeMin: serviceJson['DuréeMin'] as String,
-                  tarifId: serviceJson['TarifId'] as int,
-                  domaineId: serviceJson['DomaineId'] as int,
-                  ecologique: serviceJson['Ecologique'] as bool,
-                  image: imageUrl,
-                  tarifJourMin: serviceJson['Tarif']['TarifJourMin'] as String,
-                  tarifJourMax: serviceJson['Tarif']['TarifJourMax'] as String,
-                  Unite: serviceJson['Tarif']['Unité'] as String
-                );
+                    id: serviceJson['id'] as int,
+                    nomPrestation: serviceJson['NomPrestation'] as String,
+                    materiel: serviceJson['Matériel'] as String,
+                    Description: serviceJson['Matériel'] as String,
+                    dureeMax: serviceJson['DuréeMax'] as String,
+                    dureeMin: serviceJson['DuréeMin'] as String,
+                    tarifId: serviceJson['TarifId'] as int,
+                    domaineId: serviceJson['DomaineId'] as int,
+                    ecologique: serviceJson['Ecologique'] as bool,
+                    image: imageUrl,
+                    tarifJourMin:
+                        serviceJson['Tarif']['TarifJourMin'] as String,
+                    tarifJourMax:
+                        serviceJson['Tarif']['TarifJourMax'] as String,
+                    Unite: serviceJson['Tarif']['Unité'] as String);
               })
               .map((service) => ServiceOffreContainer(
                     service: service,
@@ -186,6 +194,44 @@ class _DrawerServicesState extends State<DrawerServices> {
       }
     } catch (error) {
       print('Error fetching top prestations: $error');
+    }
+  }
+
+  Future<void> fetchAllPrestations() async {
+    final url =
+        Uri.parse('http://10.0.2.2:3000/pageaccueil/AfficherToutesPrestation');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {'Authorization': 'Bearer $_token'},
+      );
+
+      if (response.statusCode == 200) {
+        print("fetched all Prestations");
+        // Parse the JSON response
+        List<dynamic> prestationsData = json.decode(response.body);
+        print(prestationsData);
+        setState(() {
+          allPrestations = prestationsData.map((prestationData) {
+            return Prestation(
+              nom: prestationData['NomPrestation'] ?? '',
+              materiel: prestationData['Matériel'] ?? '',
+              dureeMax: prestationData['DuréeMax'] ?? '',
+              dureeMin: prestationData['DuréeMin'] ?? '',
+              tarifId: prestationData['TarifId'] ?? 0,
+              domaineId: prestationData['domaineId'] ?? 0,
+              ecologique: prestationData['Ecologique'] ?? false,
+              image: prestationData['imagePrestation'] ?? '',
+              description: prestationData['Description'] ?? '',
+            );
+          }).toList();
+        });
+      } else {
+        print('Failed to fetch prestations');
+      }
+    } catch (error) {
+      print('Error fetching prestations: $error');
     }
   }
 
@@ -225,10 +271,47 @@ class _DrawerServicesState extends State<DrawerServices> {
                     ),
                   ),
                   // Search bar with expanded flex
-                  Expanded(
-                    flex: 2, // Give search bar more space (optional)
-                    child: BarRecherche(),
-                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SizedBox(
+                      height: 40,
+                      child: GestureDetector(
+                          onTap: () => {
+                                showSearch(
+                                  context: context,
+                                  delegate: DataSearch(
+                                      prestations: allPrestations,
+                                      recentPrestations: recentPrestations),
+                                ),
+                              },
+                          child: Container(
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: vertClair,
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 4,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child:
+                                      Image.asset('assets/icons/recherche.png'),
+                                ),
+                                Text(
+                                  'Rechercher une prestation...',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )),
+                    ),
+                  )
                 ],
               ),
               Row(

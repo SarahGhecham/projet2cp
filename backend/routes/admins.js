@@ -10,6 +10,7 @@ router.post("/creerartisan",adminControllers.CreerArtisan);
 router.get("/:id",adminControllers.show);
 router.get("/Afficher/Artisans",adminControllers.AfficherArtisans);
 router.get("/Afficher/Clients",adminControllers.AfficherClients);
+router.get("/Afficher/Tous",adminControllers.AfficherArtisansEtClients);
 router.patch("/Desactiver/Client",adminControllers.DesactiverClient);
 router.patch("/Desactiver/Artisan",adminControllers.DesactiverArtisan);
 router.delete("/:id",adminControllers.destroy);
