@@ -56,10 +56,6 @@ function AfficherProfil(req, res) {
     })
         .then(result => {
             if (result) {
-                let domaine = null; // Domaine par défaut
-                if (result.Prestations.length > 0 && result.Prestations[0].Domaine) {
-                    domaine = result.Prestations[0].Domaine.NomDomaine; // Premier domaine rencontré
-                }
                 const artisanInfo = {
                     NomArtisan: result.NomArtisan,
                     PrenomArtisan: result.PrenomArtisan,
@@ -70,6 +66,7 @@ function AfficherProfil(req, res) {
                     photo: result.photo,
                     Note: result.Note,
                     RayonKm:result.RayonKm ,
+                    id:result.id,
                     Domaine: domaine, // Afficher le domaine
                     Prestations: result.Prestations.map(prestation => prestation.NomPrestation) // Afficher seulement les noms des prestations
                 };
@@ -98,6 +95,7 @@ async function updateartisan(req, res) {
     const updatedArtisan = {
        
         MotdepasseArtisan: hashedPassword, // Hashed password
+        
         AdresseArtisan: req.body.AdresseArtisan,
         NumeroTelArtisan: req.body.NumeroTelArtisan,
         Disponnibilite: req.body.Disponnibilite ,
