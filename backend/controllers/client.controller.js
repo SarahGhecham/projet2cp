@@ -443,7 +443,7 @@ async function validateAddress(address, Cleapi) {
 }
 
 async function updateClient(req, res) {
-    const id = req.userId;
+    const id = req.userid;
 
   // Hash the new password if provided
   /*let hashedPassword = null;
@@ -482,8 +482,7 @@ async function updateClient(req, res) {
 }
 
 function updateClientImage(req, res) {
-    const id = req.userId; // Extract client ID from request parameters
-    console.log(req.file.mimetype);
+    const id = req.userid; // Extract client ID from request parameters
 
   // Check if a file is uploaded
   if (!req.file) {
@@ -499,7 +498,11 @@ function updateClientImage(req, res) {
   }*/
 
     // Construct the image URL for the client
+
+    // changer avec votre adressse ip/10.0.2.2(emulateur)
+
     const imageURL = `http://192.168.85.78:3000/imageClient/${req.file.filename}`; // changer avec votre adressse ip/10.0.2.2(emulateur)
+
 
   // Update the client's photo URL in the database
   models.Client.findByPk(id)
@@ -995,6 +998,7 @@ try {
       return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
   }
 }
+
 
 async function ActiviteTerminee(req, res) {
     const clientId = req.params.id;
