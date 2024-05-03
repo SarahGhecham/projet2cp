@@ -45,7 +45,7 @@ async function consulterdemandes(req, res) {
     }
 }
 function AfficherProfil(req, res) {
-    const id = req.params.id;
+    const id = req.userId;
     models.Artisan.findByPk(id, {
         include: [{
             model: models.Prestation,
