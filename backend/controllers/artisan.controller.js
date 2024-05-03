@@ -170,27 +170,18 @@ function updateArtisanImage(req, res) {
 
 
 async function accepterRDV(req, res) {
-    const rdvId = req.body.rdvId;
-    const rdv = await models.RDV.findByPk(rdvId);
+    const demandeId = req.body.demandeId;
+    const artisanId = req.userId;
 
-    if (!rdv) {
-        return res.status(404).json({ message: `Le RDV avec l'ID ${rdvId} n'existe pas.` });
-    }
-
-    const demandeId = rdv.DemandeId;
     try {
-        // Trouver la relation artisan-demande correspondant à la demande
-        let artisandemande = await models.ArtisanDemande.findOne({ where: { DemandeId: demandeId } });
+        let artisandemande = await models.ArtisanDemande.findOne({ where: { DemandeId: demandeId, ArtisanId: artisanId } });
 
         if (!artisandemande) {
-            return res.status(404).json({ message: `La relation artisan-demande pour la demande avec l'ID ${demandeId} n'existe pas.` });
+            return res.status(404).json({ message: `La relation artisan-demande pour la demande avec l'ID ${demandeId} et l'artisan avec l'ID ${artisanId} n'existe pas.` });
         }
 
-        // Mettre à jour le champ "accepte" dans la table "artisandemandes"
         artisandemande.accepte = true;
         await artisandemande.save();
-
-        // Recharger les données pour s'assurer que le champ "accepte" a bien été mis à jour
         await artisandemande.reload();
 
         return res.status(200).json({ message: `La demande avec l'ID ${demandeId} a été acceptée avec succès.` });
@@ -202,32 +193,30 @@ async function accepterRDV(req, res) {
 
 
 async function refuserRDV(req, res) {
-    const rdvId = req.body.rdvId;
-    const rdv = await models.RDV.findByPk(rdvId);
+    const demandeId = req.body.demandeId;
+    const artisanId = req.userId;
 
-    if (!rdv) {
-        return res.status(404).json({ message: `Le RDV avec l'ID ${rdvId} n'existe pas.` });
-    }
-
-    const demandeId = rdv.DemandeId;
     try {
-        // Trouver la relation artisan-demande correspondant à la demande
-        const artisandemande = await models.ArtisanDemande.findOne({ where: { DemandeId: demandeId } });
+        let artisandemande = await models.ArtisanDemande.findOne({ where: { DemandeId: demandeId, ArtisanId: artisanId } });
 
         if (!artisandemande) {
-            return res.status(404).json({ message: `La relation artisan-demande pour la demande avec l'ID ${demandeId} n'existe pas.` });
+            return res.status(404).json({ message: `La relation artisan-demande pour la demande avec l'ID ${demandeId} et l'artisan avec l'ID ${artisanId} n'existe pas.` });
         }
 
-        // Mettre à jour le champ "accepte" dans la table "artisandemandes"
         artisandemande.refuse = true;
         await artisandemande.save();
+        await artisandemande.reload();
 
-        return res.status(200).json({ message: `La demande avec l'ID ${demandeId} a été refusée avec succès.`, artisandemande });
+        return res.status(200).json({ message: `La demande avec l'ID ${demandeId} a été refusee avec succès.` });
     } catch (error) {
         console.error("Erreur lors du refus de la demande :", error);
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
+
+
+
+
 async function associerDemandeArtisan(req, res) {
     const artisanId = req.body.artisanId;
     const demandeId = req.body.demandeId;
