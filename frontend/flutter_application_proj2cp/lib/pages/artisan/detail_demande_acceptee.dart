@@ -30,12 +30,7 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
         backgroundColor: Colors.white,
         title: Row(
           children: [
-            SizedBox(
-              height: 18,
-              width: 25,
-              child: SvgPicture.asset("assets/fleche.svg"),
-            ),
-            const SizedBox(width: 130),
+            const SizedBox(width: 90),
             Text(
               "Details",
               style: GoogleFonts.poppins(
