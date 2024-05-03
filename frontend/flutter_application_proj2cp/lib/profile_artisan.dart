@@ -20,27 +20,31 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
   var note = "4.5";
   final _debutController = TextEditingController();
   final _finController = TextEditingController();
+  final _NomController = TextEditingController();
+  final _PrenomController = TextEditingController();
+  final _EmailController = TextEditingController();
+  final _PhoneController = TextEditingController();
+  final _RayonController = TextEditingController();
+  final _AdresseController = TextEditingController();
   int day = 0;
   @override
   void initState() {
     super.initState();
     day = 0; // Set initial day to 0
   }
+  bool dispo = true;
 
+  void _dispo(bool value) {
+    setState(() {
+      dispo= value;
+    });
+  }
   void changeDayValue(int newValue) {
     setState(() {
       day = newValue; // Update the value of day
     });
   }
 
-  final ImagePicker _imagePicker = ImagePicker();
-  var _pickedImagePath = null; // var jsp si c ccorrect hna
-  TextEditingController _NomController = TextEditingController();
-  TextEditingController _PrenomController = TextEditingController();
-  TextEditingController _PhoneController = TextEditingController();
-  TextEditingController _EmailController = TextEditingController();
-  TextEditingController _RayonController = TextEditingController();
-  TextEditingController _AdresseController = TextEditingController();
   bool _isEditing = false;
 
   void _toggleEditing(bool value) {
@@ -104,7 +108,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
   void removeTimeRange(int day, TimeOfDay startTime, TimeOfDay endTime) {
     setState(() {
       allHoraires[day]?.removeWhere((key, value) =>
-          (key.hour == startTime.hour && key.minute == startTime.minute) &&
+      (key.hour == startTime.hour && key.minute == startTime.minute) &&
           (value.hour == endTime.hour && value.minute == endTime.minute));
     });
   }
@@ -250,31 +254,40 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                         fontWeight: FontWeight.w600,
                         color: Color(0xFF05564B)),
                   ),
-                  Container(
-                    height: 30,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Color(0xFFF7F3F2),
-                      border: Border.all(color: Color(0xFF05564B)),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Container(
-                          height: 15,
-                          width: 15,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color(0xFF15AC3F),
+                  GestureDetector(
+                    onTap: (){
+                      if(dispo){
+                        _dispo(false);
+                      }else{
+                        _dispo(true);
+                      }
+                    },
+                    child: Container(
+                      height: 30,
+                      width: 100,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Color(0xFFF7F3F2),
+                        border: Border.all(color: Color(0xFF05564B)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Container(
+                            height: 15,
+                            width: 15,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: dispo ? Color(0xFF15AC3F) : Colors.red,
+                            ),
                           ),
-                        ),
-                        Text(
-                          "Disponible",
-                          style: GoogleFonts.poppins(
-                              fontSize: 12, fontWeight: FontWeight.w600),
-                        ),
-                      ],
+                          Text(
+                            dispo ? "Disponible" : "hors",
+                            style: GoogleFonts.poppins(
+                                fontSize: 12, fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -317,14 +330,14 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
               onPressed: () {},
               style: ButtonStyle(
                 minimumSize:
-                    MaterialStateProperty.all<Size>(const Size(315, 30)),
+                MaterialStateProperty.all<Size>(const Size(315, 30)),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
                 backgroundColor:
-                    MaterialStateProperty.all<Color>(const Color(0xFFFF8787)),
+                MaterialStateProperty.all<Color>(const Color(0xFFFF8787)),
               ),
               child: Text(
                 "Préstations proposées",
@@ -379,32 +392,32 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                   ),
                   child: _isEditing
                       ? TextFormField(
-                          controller: _NomController,
-                          keyboardType: TextInputType.text,
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            hintText: "Nom",
-                            hintStyle: GoogleFonts.poppins(
-                              color: const Color(0xFF777777),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: 10.0,
-                              horizontal: 16.0,
-                            ),
-                            border: InputBorder.none,
-                          ),
-                        )
+                    controller: _NomController,
+                    keyboardType: TextInputType.text,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      hintText: "Nom",
+                      hintStyle: GoogleFonts.poppins(
+                        color: const Color(0xFF777777),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 10.0,
+                        horizontal: 16.0,
+                      ),
+                      border: InputBorder.none,
+                    ),
+                  )
                       : Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 10.0, horizontal: 16.0),
-                          child: Text(
-                            "Nom",
-                            style: GoogleFonts.poppins(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10.0, horizontal: 16.0),
+                    child: Text(
+                      "Nom",
+                      style: GoogleFonts.poppins(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -438,28 +451,32 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                   ),
                   child: _isEditing
                       ? TextFormField(
-                          controller: _PrenomController,
-                          keyboardType: TextInputType.text,
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            hintText: "Prénom",
-                            hintStyle: GoogleFonts.poppins(
-                              color: const Color(0xFF777777),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: 10.0,
-                              horizontal: 16.0,
-                            ),
-                            border: InputBorder.none,
-                          ),
-                        )
-                      : Text(
-                          "Prénom",
-                          style: GoogleFonts.poppins(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                    controller: _PrenomController,
+                    keyboardType: TextInputType.text,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      hintText: "Prénom",
+                      hintStyle: GoogleFonts.poppins(
+                        color: const Color(0xFF777777),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 10.0,
+                        horizontal: 16.0,
+                      ),
+                      border: InputBorder.none,
+                    ),
+                  )
+                      : Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
+                    child: Text(
+                      "Prénom",
+                      style: GoogleFonts.poppins(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -493,28 +510,31 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                   ),
                   child: _isEditing
                       ? TextFormField(
-                          controller: _PhoneController,
-                          keyboardType: TextInputType.text,
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            hintText: "Numéro Téléphone",
-                            hintStyle: GoogleFonts.poppins(
-                              color: const Color(0xFF777777),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: 10.0,
-                              horizontal: 16.0,
-                            ),
-                            border: InputBorder.none,
-                          ),
-                        )
-                      : Text(
-                          "Téléphone",
-                          style: GoogleFonts.poppins(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                    controller: _PhoneController,
+                    keyboardType: TextInputType.text,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      hintText: "Numéro Téléphone",
+                      hintStyle: GoogleFonts.poppins(
+                        color: const Color(0xFF777777),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 10.0,
+                        horizontal: 16.0,
+                      ),
+                      border: InputBorder.none,
+                    ),
+                  )
+                      : Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
+                    child: Text(
+                      "Téléphone",
+                      style: GoogleFonts.poppins(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -548,28 +568,31 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                   ),
                   child: _isEditing
                       ? TextFormField(
-                          controller: _EmailController,
-                          keyboardType: TextInputType.text,
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            hintText: "Email",
-                            hintStyle: GoogleFonts.poppins(
-                              color: const Color(0xFF777777),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: 10.0,
-                              horizontal: 16.0,
-                            ),
-                            border: InputBorder.none,
-                          ),
-                        )
-                      : Text(
-                          "Email",
-                          style: GoogleFonts.poppins(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                    controller: _EmailController,
+                    keyboardType: TextInputType.text,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      hintText: "Email",
+                      hintStyle: GoogleFonts.poppins(
+                        color: const Color(0xFF777777),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 10.0,
+                        horizontal: 16.0,
+                      ),
+                      border: InputBorder.none,
+                    ),
+                  )
+                      : Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
+                    child: Text(
+                      "Email",
+                      style: GoogleFonts.poppins(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -603,28 +626,31 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                   ),
                   child: _isEditing
                       ? TextFormField(
-                          controller: _AdresseController,
-                          keyboardType: TextInputType.text,
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            hintText: "Adresse",
-                            hintStyle: GoogleFonts.poppins(
-                              color: const Color(0xFF777777),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: 10.0,
-                              horizontal: 16.0,
-                            ),
-                            border: InputBorder.none,
-                          ),
-                        )
-                      : Text(
-                          "Adresse",
-                          style: GoogleFonts.poppins(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                    controller: _AdresseController,
+                    keyboardType: TextInputType.text,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      hintText: "Adresse",
+                      hintStyle: GoogleFonts.poppins(
+                        color: const Color(0xFF777777),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 10.0,
+                        horizontal: 16.0,
+                      ),
+                      border: InputBorder.none,
+                    ),
+                  )
+                      : Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
+                    child: Text(
+                      "Adresse",
+                      style: GoogleFonts.poppins(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -658,28 +684,31 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                   ),
                   child: _isEditing
                       ? TextFormField(
-                          controller: _RayonController,
-                          keyboardType: TextInputType.text,
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            hintText: "Rayon",
-                            hintStyle: GoogleFonts.poppins(
-                              color: const Color(0xFF777777),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: 10.0,
-                              horizontal: 16.0,
-                            ),
-                            border: InputBorder.none,
-                          ),
-                        )
-                      : Text(
-                          "Rayon ",
-                          style: GoogleFonts.poppins(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                    controller: _RayonController,
+                    keyboardType: TextInputType.text,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      hintText: "Rayon géographique",
+                      hintStyle: GoogleFonts.poppins(
+                        color: const Color(0xFF777777),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 10.0,
+                        horizontal: 16.0,
+                      ),
+                      border: InputBorder.none,
+                    ),
+                  )
+                      : Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
+                    child: Text(
+                      "Rayon géographique ",
+                      style: GoogleFonts.poppins(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -701,7 +730,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                         minimumSize: MaterialStateProperty.all<Size>(
                             const Size(100, 35)),
                         shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                        MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),
@@ -733,7 +762,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                       decoration: BoxDecoration(
                         color: Color(0xFFDCC8C5).withOpacity(0.22),
                         border:
-                            Border.all(color: Color(0xFFDCC8C5), width: 1.5),
+                        Border.all(color: Color(0xFFDCC8C5), width: 1.5),
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                       child: Row(
@@ -815,7 +844,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                   },
                   calendarStyle: CalendarStyle(
                     defaultTextStyle:
-                        GoogleFonts.poppins(fontSize: 16, color: Colors.black),
+                    GoogleFonts.poppins(fontSize: 16, color: Colors.black),
                     selectedDecoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: Color(0xFFFF8787),
@@ -891,12 +920,12 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                           ),
                           child: Center(
                               child: Text(
-                            "Lun",
-                            style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          )),
+                                "Lun",
+                                style: GoogleFonts.poppins(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              )),
                         ),
                       ),
                       GestureDetector(
@@ -914,12 +943,12 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                           ),
                           child: Center(
                               child: Text(
-                            "Mar",
-                            style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          )),
+                                "Mar",
+                                style: GoogleFonts.poppins(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              )),
                         ),
                       ),
                       GestureDetector(
@@ -937,12 +966,12 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                           ),
                           child: Center(
                               child: Text(
-                            "Mer",
-                            style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          )),
+                                "Mer",
+                                style: GoogleFonts.poppins(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              )),
                         ),
                       ),
                       GestureDetector(
@@ -960,12 +989,12 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                           ),
                           child: Center(
                               child: Text(
-                            "Jeu",
-                            style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          )),
+                                "Jeu",
+                                style: GoogleFonts.poppins(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              )),
                         ),
                       ),
                       GestureDetector(
@@ -983,12 +1012,12 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                           ),
                           child: Center(
                               child: Text(
-                            "Ven",
-                            style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          )),
+                                "Ven",
+                                style: GoogleFonts.poppins(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              )),
                         ),
                       ),
                       GestureDetector(
@@ -1006,12 +1035,12 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                           ),
                           child: Center(
                               child: Text(
-                            "Sam",
-                            style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          )),
+                                "Sam",
+                                style: GoogleFonts.poppins(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              )),
                         ),
                       ),
                     ],
@@ -1027,7 +1056,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
 
                       return Container(
                           padding:
-                              EdgeInsets.all(16.0), // Adjust padding as needed
+                          EdgeInsets.all(16.0), // Adjust padding as needed
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -1068,13 +1097,13 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                                     ),
                                     content: Container(
                                       width:
-                                          280.0, // Adjust the width as needed
+                                      280.0, // Adjust the width as needed
                                       height:
-                                          290.0, // Adjust the height as needed
+                                      290.0, // Adjust the height as needed
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                        MainAxisAlignment.center,
                                         children: <Widget>[
                                           SizedBox(height: 10),
                                           Padding(
@@ -1082,11 +1111,11 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                                                 horizontal: 30.0),
                                             child: Center(
                                                 child: Text(
-                                              "Rentrez Votre nouvelle horaire",
-                                              style: GoogleFonts.poppins(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 20),
-                                            )),
+                                                  "Rentrez Votre nouvelle horaire",
+                                                  style: GoogleFonts.poppins(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 20),
+                                                )),
                                           ),
                                           SizedBox(height: 20),
                                           Container(
@@ -1099,20 +1128,20 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                                                 width: 2,
                                               ),
                                               borderRadius:
-                                                  BorderRadius.circular(10),
+                                              BorderRadius.circular(10),
                                             ),
                                             child: TextFormField(
                                               controller: _debutController,
                                               keyboardType:
-                                                  TextInputType.datetime,
+                                              TextInputType.datetime,
                                               decoration: InputDecoration(
                                                 hintText: "10:30",
                                                 hintStyle: GoogleFonts.poppins(
                                                   color:
-                                                      const Color(0xFF000000),
+                                                  const Color(0xFF000000),
                                                 ),
                                                 contentPadding:
-                                                    const EdgeInsets.symmetric(
+                                                const EdgeInsets.symmetric(
                                                   vertical: 10.0,
                                                   horizontal: 16.0,
                                                 ),
@@ -1131,20 +1160,20 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                                                 width: 2,
                                               ),
                                               borderRadius:
-                                                  BorderRadius.circular(10),
+                                              BorderRadius.circular(10),
                                             ),
                                             child: TextFormField(
                                               controller: _finController,
                                               keyboardType:
-                                                  TextInputType.datetime,
+                                              TextInputType.datetime,
                                               decoration: InputDecoration(
                                                 hintText: "16:00",
                                                 hintStyle: GoogleFonts.poppins(
                                                   color:
-                                                      const Color(0xFF000000),
+                                                  const Color(0xFF000000),
                                                 ),
                                                 contentPadding:
-                                                    const EdgeInsets.symmetric(
+                                                const EdgeInsets.symmetric(
                                                   vertical: 10.0,
                                                   horizontal: 16.0,
                                                 ),
@@ -1159,9 +1188,9 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                                                   _debutController.text;
                                               String fin = _finController.text;
                                               TimeOfDay starting =
-                                                  stringToTimeOfDay(start);
+                                              stringToTimeOfDay(start);
                                               TimeOfDay ending =
-                                                  stringToTimeOfDay(fin);
+                                              stringToTimeOfDay(fin);
                                               addTimeRange(
                                                   day, starting, ending);
                                               print("done");
@@ -1169,18 +1198,18 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                                             style: ButtonStyle(
                                               minimumSize: MaterialStateProperty
                                                   .all<Size>(
-                                                      const Size(115, 35)),
+                                                  const Size(115, 35)),
                                               shape: MaterialStateProperty.all<
                                                   RoundedRectangleBorder>(
                                                 RoundedRectangleBorder(
                                                   borderRadius:
-                                                      BorderRadius.circular(10),
+                                                  BorderRadius.circular(10),
                                                 ),
                                               ),
                                               backgroundColor:
-                                                  MaterialStateProperty.all<
-                                                          Color>(
-                                                      const Color(0xFF05564B)),
+                                              MaterialStateProperty.all<
+                                                  Color>(
+                                                  const Color(0xFF05564B)),
                                             ),
                                             child: Text(
                                               "Valider",

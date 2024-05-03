@@ -5,7 +5,8 @@ import 'package:flutter_application_proj2cp/lancer_demande2.dart';
 
 
 class Lancerdemande1Page extends StatefulWidget {
-  const Lancerdemande1Page({super.key});
+  final nomprest;
+ const Lancerdemande1Page({Key? key, required this.nomprest}) : super(key: key);
 
   @override
   State<Lancerdemande1Page> createState() => _Lancerdemande1PageState();
@@ -17,11 +18,11 @@ class _Lancerdemande1PageState extends State<Lancerdemande1Page> {
   var hour = 1;
   var min = 30;
   var urgent = false;
-  void _navigateToNextPage(BuildContext context) {
+  void _navigateToNextPage(BuildContext context,String prst) {
   Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => Lancerdemande2Page(hour: hour, min: min,urgent: urgent),
+      builder: (context) => Lancerdemande2Page(hour: hour, min: min,urgent: urgent,nomprest: prst,),
     ),
   );
 }
@@ -36,7 +37,7 @@ class _Lancerdemande1PageState extends State<Lancerdemande1Page> {
           children: [
             const SizedBox(width: 30),
             Container(
-              width: 200,
+              width: 170,
               height: 11,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
@@ -64,7 +65,7 @@ class _Lancerdemande1PageState extends State<Lancerdemande1Page> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Text(
-              nomprest, style: GoogleFonts.poppins(fontSize :18),
+              widget.nomprest, style: GoogleFonts.poppins(fontSize :18),
             ),
           ),
           const SizedBox(height: 50),
@@ -216,7 +217,7 @@ class _Lancerdemande1PageState extends State<Lancerdemande1Page> {
           const SizedBox(height: 90),
           Center(
             child: ElevatedButton(
-              onPressed: () => _navigateToNextPage(context),
+              onPressed: () => _navigateToNextPage(context,widget.nomprest),
               style: ButtonStyle(
                 minimumSize: MaterialStateProperty.all<Size>(const Size(315, 55)),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(

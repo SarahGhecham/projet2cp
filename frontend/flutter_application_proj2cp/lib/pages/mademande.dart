@@ -43,6 +43,7 @@ class _MademandePageState extends State<Mademande> {
   Future<void> annulerDemande() async {
     // Remplacez 'votre_url_backend/confirmerRDV' par l'URL de votre endpoint backend
     String url = 'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/annulerDemande';
+    print(" 1 ${url}");
 
     // Remplacez 'votre_token_jwt' par votre token JWT
     // Créez les en-têtes de la requête avec le token JWT
@@ -75,7 +76,7 @@ class _MademandePageState extends State<Mademande> {
   Future<void> sendPostRequest() async {
     // Remplacez 'votre_url_backend/confirmerRDV' par l'URL de votre endpoint backend
     String url = 'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/confirmerRDV';
-
+    print(" 2 ${url}");
     // Remplacez 'votre_token_jwt' par votre token JWT
     // Créez les en-têtes de la requête avec le token JWT
     Map<String, String> headers = {
@@ -124,9 +125,11 @@ class _MademandePageState extends State<Mademande> {
   Future<void> fetchArtisansData() async {
     int demandeId = widget.demandeId;
     print(demandeId);
+    print('Avant la requête HTTP');
     final String apiUrl =
-        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/demandes/$demandeId/artisans';
-
+        'http://192.168.100.7:3000/client/demandes/156/artisans';
+    print(" 3  ${apiUrl}");
+    print('Avant la requête HTTP');
     try {
       final response = await http.get(Uri.parse(apiUrl));
       print('Response data: $response');
