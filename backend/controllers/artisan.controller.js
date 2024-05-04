@@ -121,41 +121,49 @@ async function consulterdemandes(req, res) {
         return res.status(500).json({ message: 'Internal server error' });
     }
 }
-
-function AfficherProfil(req, res) {
-    const id = req.userId;
-    models.Artisan.findByPk(id, {
-        include: [{
-            model: models.Prestation,
-            include: models.Domaine
-        }]
-    })
-        .then(result => {
-            if (result) {
-                const artisanInfo = {
-                    NomArtisan: result.NomArtisan,
-                    PrenomArtisan: result.PrenomArtisan,
-                    EmailArtisan: result.EmailArtisan,
-                    AdresseArtisan: result.AdresseArtisan,
-                    NumeroTelArtisan: result.NumeroTelArtisan,
-                    Disponibilite: result.Disponibilite,
-                    photo: result.photo,
-                    Note: result.Note,
-                    RayonKm:result.RayonKm ,
-                    id:result.id,
-                    Domaine: domaine, // Afficher le domaine
-                    Prestations: result.Prestations.map(prestation => prestation.NomPrestation) // Afficher seulement les noms des prestations
-                };
-                res.status(200).json(artisanInfo);
-            } else {
-                res.status(404).json({ message: "Artisan not found" });
-            }
-        })
-        .catch(error => {
-            console.error("Error fetching artisan profile:", error);
-            res.status(500).json({ message: "Something went wrong", error: error });
+async function AfficherProfil(req, res) {
+    try {
+        const id = req.params.id;
+        const result = await models.Artisan.findByPk(id, {
+            include: [{
+                model: models.Prestation,
+                include: models.Domaine
+            }]
         });
+
+        if (result) {
+            let uniqueDomaine = null; // Initialiser à null
+            for (const prestation of result.Prestations) {
+                if (prestation.Domaine) {
+                    uniqueDomaine = prestation.Domaine;
+                    break; // Sortir de la boucle une fois que le premier domaine est trouvé
+                }
+            }
+
+            const artisanInfo = {
+                NomArtisan: result.NomArtisan,
+                PrenomArtisan: result.PrenomArtisan,
+                EmailArtisan: result.EmailArtisan,
+                AdresseArtisan: result.AdresseArtisan,
+                NumeroTelArtisan: result.NumeroTelArtisan,
+                Disponibilite: result.Disponibilite,
+                photo: result.photo,
+                Note: result.Note,
+                RayonKm: result.RayonKm,
+                id: result.id,
+                Domaine: uniqueDomaine, // Utiliser le domaine unique trouvé
+                Prestations: result.Prestations.map(prestation => prestation.NomPrestation)
+            };
+            res.status(200).json(artisanInfo);
+        } else {
+            res.status(404).json({ message: "Artisan not found" });
+        }
+    } catch (error) {
+        console.error("Error fetching artisan profile:", error);
+        res.status(500).json({ message: "Something went wrong", error: error.message });
+    }
 }
+
 
 
 

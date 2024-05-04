@@ -6,7 +6,7 @@ const imageUploader = require("../helpers/image_uploader");
 
 const router = express.Router();
 
-router.get('/Affichermonprofil',auth(), artisanController.AfficherProfil) ;
+router.get('/Affichermonprofil/:id', artisanController.AfficherProfil) ;
 router.patch('/updateartisan',auth(),artisanController.updateartisan);
 router.post('/accepterRDV',auth(),artisanController.accepterRDV);
 router.post('/refuserRDV',auth(),artisanController.refuserRDV);
