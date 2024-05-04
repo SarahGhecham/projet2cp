@@ -50,7 +50,7 @@ async function getArtisanRdvs(req, res) {
 }
 
 async function consulterdemandes(req, res) {
-    const artisanId = req.userId;
+    const artisanId = req.params.id;
 
     console.log('Artisan ID:', artisanId);
 
@@ -104,8 +104,8 @@ async function consulterdemandes(req, res) {
             // Push the demande with client and prestation details to the array
             demandsWithDetails.push({
                 id: demande.id,
-                nomDemande: demande.nom,
-                urgente: demande.urgente,
+                Description:demande.Description ,
+                Urgente: demande.Urgente,
                 client: clientInfo,
                 prestation: prestationInfo
             });
