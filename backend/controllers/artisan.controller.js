@@ -481,7 +481,7 @@ async function DetailsDemandeConfirmee(req, res) {
         const rdv = await models.RDV.findByPk(rdvId, {
             include: [
                 { model: models.Demande, include: [models.Prestation],
-                    attributes: ['Description','Localisation']  
+                    attributes: ['Description','Localisation','Urgente']  
 
                  }
             ]
@@ -519,7 +519,7 @@ async function DetailsDemandeConfirmee(req, res) {
         }
 
         const client = await models.Client.findByPk(clientDemande.ClientId, {
-            attributes: ['Username']
+           attributes: ['Username','NumeroTelClient','photo']
         });
 
         const rdvAffich = {
@@ -528,10 +528,12 @@ async function DetailsDemandeConfirmee(req, res) {
         };
         const demandeAffich ={
             Description: rdv.Demande.Description,
-            Localisation: rdv.Demande.Localisation
+            Localisation: rdv.Demande.Localisation,
+            Urgente: rdv.Demande.Urgente
         }
         const prestation={
             Nom: rdv.Demande.Prestation.NomPrestation,
+            Image: rdv.Demande.Prestation.imagePrestation,
             Materiel: rdv.Demande.Prestation.Maéeriel,
             DureeMax: rdv.Demande.Prestation.DuréeMax,
             DurreMin: rdv.Demande.Prestation.DuréeMin,
@@ -543,6 +545,7 @@ async function DetailsDemandeConfirmee(req, res) {
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
+
 async function DetailsRDVTermine(req, res) {
     const artisanId = req.userId;
     const rdvId = req.body.rdvId;
@@ -550,9 +553,19 @@ async function DetailsRDVTermine(req, res) {
     try {
         const rdv = await models.RDV.findByPk(rdvId, {
             include: [
-                { model: models.Demande, include: [models.Prestation],
-                    attributes: ['Description','Localisation']  
-                }
+                { 
+                    model: models.Demande,   
+                    include: [
+                        {
+                            model: models.Client, 
+                        },
+                        { 
+                            model: models.Prestation, 
+                            include: [{ model: models.Tarif }] 
+                        }
+                    ],
+                    attributes: ['Description', 'Localisation', 'Urgente', 'ClientId']   
+                }               
             ]
         });
 
@@ -560,10 +573,12 @@ async function DetailsRDVTermine(req, res) {
             return res.status(404).json({ message: `Le RDV avec l'ID ${rdvId} n'existe pas.` });
         }
 
+        // Vérification si le RDV est annulé
         if (rdv.annule) {
             return res.status(400).json({ message: `Le RDV avec l'ID ${rdvId} a été annulé.` });
         }
 
+        // Vérification si le RDV est terminé
         const now = new Date();
         const rdvDateFin = new Date(rdv.DateFin);
         const rdvHeureFin = new Date(`${rdv.DateFin}T${rdv.HeureFin}`);
@@ -572,6 +587,7 @@ async function DetailsRDVTermine(req, res) {
             return res.status(400).json({ message: `Le RDV avec l'ID ${rdvId} n'est pas encore terminé.` });
         }
 
+        // Vérification si l'artisan est associé à la demande et si la demande est confirmée
         const artisanDemande = await models.ArtisanDemande.findOne({
             where: { 
                 DemandeId: rdv.DemandeId,
@@ -587,42 +603,50 @@ async function DetailsRDVTermine(req, res) {
             return res.status(404).json({ message: `Le RDV avec l'ID ${rdvId} n'a pas été confirmé.` });
         }
 
-        const clientDemande = await models.Demande.findOne({
-            where: { Id: rdv.DemandeId }
-        });
-
-        if (!clientDemande) {
-            return res.status(404).json({ message: `Aucun client n'est associé à la demande de RDV avec l'ID ${rdvId}.` });
-        }
-
-        const client = await models.Client.findByPk(clientDemande.ClientId, {
-            attributes: ['Username']
-        });
-
+        // Construction de l'objet RDV à afficher
         const rdvAffich = {
             DateDebut: rdv.DateDebut,
             HeureDebut: rdv.HeureDebut,
             DateFin: rdv.DateFin,
             HeureFin: rdv.HeureFin
         };
-        const demandeAffich ={
+
+        // Construction de l'objet demande à afficher
+        const demandeAffich = {
             Description: rdv.Demande.Description,
-            Localisation: rdv.Demande.Localisation
-        }
+            Localisation: rdv.Demande.Localisation,
+            Urgente: rdv.Demande.Urgente
+        };
+
+        // Construction de l'objet prestation à afficher
         const prestation = {
             Nom: rdv.Demande.Prestation.NomPrestation,
+            Image: rdv.Demande.Prestation.imagePrestation,
             Materiel: rdv.Demande.Prestation.Materiel,
             DureeMax: rdv.Demande.Prestation.DureeMax,
             DureeMin: rdv.Demande.Prestation.DureeMin,
-            Ecologique: rdv.Demande.Prestation.Ecologique
+            Ecologique: rdv.Demande.Prestation.Ecologique,
+            TarifJourMin: rdv.Demande.Prestation.Tarif.TarifJourMin,
+            TarifJourMax: rdv.Demande.Prestation.Tarif.TarifJourMax,
         };
 
+        // Récupération des informations du client
+        const client = {
+            Username: rdv.Demande.Client.Username,
+            NumeroTelClient: rdv.Demande.Client.NumeroTelClient,
+            photo: rdv.Demande.Client.photo
+        };
+
+        // Réponse avec les détails du RDV terminé
         return res.status(200).json({ client,rdvAffich, prestation, demandeAffich });
     } catch (error) {
         console.error("Erreur lors de la récupération des détails du RDV terminé :", error);
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
+
+  
+
 
 
 async function getCommentaires(req, res) {
