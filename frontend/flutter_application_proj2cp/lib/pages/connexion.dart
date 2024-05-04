@@ -63,6 +63,7 @@ class _LogInPageState extends State<LogInPage> {
           );
         } else {
           print("Artisan");
+          
           // Si le rôle n'est ni "Artisan" ni "Client", vous pouvez choisir de gérer cela d'une manière appropriée, comme afficher un message d'erreur ou rediriger vers une autre page par défaut.
         }
       } else {

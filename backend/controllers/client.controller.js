@@ -681,7 +681,6 @@ async function lancerdemande(req, res) {
                 // Calculer la distance routière entre le client et l'artisan
                 const routeDistance = await calculateRouteDistance(clientCoords, artisanCoords);
                 console.log('Route distance between client and artisan:', routeDistance.toFixed(2), 'km');
-                await artisan.update({ RayonKm: 19.4 });
                 if(artisan.RayonKm>=routeDistance)
                 {
                     artisansIds.push(artisan.id);
@@ -699,7 +698,7 @@ async function lancerdemande(req, res) {
             
         }
 
-        console.log(clientCoords);
+        console.log(coordinates);
 
         return res.status(201).json({
             message: `La demande a été créée avec succès et associée au client et à la prestation.`,
