@@ -1,11 +1,12 @@
-import 'dart:ui';
-
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
-
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_application_proj2cp/config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CommentPage2 extends StatefulWidget {
   @override
@@ -14,50 +15,43 @@ class CommentPage2 extends StatefulWidget {
 
 class _CommentPage2State extends State<CommentPage2> {
   int visibleComments = 5; // Number of comments initially visible
-  List<Comment> comments = [
-    Comment(
-      customerName: 'John Doe',
-      serviceName: 'Service A',
-      comment: 'Super service, je le recommande vivement! en effet c'
-          'eteiat tres bien fait merci  ',
-    ),
-    Comment(
-      customerName: 'Jane Smith',
-      serviceName: 'Service B',
-      comment: 'Excellent travail, merci!',
-    ),
-    Comment(
-      customerName: 'Jane Smith',
-      serviceName: 'Service B',
-      comment: 'Excellent travail, merci!',
-    ),
-    Comment(
-      customerName: 'Jane Smith',
-      serviceName: 'Service B',
-      comment: 'Excellent travail, merci!',
-    ),
-    Comment(
-      customerName: 'Jane Smith',
-      serviceName: 'Service B',
-      comment: 'Excellent travail, merci!',
-    ),
-    Comment(
-      customerName: 'Jane Smith',
-      serviceName: 'Service B',
-      comment: 'Excellent travail, merci!',
-    ),
-    Comment(
-      customerName: 'Jane Smith',
-      serviceName: 'Service B',
-      comment: 'Excellent travail, merci!',
-    ),
-    Comment(
-      customerName: 'Jane Smith',
-      serviceName: 'Service B',
-      comment: 'Excellent travail, merci!',
-    ),
-    // Add more comments as needed
-  ];
+  List<Comment> comments = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchComments();
+  }
+
+  Future<void> fetchComments() async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+            'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/artisan/ConsulterCommentaires'),
+        headers: {
+          'Authorization': 'Bearer your_token_here',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body)['commentaires'];
+        setState(() {
+          comments = data.map((commentData) {
+            return Comment(
+              customerName: commentData['client']['username'],
+              serviceName: commentData['prestation']['NomPrestation'],
+              comment: commentData['commentaire'],
+            );
+          }).toList();
+        });
+      } else {
+        throw Exception('Failed to load comments');
+      }
+    } catch (error) {
+      print('Error fetching comments: $error');
+      // Handle error, e.g., display an error message to the user
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,39 +76,13 @@ class _CommentPage2State extends State<CommentPage2> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Display visible comments
-            for (int i = 0; i < visibleComments; i++)
-              CommentCard(
-                comment: comments[i],
-              ),
-            // "Voir plus" button
-            if (visibleComments < comments.length)
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    visibleComments +=
-                        2; // Show 2 more comments when "Voir plus" is pressed
-                    if (visibleComments > comments.length) {
-                      visibleComments = comments
-                          .length; // Ensure not to exceed the number of comments
-                    }
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFFF8787), // Background color
-
-                  minimumSize: Size(60, 23), // Button size
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(10), // Button border radius
-                  ),
+            // Display fetched comments
+            if (comments.isNotEmpty)
+              for (int i = 0; i < comments.length; i++)
+                CommentCard(
+                  comment: comments[i],
                 ),
-                child: Text(
-                  'Voir plus',
-                  style: TextStyle(color: Colors.white // Text color
-                      ),
-                ),
-              ),
+            // Add UI for "Voir plus" button if needed
           ],
         ),
       ),
@@ -191,7 +159,7 @@ class CommentCard extends StatelessWidget {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                            text: "Peinture de Murs et Plafonds",
+                            text: comment.serviceName,
                             style: GoogleFonts.lato(
                               color: const Color(0xFF05564B),
                               fontSize: 17,
@@ -246,7 +214,7 @@ class CommentCard extends StatelessWidget {
                 ),
                 SizedBox(width: 2.0),
                 Text(
-                  '4.5', // Remplacez par la véritable note de l'artisan
+                  '4.5', // Replace with the actual rating of the artisan
                   style: TextStyle(
                     color: Colors.black87,
                     fontWeight: FontWeight.bold,
@@ -261,4 +229,3 @@ class CommentCard extends StatelessWidget {
     );
   }
 }
-

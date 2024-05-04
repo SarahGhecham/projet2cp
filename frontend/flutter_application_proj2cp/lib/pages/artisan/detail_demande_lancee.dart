@@ -30,12 +30,7 @@ class _DemandelanceeState extends State<Demandelancee> {
         backgroundColor: Colors.white,
         title: Row(
           children: [
-            SizedBox(
-              height: 18,
-              width: 25,
-              child: SvgPicture.asset("assets/fleche.svg"),
-            ),
-            const SizedBox(width: 120),
+            const SizedBox(width: 90),
             Text(
               "Details",
               style: GoogleFonts.poppins(
@@ -148,15 +143,6 @@ class _DemandelanceeState extends State<Demandelancee> {
                         border: Border.all(
                           color: const Color(0xFFDCC8C5),
                           width: 1,
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Voir profile',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 10,
-                          ),
                         ),
                       ),
                     ),

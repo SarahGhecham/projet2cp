@@ -11,6 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rating_dialog/rating_dialog.dart';
 import 'package:flutter_application_proj2cp/config.dart';
+import 'dart:convert' as convert;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -22,18 +23,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+// Assuming your backend API endpoint URL
+
   List<Prestation> allPrestations = [];
   List<Prestation> selectedPrestations = [];
   List<Prestation> recentPrestations = [];
-  bool _rated = true;
-  String _comment = '';
+  bool _rated = false;
+  String commentaire = '';
   Map<String, dynamic> _userData = {};
   final defaultImageUrl =
       'http://192.168.100.7:3000/imageClient/1714391607342.jpg';
 
   Future<void> fetchAllPrestations() async {
-    final url =
-        Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/pageaccueil/AfficherToutesPrestation');
+    final url = Uri.parse(
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/pageaccueil/AfficherToutesPrestation');
 
     try {
       final response = await http.get(
@@ -69,6 +72,38 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> creerEvaluation(double note, String commentaire) async {
+    // Define the endpoint URL where your backend is hosted
+    const String url =
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/creerEvaluation';
+
+    // Prepare the request body
+    final Map<String, dynamic> requestBody = {
+      'Note': note,
+      'Commentaire': commentaire,
+      'RDVId': retrievedRdvId,
+    };
+
+    try {
+      // Make the HTTP POST request
+      final http.Response response = await http.post(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 201) {
+        print('Evaluation created successfully: ${jsonDecode(response.body)}');
+      } else {
+        print('Failed to create evaluation: ${response.reasonPhrase}');
+      }
+    } catch (error) {
+      print('Error creating evaluation: $error');
+    }
+  }
+
   Future<void> _fetchUserData() async {
     final url = Uri.parse(
         'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/Affichermonprofil'); // Replace with your endpoint
@@ -98,22 +133,76 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _onRatingAndCommentSubmit(int rating, String comment) {
-    setState(() {
-      _rated = false;
-      _comment = _comment;
-    });
+  void _onRatingAndCommentSubmit(double rating, String comment) async {
+    // Replace with the actual RDV ID
+    final note = rating; // Convert rating to String
+    final commentaire = comment; // Use the provided comment
+
+    try {
+      await creerEvaluation(note, commentaire);
+      // After successful evaluation submission, set _rated to true
+      setState(() {
+        _rated = true;
+      });
+    } catch (error) {
+      // Handle error if evaluation submission fails
+      print('Error submitting evaluation: $error');
+    }
   }
 
-  String artisanName = 'Karim mouloud ';
+  late String artisanName;
+
+  int? retrievedRdvId;
+  Future<List<Map<String, dynamic>>> fetchActiviteTermineeNonEvaluee() async {
+    final url = Uri.parse(
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/AfficherActiviteTermineeNonEvaluee');
+
+    // Construct the request headers
+    final headers = {
+      'Authorization': 'Bearer $_token'
+    }; // Replace this with your endpoint
+
+    try {
+      final response = await http.get(url, headers: headers);
+
+      if (response.statusCode == 200) {
+        // If the request is successful, parse the response
+        final List<dynamic> responseData = jsonDecode(response.body);
+
+        // Convert the response data into the required format
+        final List<Map<String, dynamic>> resultList = responseData.map((item) {
+          final demande = item['demande'] as Map<String, dynamic>;
+          final rdvAffich = item['rdvAffich'] as Map<String, dynamic>;
+
+          final nomArtisan = demande['Artisan']['NomArtisan'] as String;
+          final rdvId = rdvAffich['rdvId'] as int;
+          retrievedRdvId = rdvId;
+          artisanName = nomArtisan;
+          return {'nomArtisan': nomArtisan, 'rdvId': rdvId};
+        }).toList();
+
+        return resultList;
+      } else {
+        // If the request fails, throw an exception
+        throw Exception('Failed to fetch data: ${response.statusCode}');
+      }
+    } catch (error) {
+      // If any error occurs during the process, handle it here
+      print('Error fetching data: $error');
+      return []; // or throw error as per your requirement
+    }
+  }
+
   List<Widget> domainWidgets = [];
   List<Widget> ecoServiceWidgets = [];
   List<Widget> topPrestationWidgets = [];
+
   late String _token;
 
   @override
   void initState() {
     super.initState();
+    fetchData();
     if (!_rated) {
       Future.delayed(Duration.zero, () {
         showDialog(
@@ -126,7 +215,6 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       });
     }
-    fetchData();
   }
 
   void handleSearch(List<Prestation> filteredPrestations) {
@@ -146,12 +234,13 @@ class _HomeScreenState extends State<HomeScreen> {
       fetchTopPrestations(),
       _fetchUserData(),
       fetchAllPrestations(),
+      fetchActiviteTermineeNonEvaluee(),
     ]);
   }
 
   Future<void> fetchDomaines() async {
-    final url =
-        Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/pageaccueil/AfficherDomaines');
+    final url = Uri.parse(
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/pageaccueil/AfficherDomaines');
     try {
       final response = await http.get(
         url,
@@ -244,7 +333,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> fetchTopPrestations() async {
     final url = Uri.parse(
-
         'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/pageaccueil/AfficherPrestationsTop');
 
     try {
@@ -330,7 +418,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: Row(
                           children: [
-                            SizedBox(width: 4,),
+                            SizedBox(
+                              width: 4,
+                            ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Image.asset('assets/icons/recherche.png'),
@@ -430,7 +520,7 @@ class RatingPopup extends StatefulWidget {
       : super(key: key);
   final String artisanName;
 
-  final Function(int rating, String comment)
+  final Function(double rating, String comment)
       onSubmit; // Function type for submission
 
   @override
@@ -438,7 +528,7 @@ class RatingPopup extends StatefulWidget {
 }
 
 class _RatingPopupState extends State<RatingPopup> {
-  int _rating = 0;
+  double _rating = 0;
   final _commentController = TextEditingController();
 
   @override
@@ -491,7 +581,7 @@ class _RatingPopupState extends State<RatingPopup> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              for (int i = 1; i <= 5; i++)
+              for (double i = 1; i <= 5; i++)
                 IconButton(
                   icon: Icon(
                     (i <= _rating) ? Icons.star : Icons.star_border,

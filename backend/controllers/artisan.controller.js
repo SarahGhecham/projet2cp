@@ -3,47 +3,125 @@ const models=require('../models');
 const { Op } = require('sequelize');
 const bcrypt = require('bcrypt');
 
+async function getArtisanRdvs(req, res) {
+    const artisanId = req.params.id;
+
+    try {
+        // Find the records in ArtisanDemandes where ArtisanId is the provided ID and accepte and confirme are true
+        const artisanDemandes = await models.ArtisanDemande.findAll({
+            where: { ArtisanId: artisanId, accepte: true, confirme: true }
+        });
+
+        // If no ArtisanDemandes are found, return an empty array
+        if (!artisanDemandes || artisanDemandes.length === 0) {
+            return res.status(200).json([]);
+        }
+
+        // Array to store rdvs
+        const rdvs = [];
+
+        // Iterate over each ArtisanDemande
+        for (const artisanDemande of artisanDemandes) {
+            // Find the associated demande
+            const demande = await models.Demande.findByPk(artisanDemande.DemandeId);
+
+            // If the demande is not found, skip to the next one
+            if (!demande) {
+                continue;
+            }
+
+            // Find the rdv that has the demande's ID as DemandeId
+            const rdv = await models.RDV.findOne({
+                where: { DemandeId: demande.id }
+            });
+
+            // If the rdv is found, push it to the rdvs array
+            if (rdv) {
+                rdvs.push(rdv);
+            }
+        }
+
+        // Return the rdvs
+        return res.status(200).json(rdvs);
+    } catch (error) {
+        console.error('Error retrieving rdvs for artisan:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
 async function consulterdemandes(req, res) {
     const artisanId = req.userId;
 
-    try {
-        // Find the artisan by ID
-        const artisan = await models.Artisan.findByPk(artisanId);
+    console.log('Artisan ID:', artisanId);
 
-        if (!artisan) {
-            return res.status(404).json({ message: `Artisan with ID ${artisanId} not found.` });
+    try {
+        // Find all ArtisanDemandes where accepte and refuse are null for the given artisanId
+        const artisanDemandes = await models.ArtisanDemande.findAll({
+            where: { ArtisanId: artisanId, accepte: null, refuse: null }
+        });
+
+        console.log('ArtisanDemandes:', artisanDemandes);
+
+        // If no ArtisanDemandes are found, return a 404 response
+        if (!artisanDemandes || artisanDemandes.length === 0) {
+            console.log(`No demands found for artisan with ID ${artisanId}.`);
+            return res.status(404).json({ message: `No demands found for artisan with ID ${artisanId}.` });
         }
 
-        // Retrieve demands associated with the artisan
-        const demands = await artisan.getDemandes();
+        // Array to store demands with details
+        const demandsWithDetails = [];
 
-        // Fetch attributes of clients and prestations for each demand
-        const demandsWithDetails = await Promise.all(demands.map(async (demand) => {
-            const client = await demand.getClient();
-            const prestation = await demand.getPrestation();
-            return {
-                id: demand.id,
-                nomDemande: demand.nom,
-                client: {
-                    id: client.id,
-                    emailClient: client.EmailClient,
-                    username:client.Username
-                    // we can Add more client attributes as needed
-                },
-                prestation: {
-                    id: prestation.id,
-                    nomPrestation: prestation.NomPrestation,
-                    // we can Add more prestation attributes as needed
-                }
+        // Iterate over each ArtisanDemande
+        for (const artisanDemande of artisanDemandes) {
+            console.log('ArtisanDemande:', artisanDemande);
+
+            // Find the associated Demande
+            const demande = await models.Demande.findByPk(artisanDemande.DemandeId, {
+                include: [models.Client, models.Prestation]
+            });
+
+            console.log('Demande:', demande);
+
+            // If the demande is not found, skip to the next one
+            if (!demande) {
+                console.log('Demande not found.');
+                continue;
+            }
+
+            // Extract necessary information about client and prestation
+            const clientInfo = {
+                id: demande.Client.id,
+                emailClient: demande.Client.EmailClient,
+                username: demande.Client.Username
             };
-        }));
 
+            const prestationInfo = {
+                id: demande.Prestation.id,
+                nomPrestation: demande.Prestation.NomPrestation,
+                Ecologique: demande.Prestation.Ecologique
+            };
+
+            // Push the demande with client and prestation details to the array
+            demandsWithDetails.push({
+                id: demande.id,
+                nomDemande: demande.nom,
+                urgente: demande.urgente,
+                client: clientInfo,
+                prestation: prestationInfo
+            });
+        }
+
+        // Log the demands with details
+        console.log('Demands with details:', demandsWithDetails);
+
+        // Return the demands with details
         return res.status(200).json(demandsWithDetails);
     } catch (error) {
         console.error('Error retrieving demands for artisan:', error);
         return res.status(500).json({ message: 'Internal server error' });
     }
 }
+
 function AfficherProfil(req, res) {
     const id = req.userId;
     models.Artisan.findByPk(id, {
@@ -54,10 +132,6 @@ function AfficherProfil(req, res) {
     })
         .then(result => {
             if (result) {
-                let domaine = null; // Domaine par défaut
-                if (result.Prestations.length > 0 && result.Prestations[0].Domaine) {
-                    domaine = result.Prestations[0].Domaine.NomDomaine; // Premier domaine rencontré
-                }
                 const artisanInfo = {
                     NomArtisan: result.NomArtisan,
                     PrenomArtisan: result.PrenomArtisan,
@@ -68,6 +142,7 @@ function AfficherProfil(req, res) {
                     photo: result.photo,
                     Note: result.Note,
                     RayonKm:result.RayonKm ,
+                    id:result.id,
                     Domaine: domaine, // Afficher le domaine
                     Prestations: result.Prestations.map(prestation => prestation.NomPrestation) // Afficher seulement les noms des prestations
                 };
@@ -96,6 +171,7 @@ async function updateartisan(req, res) {
     const updatedArtisan = {
        
         MotdepasseArtisan: hashedPassword, // Hashed password
+        
         AdresseArtisan: req.body.AdresseArtisan,
         NumeroTelArtisan: req.body.NumeroTelArtisan,
         Disponnibilite: req.body.Disponnibilite ,
@@ -713,5 +789,6 @@ module.exports = {
     DetailsDemandeConfirmee,
     DetailsRDVTermine,
     consulterdemandes,
-    updateArtisanImage
+    updateArtisanImage ,
+    getArtisanRdvs
 }
