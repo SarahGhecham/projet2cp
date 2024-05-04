@@ -20,6 +20,8 @@ router.get('/DetailsDemandeConfirmee',auth(),artisanController.DetailsDemandeCon
 router.get('/ConsulterDemandes',auth(),artisanController.consulterdemandes);
 router.get('/ConsulterCommentaires',auth(),artisanController.getCommentaires);
 router.post("/updateArtisanImage",auth(), imageUploader.upload.single('photo'), artisanController.updateArtisanImage);
+router.get('/Rdvpourartisan/:id',artisanController.getArtisanRdvs);
 
 
 module.exports = router;
+
