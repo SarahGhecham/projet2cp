@@ -443,7 +443,7 @@ async function validateAddress(address, Cleapi) {
 }
 
 async function updateClient(req, res) {
-    const id = req.userId;
+    const id = req.userid;
 
   // Hash the new password if provided
   /*let hashedPassword = null;
@@ -482,8 +482,7 @@ async function updateClient(req, res) {
 }
 
 function updateClientImage(req, res) {
-    const id = req.userId; // Extract client ID from request parameters
-    console.log(req.file.mimetype);
+    const id = req.userid; // Extract client ID from request parameters
 
   // Check if a file is uploaded
   if (!req.file) {
@@ -499,7 +498,11 @@ function updateClientImage(req, res) {
   }*/
 
     // Construct the image URL for the client
+
+    // changer avec votre adressse ip/10.0.2.2(emulateur)
+
     const imageURL = `http://192.168.85.78:3000/imageClient/${req.file.filename}`; // changer avec votre adressse ip/10.0.2.2(emulateur)
+
 
   // Update the client's photo URL in the database
   models.Client.findByPk(id)
@@ -995,6 +998,7 @@ try {
   }
 }
 
+
 async function ActiviteTerminee(req, res) {
     const clientId = req.params.id;
   
@@ -1102,7 +1106,7 @@ async function ActiviteTerminee(req, res) {
     }
   }
   async function ActiviteTermineeNonEvaluee(req, res) {
-    const clientId = req.params.id;
+    const clientId = req.Userid;
   
     try {
       const maintenant = new Date();
@@ -1241,87 +1245,98 @@ async function DetailsDemandeConfirmee(req, res) {
   const clientId = req.userId;
   const rdvId = req.body.rdvId;
 
-    try {
-        const rdv = await models.RDV.findByPk(rdvId, {
-            include: [
-                { model: models.Demande, include: [models.Prestation],
-                    attributes: ['Description','Localisation']  
-
-                 }
-            ]
-        });
-
-        if (!rdv) {
-            return res.status(404).json({ message: `Le RDV avec l'ID ${rdvId} n'existe pas.` });
+  try {
+    const rdv = await models.RDV.findByPk(rdvId, {
+      include: [
+        { model: models.Demande, 
+          include: [
+            { model: models.Prestation,
+              include: [{ model: models.Tarif }] 
+            }
+          ],
+          attributes: ['Description','Localisation','Urgente']  
         }
-       
-        if (rdv.annule) {
-            return res.status(400).json({ message: `Le RDV avec l'ID ${rdvId} a été annulé.` });
-        }
-        
-
-        const artisanDemande = await models.ArtisanDemande.findOne({
-            where: { 
-                DemandeId: rdv.DemandeId,
-             }
-        });
-
-        if (!artisanDemande) {
-            return res.status(404).json({ message: `Aucun artisan n'est associé à la demande de RDV avec l'ID ${rdvId}.` });
-        }
-        if(!artisanDemande.confirme){
-            return res.status(404).json({ message: `le rdv ${rdvId} n'a pas été confirmé.` });
-
-        }
-
-    const artisan = await models.Artisan.findByPk(artisanDemande.ArtisanId, {
-      attributes: ['NomArtisan', 'PrenomArtisan'],
+      ]
     });
 
-        const rdvAffich = {
-            DateDebut: rdv.DateDebut,
-            HeureDebut: rdv.HeureDebut
-        };
-        const demandeAffich ={
-            Description: rdv.Demande.Description,
-            Localisation: rdv.Demande.Localisation
-        }
-        const prestation={
-            Nom: rdv.Demande.Prestation.NomPrestation,
-            Materiel: rdv.Demande.Prestation.Maéeriel,
-            DureeMax: rdv.Demande.Prestation.DuréeMax,
-            DurreMin: rdv.Demande.Prestation.DuréeMin,
-            Ecologique: rdv.Demande.Prestation.Ecologique
-        }
-        return res.status(200).json({ artisan, rdvAffich, prestation,demandeAffich });
-    } catch (error) {
-        console.error("Erreur lors de la récupération des détails de la demande confirmée :", error);
-        return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
+    if (!rdv) {
+      return res.status(404).json({ message: `Le RDV avec l'ID ${rdvId} n'existe pas.` });
     }
+   
+    if (rdv.annule) {
+      return res.status(400).json({ message: `Le RDV avec l'ID ${rdvId} a été annulé.` });
+    }
+
+    const artisanDemande = await models.ArtisanDemande.findOne({
+      where: { 
+        DemandeId: rdv.DemandeId,
+      }
+    });
+
+    if (!artisanDemande) {
+      return res.status(404).json({ message: `Aucun artisan n'est associé à la demande de RDV avec l'ID ${rdvId}.` });
+    }
+    if (!artisanDemande.confirme) {
+      return res.status(404).json({ message: `le rdv ${rdvId} n'a pas été confirmé.` });
+    }
+
+    const artisan = await models.Artisan.findByPk(artisanDemande.ArtisanId, {
+      attributes: ['NomArtisan', 'PrenomArtisan','Note','NumeroTelArtisan','photo'],
+    });
+
+    const rdvAffich = {
+      DateDebut: rdv.DateDebut,
+      HeureDebut: rdv.HeureDebut
+    };
+    const demandeAffich ={
+      Description: rdv.Demande.Description,
+      Localisation: rdv.Demande.Localisation,
+      Urgente: rdv.Demande.Urgente
+    }
+    const prestation = {
+      Nom: rdv.Demande.Prestation.NomPrestation,
+      Materiel: rdv.Demande.Prestation.Matériel,
+      Image: rdv.Demande.Prestation.imagePrestation,
+      DureeMax: rdv.Demande.Prestation.DuréeMax,
+      DurreMin: rdv.Demande.Prestation.DuréeMin,
+      Ecologique: rdv.Demande.Prestation.Ecologique,
+      TarifJourMin: rdv.Demande.Prestation.Tarif.TarifJourMin,
+      TarifJourMax: rdv.Demande.Prestation.Tarif.TarifJourMax,
+    }
+
+    return res.status(200).json({ artisan, rdvAffich, prestation, demandeAffich });
+  } catch (error) {
+    console.error("Erreur lors de la récupération des détails de la demande confirmée :", error);
+    return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
+  }
 }
+
 async function DetailsRDVTermine(req, res) {
   const clientId = req.userId;
   const rdvId = req.body.rdvId;
 
-    try {
-        const rdv = await models.RDV.findByPk(rdvId, {
-            include: [
-                { 
-                    model: models.Demande, 
-                    include: [models.Prestation],
-                    attributes: ['Description','Localisation']  
-                }
-            ]
-        });
+  try {
+    const rdv = await models.RDV.findByPk(rdvId, {
+      include: [
+        { 
+          model: models.Demande, 
+          include: [
+            { model: models.Prestation, 
+              include: [{ model: models.Tarif }] 
+            }
+          ],
+          attributes: ['Description','Localisation','Urgente']  
+        }
+      ]
+    });
 
-        if (!rdv) {
-            return res.status(404).json({ message: `Le RDV avec l'ID ${rdvId} n'existe pas.` });
-        }
-       
-        if (rdv.annule) {
-            return res.status(400).json({ message: `Le RDV avec l'ID ${rdvId} a été annulé.` });
-        }
-        
+    if (!rdv) {
+      return res.status(404).json({ message: `Le RDV avec l'ID ${rdvId} n'existe pas.` });
+    }
+   
+    if (rdv.annule) {
+      return res.status(400).json({ message: `Le RDV avec l'ID ${rdvId} a été annulé.` });
+    }
 
     const now = new Date();
     const rdvDateFin = new Date(rdv.DateFin);
@@ -1341,48 +1356,51 @@ async function DetailsRDVTermine(req, res) {
       where: { DemandeId: rdv.DemandeId },
     });
 
-        if (!artisanDemande) {
-            return res.status(404).json({ message: `Aucun artisan n'est associé à la demande de RDV avec l'ID ${rdvId}.` });
-        }
-        if(!artisanDemande.confirme){
-            return res.status(404).json({ message: `le rdv ${rdvId} n'a pas été confirmé.` });
-
-        }
+    if (!artisanDemande) {
+      return res.status(404).json({ message: `Aucun artisan n'est associé à la demande de RDV avec l'ID ${rdvId}.` });
+    }
+    if (!artisanDemande.confirme) {
+      return res.status(404).json({ message: `le rdv ${rdvId} n'a pas été confirmé.` });
+    }
 
     const artisan = await models.Artisan.findByPk(artisanDemande.ArtisanId, {
-      attributes: ['NomArtisan', 'PrenomArtisan'],
+      attributes: ['NomArtisan', 'PrenomArtisan','Note','NumeroTelArtisan','photo'],
     });
 
-        const rdvAffich = {
-            DateDebut: rdv.DateDebut,
-            HeureDebut: rdv.HeureDebut,
-            DateFin: rdv.DateFin,
-            HeureFin: rdv.HeureFin,
-        };
-        const demandeAffich ={
-            Description: rdv.Demande.Description,
-            Localisation: rdv.Demande.Localisation
-        }
-
-        const prestation = {
-            Nom: rdv.Demande.Prestation.NomPrestation,
-            Materiel: rdv.Demande.Prestation.Matériel,
-            DureeMax: rdv.Demande.Prestation.DuréeMax,
-            DureeMin: rdv.Demande.Prestation.DuréeMin,
-            Ecologique: rdv.Demande.Prestation.Ecologique,
-
-        };
-
-        return res.status(200).json({ artisan,rdvAffich, prestation,demandeAffich });
-    } catch (error) {
-        console.error("Erreur lors de la récupération des détails du RDV terminé :", error);
-        return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
+    const rdvAffich = {
+      DateDebut: rdv.DateDebut,
+      HeureDebut: rdv.HeureDebut,
+      DateFin: rdv.DateFin,
+      HeureFin: rdv.HeureFin,
+    };
+    const demandeAffich ={
+      Description: rdv.Demande.Description,
+      Localisation: rdv.Demande.Localisation,
+      Urgente: rdv.Demande.Urgente
     }
+
+    const prestation = {
+      Nom: rdv.Demande.Prestation.NomPrestation,
+      Image: rdv.Demande.Prestation.imagePrestation,
+      Materiel: rdv.Demande.Prestation.Matériel,
+      DureeMax: rdv.Demande.Prestation.DuréeMax,
+      DureeMin: rdv.Demande.Prestation.DuréeMin,
+      Ecologique: rdv.Demande.Prestation.Ecologique,
+      TarifJourMin: rdv.Demande.Prestation.Tarif.TarifJourMin,
+      TarifJourMax: rdv.Demande.Prestation.Tarif.TarifJourMax,
+    };
+
+    return res.status(200).json({ artisan, rdvAffich, prestation, demandeAffich });
+  } catch (error) {
+    console.error("Erreur lors de la récupération des détails du RDV terminé :", error);
+    return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
+  }
 }
 
 
+
 async function getCommentaires(req, res) {
-  const artisanId = req.params.ArtisanId;
+  const artisanId = req.artisanId;
   try {
       
       const demandesIds = await models.ArtisanDemande.findAll({ where: { ArtisanId: artisanId }, attributes: ['DemandeId'] });

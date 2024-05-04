@@ -35,7 +35,7 @@ function getAllJours(req, res) {
 }
 
 function updateJour(req, res) {
-    const id = req.params.id;
+    const id = req;
     const updatedJour = {
         Jour: req.body.Jour,
         HeureDebut: req.body.HeureDebut,
@@ -60,7 +60,7 @@ function updateJour(req, res) {
 }
 
 function deleteJour(req, res) {
-    const id = req.params.id;
+    const id = req;
     models.Jour.destroy({ where: { id } })
         .then(deletedRows => {
             if (deletedRows === 1) {

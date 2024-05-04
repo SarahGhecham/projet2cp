@@ -10,10 +10,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_application_proj2cp/config.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/bottom_nav_bar.dart';
-
-
-
-
+import 'package:flutter_application_proj2cp/pages/artisan/Bottomnavbar_artisan.dart';
 
 class LogInPage extends StatefulWidget {
   const LogInPage({Key? key}) : super(key: key);
@@ -29,8 +26,8 @@ class _LogInPageState extends State<LogInPage> {
     final email = _usernameController.text;
     final password = _passwordController.text;
 
-  final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/connexion/login');
-
+    final url = Uri.parse(
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/connexion/login');
 
     try {
       final response = await http.post(
@@ -42,29 +39,35 @@ class _LogInPageState extends State<LogInPage> {
       if (response.statusCode == 200) {
         var responseData = json.decode(response.body);
         var token = responseData['token'];
-        var role=responseData['role'];
+        var role = responseData['role'];
         print(role);
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
 
-       if (role == "Admin") {
+        if (role == "Admin") {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => BottomNavBarAdmin(), // Remplacez ArtisanPage par le nom de votre page pour les artisans
+              builder: (context) =>
+                  BottomNavBarAdmin(), // Remplacez ArtisanPage par le nom de votre page pour les artisans
             ),
           );
         } else if (role == "Client") {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => BottomNavBar(), // Remplacez ClientPage par le nom de votre page pour les clients
+              builder: (context) =>
+                  BottomNavBar(), // Remplacez ClientPage par le nom de votre page pour les clients
             ),
           );
         } else {
-          print("Artisan");
-          
-          // Si le rôle n'est ni "Artisan" ni "Client", vous pouvez choisir de gérer cela d'une manière appropriée, comme afficher un message d'erreur ou rediriger vers une autre page par défaut.
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  BottomNavBarartisan(), // Remplacez ClientPage par le nom de votre page pour les clients
+            ),
+          );
         }
       } else {
         var responseData = json.decode(response.body);
@@ -76,7 +79,8 @@ class _LogInPageState extends State<LogInPage> {
               context: context,
               builder: (context) => AlertDialog(
                 title: const Text('Authentification échouée'),
-                content: const Text("Adresse e-mail invalide. Veuillez réessayer."),
+                content:
+                    const Text("Adresse e-mail invalide. Veuillez réessayer."),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
@@ -90,7 +94,8 @@ class _LogInPageState extends State<LogInPage> {
               context: context,
               builder: (context) => AlertDialog(
                 title: const Text('Authentification échouée'),
-                content: const Text('Mot de passe incorrect. Veuillez réessayer.'),
+                content:
+                    const Text('Mot de passe incorrect. Veuillez réessayer.'),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
@@ -104,7 +109,8 @@ class _LogInPageState extends State<LogInPage> {
               context: context,
               builder: (context) => AlertDialog(
                 title: const Text('Authentification échouée'),
-                content: const Text("Nom d'utilisateur ou mot de passe incorrect. Veuillez réessayer."),
+                content: const Text(
+                    "Nom d'utilisateur ou mot de passe incorrect. Veuillez réessayer."),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
@@ -120,7 +126,8 @@ class _LogInPageState extends State<LogInPage> {
             context: context,
             builder: (context) => AlertDialog(
               title: const Text('Authentification échouée'),
-              content: const Text('Nom d\'utilisateur ou mot de passe incorrect. Veuillez réessayer.'),
+              content: const Text(
+                  'Nom d\'utilisateur ou mot de passe incorrect. Veuillez réessayer.'),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
@@ -222,7 +229,8 @@ class _LogInPageState extends State<LogInPage> {
               ElevatedButton(
                 onPressed: _authenticateUser,
                 style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all<Size>(const Size(100, 37)),
+                  minimumSize:
+                      MaterialStateProperty.all<Size>(const Size(100, 37)),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
