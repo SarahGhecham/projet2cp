@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
+import 'package:flutter_application_proj2cp/pages/activite/activite_termine.dart';
 import 'package:flutter_application_proj2cp/pages/home/components/home_header.dart';
 import 'package:flutter_application_proj2cp/pages/home/components/service_populair_container.dart';
 import 'package:flutter_application_proj2cp/pages/home/components/domain_container.dart';
@@ -72,7 +73,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> creerEvaluation(double note, String commentaire) async {
+  Future<void> creerEvaluation(
+      double note, String commentaire, String token, int retrievedRdvId) async {
     // Define the endpoint URL where your backend is hosted
     const String url =
         'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/creerEvaluation';
@@ -90,6 +92,8 @@ class _HomeScreenState extends State<HomeScreen> {
         Uri.parse(url),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization':
+              'Bearer $token', // Include the token in the Authorization header
         },
         body: jsonEncode(requestBody),
       );
@@ -133,13 +137,14 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _onRatingAndCommentSubmit(double rating, String comment) async {
-    // Replace with the actual RDV ID
-    final note = rating; // Convert rating to String
-    final commentaire = comment; // Use the provided comment
+  void _onRatingAndCommentSubmit(
+      double rating, String comment, int rdvId) async {
+    final note = rating; // Convert rating to double
+    final retrievedRdvId = rdvId; // Use the provided RDV ID
+    // Use the provided artisan name
 
     try {
-      await creerEvaluation(note, commentaire);
+      await creerEvaluation(note, comment, _token, retrievedRdvId);
       // After successful evaluation submission, set _rated to true
       setState(() {
         _rated = true;
@@ -150,10 +155,9 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  late String artisanName;
-
-  int? retrievedRdvId;
-  Future<List<Map<String, dynamic>>> fetchActiviteTermineeNonEvaluee() async {
+  String Name = '';
+  int retrievedRdvId = 0;
+  Future<Map<String, dynamic>> fetchActiviteTermineeNonEvaluee() async {
     final url = Uri.parse(
         'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/AfficherActiviteTermineeNonEvaluee');
 
@@ -167,21 +171,54 @@ class _HomeScreenState extends State<HomeScreen> {
 
       if (response.statusCode == 200) {
         // If the request is successful, parse the response
-        final List<dynamic> responseData = jsonDecode(response.body);
+        final List<dynamic> responseData =
+            convert.jsonDecode(response.body) as List<dynamic>;
 
-        // Convert the response data into the required format
-        final List<Map<String, dynamic>> resultList = responseData.map((item) {
-          final demande = item['demande'] as Map<String, dynamic>;
-          final rdvAffich = item['rdvAffich'] as Map<String, dynamic>;
+        if (responseData.isEmpty) {
+          setState(() {
+            _rated = true;
+          });
+          print('No data available');
+          return {}; // or return null or throw an exception as per your requirement
+        }
 
-          final nomArtisan = demande['Artisan']['NomArtisan'] as String;
-          final rdvId = rdvAffich['rdvId'] as int;
+        final Map<String, dynamic> item =
+            responseData.isNotEmpty ? responseData.first : {};
+
+        final demande = item['demande'] as Map<String, dynamic>?;
+        final rdvAffich = item['rdvAffich'] as Map<String, dynamic>?;
+        final List<dynamic>? artisans = demande?['Artisans'] as List<dynamic>?;
+
+        // Check if demande is null
+        final rdvId = rdvAffich!['rdvId'] as int;
+        retrievedRdvId = rdvId;
+        print(' RDV ID: $rdvId');
+
+        // Check if artisan is null
+        if (artisans != null) {
+          // Access artisan details
+          Name = artisans[0]['NomArtisan'];
+          print('name: $Name');
+
+          // Use artisanName as needed
+        } else {
+          // Handle null artisan
+          print('Artisan is null');
+        }
+
+        if (rdvId == null) {
+          setState(() {
+            _rated = true;
+          });
+        } else {
           retrievedRdvId = rdvId;
-          artisanName = nomArtisan;
-          return {'nomArtisan': nomArtisan, 'rdvId': rdvId};
-        }).toList();
+        }
 
-        return resultList;
+        // Print name and rdvId
+        print(' RDV ID: $rdvId');
+
+        // Return the first item as a map
+        return {'rdvId': rdvId};
       } else {
         // If the request fails, throw an exception
         throw Exception('Failed to fetch data: ${response.statusCode}');
@@ -189,7 +226,7 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (error) {
       // If any error occurs during the process, handle it here
       print('Error fetching data: $error');
-      return []; // or throw error as per your requirement
+      return {}; // or throw error as per your requirement
     }
   }
 
@@ -197,24 +234,10 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> ecoServiceWidgets = [];
   List<Widget> topPrestationWidgets = [];
 
-  late String _token;
-
   @override
   void initState() {
     super.initState();
     fetchData();
-    if (!_rated) {
-      Future.delayed(Duration.zero, () {
-        showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (context) => RatingPopup(
-            artisanName: artisanName,
-            onSubmit: _onRatingAndCommentSubmit,
-          ),
-        );
-      });
-    }
   }
 
   void handleSearch(List<Prestation> filteredPrestations) {
@@ -224,6 +247,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  String _token = '';
   Future<void> fetchData() async {
     final prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('token') ?? '';
@@ -236,6 +260,25 @@ class _HomeScreenState extends State<HomeScreen> {
       fetchAllPrestations(),
       fetchActiviteTermineeNonEvaluee(),
     ]);
+    showRatingDialog();
+  }
+
+  void showRatingDialog() {
+    if (!_rated) {
+      final rdvId = retrievedRdvId;
+      final artisanName = Name;
+      setState(() {
+        showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) => RatingPopup(
+            artisanName: artisanName,
+            rdvId: rdvId,
+            onSubmit: _onRatingAndCommentSubmit,
+          ),
+        );
+      });
+    }
   }
 
   Future<void> fetchDomaines() async {
@@ -515,13 +558,16 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class RatingPopup extends StatefulWidget {
-  const RatingPopup(
-      {Key? key, required this.artisanName, required this.onSubmit})
-      : super(key: key);
-  final String artisanName;
+  const RatingPopup({
+    Key? key,
+    required this.artisanName,
+    required this.rdvId,
+    required this.onSubmit,
+  }) : super(key: key);
 
-  final Function(double rating, String comment)
-      onSubmit; // Function type for submission
+  final String artisanName;
+  final int rdvId;
+  final Function(double rating, String comment, int rdvId) onSubmit;
 
   @override
   State<RatingPopup> createState() => _RatingPopupState();
@@ -639,7 +685,9 @@ class _RatingPopupState extends State<RatingPopup> {
               onPressed: _rating != 0
                   ? () {
                       // Submit with rating (comment optional)
-                      widget.onSubmit(_rating, _commentController.text);
+                      widget.onSubmit(
+                          _rating, _commentController.text, widget.rdvId);
+                      print(widget.rdvId);
                       Navigator.pop(context);
                     }
                   : null, // Disable button if rating is empty
