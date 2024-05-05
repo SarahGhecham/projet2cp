@@ -11,6 +11,7 @@ import 'package:flutter_application_proj2cp/pages/home/components/service_popula
 import 'package:flutter_application_proj2cp/pages/home/search_delegate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DrawerServices extends StatefulWidget {
   const DrawerServices({super.key});
@@ -43,9 +44,9 @@ class _DrawerServicesState extends State<DrawerServices> {
   }
 
   Future<void> fetchData() async {
-    //final prefs = await SharedPreferences.getInstance();
-    //_token = prefs.getString('token') ?? '';
-    //print('Token: $_token');
+    final prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('token') ?? '';
+    print('Token: $_token');
     await Future.wait([
       fetchDomaines(),
       fetchEcoServices(),
@@ -97,7 +98,7 @@ class _DrawerServicesState extends State<DrawerServices> {
 
   Future<void> fetchEcoServices() async {
     final url = Uri.parse(
-        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/pageaccueil/AfficherPrestationsEco');
+        'http://192.168.100.7:3000/pageaccueil/AfficherPrestationsEco');
     try {
       final response = await http.get(
         url,
@@ -199,7 +200,7 @@ class _DrawerServicesState extends State<DrawerServices> {
 
   Future<void> fetchAllPrestations() async {
     final url =
-        Uri.parse('http://10.0.2.2:3000/pageaccueil/AfficherToutesPrestation');
+        Uri.parse('http://192.168.100.7:3000/pageaccueil/AfficherToutesPrestation');
 
     try {
       final response = await http.get(

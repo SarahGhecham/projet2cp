@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_proj2cp/pages/activite/activite_termine.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -10,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Mademande extends StatefulWidget {
   final int demandeId;
   @override
-  const Mademande({Key? key,required this.demandeId});
+  const Mademande({Key? key, required this.demandeId});
   @override
   _MademandePageState createState() => _MademandePageState();
 }
@@ -22,36 +23,34 @@ class _MademandePageState extends State<Mademande> {
   String description = '';
   String localisation = '';
   String imagePrestation = '';
-  String nomPrestation='';
+  String nomPrestation = '';
   String Date = '';
   String Heure = '';
   String dateDebut = '';
   DateTime dateDebut1 = DateTime(0, 0, 0, 0, 0);
-  String dureeMax='';
-  String dureeMin='';
-  int rdvId=0;
-  int artisanId=0;
-  
+  String dureeMax = '';
+  String dureeMin = '';
+  int rdvId = 0;
+  int artisanId = 0;
+
   Future<void> fetchData() async {
     final prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('token') ?? '';
     print('Token: $_token');
-    await Future.wait([sendPostRequest()]);
   }
-
 
   Future<void> annulerDemande() async {
     // Remplacez 'votre_url_backend/confirmerRDV' par l'URL de votre endpoint backend
-    String url = 'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/annulerDemande';
+    String url =
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/annulerDemande';
     print(" 1 ${url}");
 
     // Remplacez 'votre_token_jwt' par votre token JWT
     // Créez les en-têtes de la requête avec le token JWT
     Map<String, String> headers = {
-      
       'Content-Type': 'application/json', // Spécifiez le type de contenu JSON
     };
-    Map<String, dynamic> data = {'demandeId':widget.demandeId};
+    Map<String, dynamic> data = {'demandeId': widget.demandeId};
 
     String jsonData = jsonEncode(data);
     // Envoyez la requête POST avec les en-têtes
@@ -73,20 +72,25 @@ class _MademandePageState extends State<Mademande> {
       print('Erreur lors de l\'envoi de la requête POST: $error');
     }
   }
-  Future<void> sendPostRequest() async {
+
+  Future<void> sendPostRequest(int rdvId, int artisanId, String token) async {
     // Remplacez 'votre_url_backend/confirmerRDV' par l'URL de votre endpoint backend
-    String url = 'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/confirmerRDV';
+    String url =
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/confirmerRDV';
     print(" 2 ${url}");
-    // Remplacez 'votre_token_jwt' par votre token JWT
+
     // Créez les en-têtes de la requête avec le token JWT
     Map<String, String> headers = {
-      
       'Content-Type': 'application/json', // Spécifiez le type de contenu JSON
+      'Authorization': 'Bearer $token', // Ajoutez le jeton d'authentification
     };
+
+    // Créez les données à envoyer dans le corps de la requête
     Map<String, dynamic> data = {'rdvId': rdvId, 'artisanId': artisanId};
 
     String jsonData = jsonEncode(data);
-    // Envoyez la requête POST avec les en-têtes
+
+    // Envoyez la requête POST avec les en-têtes et le corps de la requête
     try {
       var response =
           await http.post(Uri.parse(url), headers: headers, body: jsonData);
@@ -119,6 +123,7 @@ class _MademandePageState extends State<Mademande> {
   @override
   void initState() {
     super.initState();
+    fetchData();
     fetchArtisansData();
   }
 
@@ -136,35 +141,33 @@ class _MademandePageState extends State<Mademande> {
 
       if (response.statusCode == 200) {
         Map<String, dynamic> responseData = json.decode(response.body);
-         print('Response data: $responseData');
+        print('Response data: $responseData');
 
         setState(() {
           artisans = responseData['artisans'];
-          final tarifJourMin = 
-              responseData['tarif']['TarifJourMin'].toString();
-          
-          final tarifJourMax = 
-              responseData['tarif']['TarifJourMax'].toString();
-          final Unite=responseData['tarif']['Unité'];
-          prix='${tarifJourMin}-${tarifJourMax}    da/${Unite}';
+          final tarifJourMin = responseData['tarif']['TarifJourMin'].toString();
+
+          final tarifJourMax = responseData['tarif']['TarifJourMax'].toString();
+          final Unite = responseData['tarif']['Unité'];
+          prix = '${tarifJourMin}-${tarifJourMax}    da/${Unite}';
           print('Response data: $artisans');
           description = responseData['demande']?['description'] ?? 'null';
-          urgente = responseData['demande']?['Urgente'] ;
+          urgente = responseData['demande']?['Urgente'];
           localisation = responseData['demande']?['localisation'] ?? 'null';
           imagePrestation =
               responseData['prestation']?['imagePrestation'] ?? 'null';
-          nomPrestation=responseData['prestation']?['nomPrestation'];
-          rdvId=responseData['rdv']?['id'];
+          nomPrestation = responseData['prestation']?['nomPrestation'];
+          rdvId = responseData['rdv']?['id'];
           dateDebut = responseData['rdv']?['dateDebut'];
           dateDebut1 = DateTime.parse(dateDebut);
           Date =
               '${dateDebut1.year}-${dateDebut1.month.toString().padLeft(2, '0')}-${dateDebut1.day.toString().padLeft(2, '0')}';
 
           Heure =
-             '${dateDebut1.hour.toString().padLeft(2, '0')}:${dateDebut1.minute.toString().padLeft(2, '0')}';
-          dureeMax= responseData['prestation']?['DureeMax'] as String;
-          dureeMin= responseData['prestation']?['DureeMin'] as String;
-          duree='${dureeMin}-${dureeMax}';
+              '${dateDebut1.hour.toString().padLeft(2, '0')}:${dateDebut1.minute.toString().padLeft(2, '0')}';
+          dureeMax = responseData['prestation']?['DureeMax'] as String;
+          dureeMin = responseData['prestation']?['DureeMin'] as String;
+          duree = '${dureeMin}-${dureeMax}';
         });
       } else {
         throw Exception('Failed to load artisans');
@@ -174,13 +177,19 @@ class _MademandePageState extends State<Mademande> {
     }
   }
 
+  void _removeClient(int index) {
+    setState(() {
+      artisans.removeAt(index);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
           Container(
-            margin: EdgeInsets.only(top: 70),
+            margin: EdgeInsets.only(top: 40),
             child: Row(
               children: [
                 IconButton(
@@ -204,6 +213,7 @@ class _MademandePageState extends State<Mademande> {
               ],
             ),
           ),
+          SizedBox(height: 20),
           Expanded(
             child: SingleChildScrollView(
               child: Column(
@@ -267,18 +277,18 @@ class _MademandePageState extends State<Mademande> {
                                     borderRadius: BorderRadius.circular(8.0),
                                     child: imagePrestation != null
                                         ? Image.network(
-                                          imagePrestation, // Utilisez l'URL de la photo de profil
-                                          width: 168,
-                                          height: 174,
-                                          fit: BoxFit.cover,
-                                        )
+                                            imagePrestation, // Utilisez l'URL de la photo de profil
+                                            width: 168,
+                                            height: 174,
+                                            fit: BoxFit.cover,
+                                          )
                                         : Image.asset(
                                             'assets/images/l.png',
                                             width: 168,
                                             height: 174,
                                             fit: BoxFit.cover,
                                           ),
-                                          ),
+                                  ),
                                 ),
                               ],
                             ),
@@ -514,142 +524,150 @@ class _MademandePageState extends State<Mademande> {
                     itemBuilder: (context, index) {
                       bool isFirstItem = index == 0;
                       return GestureDetector(
-                            onTap: () {
-                              // Récupérer l'ID de l'artisan lorsque l'utilisateur clique
-                              var selectedArtisanId = artisans[index]['id'];
-                              print('ID de l\'artisan sélectionné : $selectedArtisanId');
-                              
-                              // Ensuite, vous pouvez utiliser selectedArtisanId dans votre requête
-                              // (envoyer une requête HTTP ou effectuer toute autre opération nécessaire)
-                            },
-                      child: Container(
-                        height: 77,
-                        width: 323,
-                        margin: isFirstItem
-                            ? EdgeInsets.fromLTRB(30, 00, 30, 10)
-                            : EdgeInsets.fromLTRB(30, 10, 30, 10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(18),
-                          color: Color(0xFFD6E3DC),
-                        ),
-                        child: Stack(
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                          onTap: () {
+                            // Récupérer l'ID de l'artisan lorsque l'utilisateur clique
+                            var selectedArtisanId = artisans[index]['id'];
+                            print(
+                                'ID de l\'artisan sélectionné : $selectedArtisanId');
+
+                            // Ensuite, vous pouvez utiliser selectedArtisanId dans votre requête
+                            // (envoyer une requête HTTP ou effectuer toute autre opération nécessaire)
+                          },
+                          child: Container(
+                            height: 77,
+                            width: 323,
+                            margin: isFirstItem
+                                ? EdgeInsets.fromLTRB(30, 00, 30, 10)
+                                : EdgeInsets.fromLTRB(30, 10, 30, 10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(18),
+                              color: Color(0xFFD6E3DC),
+                            ),
+                            child: Stack(
                               children: [
-                                Container(
-                                  margin: EdgeInsets.only(left: 10, top: 14),
-                                  width: 50,
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(45),
-                                    child: artisans.isNotEmpty &&
-                                            artisans[index]['photo'] != null
-                                        ? Image.network(
-                                            artisans[index]['photo'],
-                                            fit: BoxFit.cover,
-                                          )
-                                        : Container(
-                                            color: Colors.grey,
-                                            child: Icon(
-                                              Icons.person,
-                                              size: 40,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                  ),
-                                ),
-                                SizedBox(width: 10),
-                                Column(
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Row(
+                                    Container(
+                                      margin:
+                                          EdgeInsets.only(left: 10, top: 14),
+                                      width: 50,
+                                      height: 50,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(45),
+                                        child: artisans.isNotEmpty &&
+                                                artisans[index]['photo'] != null
+                                            ? Image.network(
+                                                artisans[index]['photo'],
+                                                fit: BoxFit.cover,
+                                              )
+                                            : Container(
+                                                color: Colors.grey,
+                                                child: Icon(
+                                                  Icons.person,
+                                                  size: 40,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 10),
+                                    Column(
                                       children: [
-                                        Padding(
-                                          padding: EdgeInsets.only(top: 13),
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                (artisans[index]['nom'] !=
-                                                            null &&
-                                                        artisans[index]
-                                                                ['prenom'] !=
-                                                            null)
-                                                    ? '${artisans[index]['nom']}   ${artisans[index]['prenom']}'
-                                                    : '',
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w600,
-                                                  fontFamily: 'Lato',
-                                                ),
-                                              ),
-                                              SizedBox(width: 5),
-                                              Icon(Icons.star,
-                                                  color: Color(0xffFABB05)),
-                                              SizedBox(width: 0.5),
-                                              Padding(
-                                                padding:
-                                                    EdgeInsets.only(top: 8),
-                                                child: Text(
-                                                  '${artisans.isNotEmpty ? artisans[index]['note'] : ''}  ', // Change this to your points field
-                                                  style: TextStyle(
-                                                    fontSize: 8,
-                                                    fontWeight: FontWeight.w600,
-                                                    fontFamily: 'Lato',
+                                        Row(
+                                          children: [
+                                            Padding(
+                                              padding: EdgeInsets.only(top: 13),
+                                              child: Row(
+                                                children: [
+                                                  Text(
+                                                    (artisans[index]['nom'] !=
+                                                                null &&
+                                                            artisans[index][
+                                                                    'prenom'] !=
+                                                                null)
+                                                        ? '${artisans[index]['nom']}   ${artisans[index]['prenom']}'
+                                                        : '',
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontFamily: 'Lato',
+                                                    ),
                                                   ),
-                                                ),
+                                                  SizedBox(width: 5),
+                                                  Icon(Icons.star,
+                                                      color: Color(0xffFABB05)),
+                                                  SizedBox(width: 0.5),
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.only(top: 8),
+                                                    child: Text(
+                                                      '${artisans.isNotEmpty ? artisans[index]['note'] : ''}  ', // Change this to your points field
+                                                      style: TextStyle(
+                                                        fontSize: 8,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontFamily: 'Lato',
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
                                   ],
                                 ),
-                              ],
-                            ),
-                            Positioned(
-                              bottom: 15,
-                              right: 35,
-                              child: Container(
-                                height: 17,
-                                width: 60,
-                                padding: EdgeInsets.symmetric(
-                                    horizontal:
-                                        10), // Ajoute un espace supplémentaire autour du bouton
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(3),
-                                  color: Colors.green,
-                                ),
-                                child: TextButton(
-                                  onPressed: () {
-                                    // Ajoutez votre logique onTap ico
-                                    sendPostRequest();
-                                  },
-                                  style: ButtonStyle(
-                                    padding: MaterialStateProperty
-                                        .all<EdgeInsets>(EdgeInsets
-                                            .zero), // Supprime le remplissage du bouton
-                                  ),
-                                  child: Text(
-                                    'Confirmer',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize:
-                                          8, // Ajustez la taille de la police selon vos besoins
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: 'Lato',
+                                Positioned(
+                                  bottom: 15,
+                                  right: 35,
+                                  child: Container(
+                                    height: 17,
+                                    width: 60,
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal:
+                                            10), // Ajoute un espace supplémentaire autour du bouton
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(3),
+                                      color: Colors.green,
+                                    ),
+                                    child: TextButton(
+                                      onPressed: () {
+                                        var selectedArtisanId =
+                                            artisans[index]['id'];
+                                        // Ajoutez votre logique onTap ico
+                                        sendPostRequest(
+                                            rdvId, selectedArtisanId, _token);
+                                        _removeClient(index);
+                                      },
+                                      style: ButtonStyle(
+                                        padding: MaterialStateProperty
+                                            .all<EdgeInsets>(EdgeInsets
+                                                .zero), // Supprime le remplissage du bouton
+                                      ),
+                                      child: Text(
+                                        'Confirmer',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize:
+                                              8, // Ajustez la taille de la police selon vos besoins
+                                          fontWeight: FontWeight.w600,
+                                          fontFamily: 'Lato',
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ));
+                          ));
                     },
                   ),
                 ],

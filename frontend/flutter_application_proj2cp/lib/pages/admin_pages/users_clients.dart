@@ -6,6 +6,7 @@ import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_application_proj2cp/config.dart';
 
 class Client {
   final String name;
@@ -50,6 +51,7 @@ class _ClientsListState extends State<ClientsList> {
         headers: {'Authorization': 'Bearer $_token'},
       );
       if (response.statusCode == 200) {
+        //print("coucou");
         List<dynamic> data = json.decode(response.body);
         final List<Client?> clients = [];
         for (var item in data) {

@@ -13,7 +13,9 @@ import 'package:flutter_application_proj2cp/pages/admin_pages/users_clients.dart
 import 'package:google_fonts/google_fonts.dart';
 
 class DrawerUsers extends StatefulWidget {
-  const DrawerUsers({Key? key}) : super(key: key);
+  final bool showClients;
+
+  const DrawerUsers({Key? key, this.showClients = true}) : super(key: key);
 
   @override
   State<DrawerUsers> createState() => _DrawerUsersState();
@@ -23,9 +25,7 @@ class _DrawerUsersState extends State<DrawerUsers> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _currentPageIndex = 2;
   bool _showClients = true;
-
-    late String _token;
-
+  late String _token;
 
   void onPageSelected(int index) {
     setState(() {
@@ -36,8 +36,9 @@ class _DrawerUsersState extends State<DrawerUsers> {
   @override
   void initState() {
     super.initState();
+    _showClients = widget.showClients;
   }
-  
+
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
