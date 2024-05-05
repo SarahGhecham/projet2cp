@@ -6,6 +6,7 @@ import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_application_proj2cp/config.dart';
 
 class Client {
   final String name;
@@ -43,7 +44,7 @@ class _ClientsListState extends State<ClientsList> {
   }
 
   Future<void> fetchAllClients() async {
-    final url = Uri.parse('http://10.0.2.2:3000/admins/Afficher/Clients');
+    final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/Afficher/Clients');
     try {
       final response = await http.get(
         url,

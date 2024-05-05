@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_application_proj2cp/config.dart';
 
 class Artisan {
   final String nom;
@@ -44,7 +45,7 @@ class _ArtisansListState extends State<ArtisansList> {
   }
 
   Future<void> fetchAllArtisans() async {
-    final url = Uri.parse('http://10.0.2.2:3000/admins/Afficher/Artisans');
+    final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/Afficher/Artisans');
     try {
       final response = await http.get(
         url,

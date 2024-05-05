@@ -7,6 +7,7 @@ import 'package:flutter_application_proj2cp/pages/admin_pages/drawer_users.dart'
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_application_proj2cp/config.dart';
 
 class Prestation {
   final int id;
@@ -78,7 +79,7 @@ class _CreerArtisanState extends State<CreerArtisan> {
       return;
     }
 
-    final url = Uri.parse('http://10.0.2.2:3000/admins/creerartisan');
+    final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/creerartisan');
 
     try {
       final response = await http.post(
@@ -114,7 +115,7 @@ class _CreerArtisanState extends State<CreerArtisan> {
   }
 
   Future<void> fetchDomaines() async {
-    final url = Uri.parse('http://10.0.2.2:3000/pageaccueil/AfficherDomaines');
+    final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/pageaccueil/AfficherDomaines');
     try {
       final response = await http.get(
         url,
@@ -147,7 +148,7 @@ class _CreerArtisanState extends State<CreerArtisan> {
 
   Future<void> fetchPrestationsByDomaine(int domaineId) async {
     final url = Uri.parse(
-        'http://10.0.2.2:3000/admins/AfficherPrestationsByDomaine/$domaineId');
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/AfficherPrestationsByDomaine/$domaineId');
     try {
       final response = await http.get(
         url,

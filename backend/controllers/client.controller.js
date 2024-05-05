@@ -443,14 +443,13 @@ async function validateAddress(address, Cleapi) {
 }
 
 async function updateClient(req, res) {
-    const id = req.userid;
+    const id = req.userId;
 
   // Hash the new password if provided
   /*let hashedPassword = null;
   if (req.body.MotdepasseClient) {
     hashedPassword = await bcrypt.hash(req.body.MotdepasseClient, 10);
   }*/
-
     const updatedClient = {
         Username:req.body.Username ,
         //MotdepasseClient: hashedPassword, // Hashed password
@@ -459,6 +458,7 @@ async function updateClient(req, res) {
         NumeroTelClient: req.body.NumeroTelClient,   
         //  any other client attributes you want to update
     }
+    console.log(updatedClient);
    const fs = require('fs')
 
   // Update the Client model with the updated data
@@ -501,7 +501,7 @@ function updateClientImage(req, res) {
 
     // changer avec votre adressse ip/10.0.2.2(emulateur)
 
-    const imageURL = `http://192.168.85.78:3000/imageClient/${req.file.filename}`; // changer avec votre adressse ip/10.0.2.2(emulateur)
+    const imageURL = `http://192.168.100.7:3000/imageClient/${req.file.filename}`; // changer avec votre adressse ip/10.0.2.2(emulateur)
 
 
   // Update the client's photo URL in the database
@@ -1243,7 +1243,7 @@ function AfficherPrestations(req, res) {
 
 async function DetailsDemandeConfirmee(req, res) {
   const clientId = req.userId;
-  const rdvId = req.body.rdvId;
+  const rdvId = req.params.rdvId;
 
   try {
     const rdv = await models.RDV.findByPk(rdvId, {

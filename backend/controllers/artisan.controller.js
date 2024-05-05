@@ -57,7 +57,7 @@ async function consulterdemandes(req, res) {
     try {
         // Find all ArtisanDemandes where accepte and refuse are null for the given artisanId
         const artisanDemandes = await models.ArtisanDemande.findAll({
-            where: { ArtisanId: artisanId, accepte: null, refuse: null }
+            where: { ArtisanId: artisanId, accepte: 0, refuse: 0 }
         });
 
         console.log('ArtisanDemandes:', artisanDemandes);
@@ -143,9 +143,10 @@ function AfficherProfil(req, res) {
                     Note: result.Note,
                     RayonKm:result.RayonKm ,
                     id:result.id,
-                    Domaine: domaine, // Afficher le domaine
+                    //Domaine: domaine, // Afficher le domaine
                     Prestations: result.Prestations.map(prestation => prestation.NomPrestation) // Afficher seulement les noms des prestations
                 };
+                console.log(artisanInfo);
                 res.status(200).json(artisanInfo);
             } else {
                 res.status(404).json({ message: "Artisan not found" });

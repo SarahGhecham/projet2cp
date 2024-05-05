@@ -8,6 +8,7 @@ import 'package:flutter_application_proj2cp/pages/admin_pages/drawer.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_application_proj2cp/config.dart';
 
 class HeaderAdmin {
   String nomAdmin;
@@ -67,7 +68,7 @@ class _HomePageAdminState extends State<HomePageAdmin> {
   }
 
   Future<void> _loadStatistics() async {
-    final url = Uri.parse('http://10.0.2.2:3000/admins/Obtenir/Statistiques');
+    final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/Obtenir/Statistiques');
     try {
       final response = await http.get(
         url,
@@ -89,7 +90,7 @@ class _HomePageAdminState extends State<HomePageAdmin> {
   }
 
   Future<void> _fetchUserData() async {
-    final url = Uri.parse('http://10.0.2.2:3000/admins/1');
+    final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/1');
     try {
       final response = await http.get(
         url,

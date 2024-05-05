@@ -583,6 +583,7 @@ async function CreerArtisan(req, res) {
                         AdresseArtisan: req.body.AdresseArtisan,
                         NumeroTelArtisan: req.body.NumeroTelArtisan,
                         DomaineId: req.body.DomaineId,
+                        photo:"http://192.168.100.7:3000/imageClient/1714391607342.jpg"
                       };
                       models.Artisan.create(Artisan)
                         .then((result) => {
