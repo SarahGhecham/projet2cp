@@ -12,8 +12,8 @@ import 'package:flutter_application_proj2cp/config.dart';
 class Artisan {
   final String nom;
   final String prenom;
-  final String image;
-  Artisan({required this.nom, required this.prenom, required this.image});
+  final String? image;
+  Artisan({required this.nom, required this.prenom, this.image});
 }
 
 class ArtisansList extends StatefulWidget {
@@ -45,7 +45,7 @@ class _ArtisansListState extends State<ArtisansList> {
   }
 
   Future<void> fetchAllArtisans() async {
-    final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/Afficher/Artisans');
+    final url = Uri.parse('http://10.0.2.2:3000/admins/Afficher/Artisans');
     try {
       final response = await http.get(
         url,
@@ -59,7 +59,7 @@ class _ArtisansListState extends State<ArtisansList> {
           final prenom = item['PrenomArtisan'] as String?;
           final photoDeProfil = item['photo'] as String?;
 
-          if (nom != null && prenom != null && photoDeProfil != null) {
+          if (nom != null && prenom != null) {
             artisans.add(Artisan(
               nom: nom,
               prenom: prenom,
@@ -76,6 +76,38 @@ class _ArtisansListState extends State<ArtisansList> {
       }
     } catch (error) {
       print('Error fetching artisans $error');
+    }
+  }
+
+  Widget _buildProfileImage(Artisan? artisan) {
+    if (artisan?.image != null && artisan!.image!.isNotEmpty) {
+      return Container(
+        width: 65,
+        height: 65,
+        decoration: BoxDecoration(
+          color: creme,
+          borderRadius: BorderRadius.circular(30),
+          image: DecorationImage(
+            image:
+                NetworkImage(artisan.image!), // Use ! to assert non-nullability
+            fit: BoxFit.cover,
+          ),
+        ),
+      );
+    } else {
+      // Display default profile picture if image URL is null or empty
+      return Container(
+        width: 65,
+        height: 65,
+        decoration: BoxDecoration(
+          color: creme,
+          borderRadius: BorderRadius.circular(30),
+          image: DecorationImage(
+            image: defaultPfp,
+            fit: BoxFit.cover,
+          ),
+        ),
+      );
     }
   }
 
@@ -98,18 +130,7 @@ class _ArtisansListState extends State<ArtisansList> {
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
-                  Container(
-                    width: 65,
-                    height: 65,
-                    decoration: BoxDecoration(
-                      color: creme,
-                      borderRadius: BorderRadius.circular(10),
-                      image: DecorationImage(
-                        image: NetworkImage(artisan?.image ?? ''),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
+                  _buildProfileImage(artisan),
                   SizedBox(
                     width: 15,
                   ),
@@ -119,7 +140,7 @@ class _ArtisansListState extends State<ArtisansList> {
                       textStyle: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.w500,
-                        fontSize: 12,
+                        fontSize: 14,
                       ),
                     ),
                   )

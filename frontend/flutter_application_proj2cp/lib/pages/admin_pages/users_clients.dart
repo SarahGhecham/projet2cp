@@ -44,13 +44,14 @@ class _ClientsListState extends State<ClientsList> {
   }
 
   Future<void> fetchAllClients() async {
-    final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/Afficher/Clients');
+    final url = Uri.parse('http://10.0.2.2:3000/admins/Afficher/Clients');
     try {
       final response = await http.get(
         url,
         headers: {'Authorization': 'Bearer $_token'},
       );
       if (response.statusCode == 200) {
+        //print("coucou");
         List<dynamic> data = json.decode(response.body);
         final List<Client?> clients = [];
         for (var item in data) {

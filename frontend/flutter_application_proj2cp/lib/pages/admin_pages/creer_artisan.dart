@@ -1,12 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/drawer_services.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/drawer_users.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/users_artisans.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/drawer_users.dart';
 import 'package:flutter_application_proj2cp/config.dart';
 
 class Prestation {
@@ -79,7 +82,7 @@ class _CreerArtisanState extends State<CreerArtisan> {
       return;
     }
 
-    final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/creerartisan');
+    final url = Uri.parse('http://10.0.2.2:3000/admins/creerartisan');
 
     try {
       final response = await http.post(
@@ -99,7 +102,14 @@ class _CreerArtisanState extends State<CreerArtisan> {
 
       if (response.statusCode == 201) {
         var responseData = json.decode(response.body);
-        // Handle successful creation (optional)
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DrawerUsers(
+              showClients: false,
+            ),
+          ),
+        );
         print('Artisan created successfully');
       } else if (response.statusCode == 400) {
         var responseData = json.decode(response.body);
@@ -115,7 +125,7 @@ class _CreerArtisanState extends State<CreerArtisan> {
   }
 
   Future<void> fetchDomaines() async {
-    final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/pageaccueil/AfficherDomaines');
+    final url = Uri.parse('http://10.0.2.2:3000/pageaccueil/AfficherDomaines');
     try {
       final response = await http.get(
         url,
@@ -148,7 +158,7 @@ class _CreerArtisanState extends State<CreerArtisan> {
 
   Future<void> fetchPrestationsByDomaine(int domaineId) async {
     final url = Uri.parse(
-        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/AfficherPrestationsByDomaine/$domaineId');
+        'http://10.0.2.2:3000/admins/AfficherPrestationsByDomaine/$domaineId');
     try {
       final response = await http.get(
         url,
@@ -389,6 +399,8 @@ class _CreerArtisanState extends State<CreerArtisan> {
                 child: TextFormField(
                   controller: _passwordArtisanController,
                   keyboardType: TextInputType.text,
+                  obscureText: true, // Add this line to obscure the text
+
                   decoration: const InputDecoration(
                     hintText: "Mot de passe",
                     hintStyle: TextStyle(
@@ -551,7 +563,7 @@ class _CreerArtisanState extends State<CreerArtisan> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(bottom: 10, left: 30, right: 30),
+              padding: EdgeInsets.only(left: 30, right: 30),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
