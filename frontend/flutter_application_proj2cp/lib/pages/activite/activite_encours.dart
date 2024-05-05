@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_proj2cp/config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Demande {
   final String name;
@@ -39,17 +40,28 @@ class DemandesEnCours extends StatefulWidget {
 
 class _DemandesEnCoursState extends State<DemandesEnCours> {
   List<Demande?> demandesEnCours = [];
+  late String _token;
 
   @override
   void initState() {
     super.initState();
     fetchDemandesEnCours();
   }
-
+Future<void> fetchData() async {
+    final prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('token') ?? '';
+    print('Token: $_token');
+  }
   Future<void> fetchDemandesEnCours() async {
-    try {
+   try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token') ?? '';
       final response = await http.get(
-        Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/AfficherActiviteEncours/3'),
+        Uri.parse(
+            'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/AfficherActiviteEncours'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
       );
 
       if (response.statusCode == 200) {

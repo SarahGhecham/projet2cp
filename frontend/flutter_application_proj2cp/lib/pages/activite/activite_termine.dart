@@ -8,7 +8,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Demande {
   final String name;
@@ -22,12 +22,10 @@ class Demande {
       required this.artisan});
 }
 
-
 class Artisan {
   final String nomArtisan;
   final String prenomArtisan;
   final int points; // Use double for rating
-
 
   Artisan({
     required this.nomArtisan,
@@ -36,11 +34,9 @@ class Artisan {
   });
 }
 
-
 class ActiviteTerminee {
   final dynamic demande;
   final dynamic rdv;
-
 
   ActiviteTerminee({
     required this.demande,
@@ -48,16 +44,14 @@ class ActiviteTerminee {
   });
 }
 
-
 class DemandesTermines extends StatefulWidget {
   @override
   _DemandesTerminesState createState() => _DemandesTerminesState();
 }
 
-
 class _DemandesTerminesState extends State<DemandesTermines> {
   List<Demande?> demandesTerminees = [];
-
+  late String _token;
 
   @override
   void initState() {
@@ -65,41 +59,47 @@ class _DemandesTerminesState extends State<DemandesTermines> {
     fetchDemandesTerminees();
   }
 
+  Future<void> fetchData() async {
+    final prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('token') ?? '';
+    print('Token: $_token');
+  }
 
   Future<void> fetchDemandesTerminees() async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token') ?? '';
       final response = await http.get(
-        Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/AfficherActiviteTerminee/3'),
+        Uri.parse(
+            'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/AfficherActiviteTerminee'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
       );
-
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         final List<Demande?> demandes = [];
         print('data: $data');
 
-
         for (var item in data) {
           final demande = item['demande'];
           final rdv = item['rdvAffich'];
 
-
-
-
           if (demande != null && rdv != null) {
-           
             final String name = demande['Prestation']['nomPrestation'] ?? '';
 
+            final String orderTime =
+                rdv['DateFin'] + ', ' + rdv['HeureFin'] ?? '';
+            final String demandeImage =
+                demande['Prestation']['imagePrestation'] ?? '';
+            final String nomArtisan =
+                demande['Artisans'][0]['NomArtisan'] ?? '';
 
-            final String orderTime = rdv['DateFin'] + ', ' + rdv['HeureFin'] ?? '';
-            final String demandeImage =demande['Prestation']['imagePrestation'] ?? '';
-            final String nomArtisan = demande['Artisans'][0]['NomArtisan'] ?? '';
-
-
-            final String prenomArtisan = demande['Artisans'][0]['PrenomArtisan'] ?? '';
-            final String noteAsString = demande['Artisans'][0]['Note'] ?? '';
+            final String prenomArtisan =
+                demande['Artisans'][0]['PrenomArtisan'] ?? '';
+            final String noteAsString = rdv['NoteEvaluation'] ?? '';
             final int points = int.tryParse(noteAsString) ?? 0;
-
 
             demandes.add(Demande(
               name: name,
@@ -114,7 +114,6 @@ class _DemandesTerminesState extends State<DemandesTermines> {
           }
         }
 
-
         setState(() {
           demandesTerminees = demandes;
         });
@@ -125,7 +124,6 @@ class _DemandesTerminesState extends State<DemandesTermines> {
       print('Error fetching activite terminee: $error');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -157,9 +155,10 @@ class _DemandesTerminesState extends State<DemandesTermines> {
                               color: creme,
                               borderRadius: BorderRadius.circular(10),
                               image: DecorationImage(
-                              image: NetworkImage(demande?.demandeImage ?? ''),
-                              fit: BoxFit.cover,
-                            ),
+                                image:
+                                    NetworkImage(demande?.demandeImage ?? ''),
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                           SizedBox(width: 15.0),
@@ -210,7 +209,7 @@ class _DemandesTerminesState extends State<DemandesTermines> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  '${demande.artisan.nomArtisan}  ${demande.artisan.nomArtisan[0]}.',
+                                  '${demande.artisan.nomArtisan}',
                                   overflow: TextOverflow.ellipsis,
                                   style: GoogleFonts.poppins(
                                     textStyle: TextStyle(
@@ -264,8 +263,4 @@ class _DemandesTerminesState extends State<DemandesTermines> {
       ),
     );
   }
-  
 }
-
-
-

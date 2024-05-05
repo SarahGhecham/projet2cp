@@ -54,9 +54,15 @@ class _DemandesTerminesArtisanState extends State<DemandesTerminesArtisan> {
 
   Future<void> fetchDemandesTerminees() async {
   try {
-    final response = await http.get(
-      Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/artisan/AfficherActiviteTerminee'),
-    );
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token') ?? '';
+      final response = await http.get(
+        Uri.parse(
+            'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/artisan/AfficherActiviteTerminee'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);

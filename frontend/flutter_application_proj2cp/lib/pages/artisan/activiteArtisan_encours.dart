@@ -43,9 +43,15 @@ class _DemandesEnCoursArtisanState extends State<DemandesEnCoursArtisan> {
   }
 
 Future<void> fetchDemandesArtisanEnCours() async {
-  try {
+ try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token') ?? '';
       final response = await http.get(
-        Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/artisan/AfficherActiviteEncours'),
+        Uri.parse(
+            'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/artisan/AfficherActiviteEncours'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
       );
 
       if (response.statusCode == 200) {

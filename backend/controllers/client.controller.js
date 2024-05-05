@@ -932,7 +932,7 @@ async function annulerDemande(req, res) {
 }
 
 async function ActiviteEncours(req, res) {
-  const clientId = req.params.id;
+  const clientId = req.userId;
 
 try {
   const maintenant = new Date();
@@ -1001,7 +1001,7 @@ try {
 
 
 async function ActiviteTerminee(req, res) {
-    const clientId = req.params.id;
+    const clientId = req.userId;
   
   
     try {
@@ -1019,6 +1019,15 @@ async function ActiviteTerminee(req, res) {
       const rdvs = await models.RDV.findAll({
         where: { DemandeId: demandeIds },
         attributes: ['id', 'DemandeId', 'annule', 'DateFin', 'HeureFin'],
+        include: [
+          {
+            
+                model: models.Evaluation,
+                attributes: ['Note'],
+              
+            
+          },
+        ],
       });
   
   
@@ -1055,8 +1064,8 @@ async function ActiviteTerminee(req, res) {
             const rdvAffich = {
               rdvId: rdv.id,
               DateFin: formattedDate,
-              HeureFin: rdv.HeureFin
-            };
+              HeureFin: rdv.HeureFin,
+              NoteEvaluation: rdv.Evaluation ? rdv.Evaluation.Note : null,            };
   
   
             const demande = await models.Demande.findByPk(rdv.DemandeId, {
@@ -1068,9 +1077,10 @@ async function ActiviteTerminee(req, res) {
                 },
                 {
                   model: models.Artisan, // Inclure les détails de l'artisan
-                  attributes: ['id', 'NomArtisan', 'PrenomArtisan', 'Note'],
+                  attributes: ['id', 'NomArtisan', 'PrenomArtisan'],
                   through: { attributes: [] },
                 },
+                
               ],
             });
   
