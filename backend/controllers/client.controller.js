@@ -915,7 +915,7 @@ async function annulerDemande(req, res) {
   const demandeId = req.body.demandeId;
 
     try {
-        const demande = await models.RDV.findByPk(demandeId);
+        const demande = await models.Demande.findByPk(demandeId);
         if (!demande) {
             return res.status(404).json({ message: `La demande avec l'ID ${demandeId} n'existe pas.` });
         }
