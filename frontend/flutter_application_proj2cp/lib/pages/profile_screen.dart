@@ -132,6 +132,7 @@ class _ProfileState extends State<Profile> {
 
         if (data['success'] == true) {
           // Client image updated successfully
+          await _fetchUserData();
           print('Client image updated successfully');
         } else {
           // Image upload failed
@@ -202,8 +203,6 @@ class _ProfileState extends State<Profile> {
     _userData['AdresseClient'] = _addressController.text.isNotEmpty
         ? _addressController.text
         : _userData['AdresseClient'];
-
-    _userData['photo'] = _pickedImagePath;
   }
 
   @override
