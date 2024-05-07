@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String commentaire = '';
   Map<String, dynamic> _userData = {};
   final defaultImageUrl =
-      'http://192.168.100.7:3000/imageClient/1714391607342.jpg';
+      'http://192.168.54.173:3000/imageClient/1714391607342.jpg';
 
   Future<void> fetchAllPrestations() async {
     final url = Uri.parse(
@@ -157,13 +157,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String Name = '';
   int retrievedRdvId = 0;
-  Future<Map<String, dynamic>> fetchActiviteTermineeNonEvaluee() async {
+  Future<Map<String, dynamic>> fetchActiviteTermineeNonEvaluee(
+      String token) async {
     final url = Uri.parse(
         'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/AfficherActiviteTermineeNonEvaluee');
 
     // Construct the request headers
     final headers = {
-      'Authorization': 'Bearer $_token'
+      'Authorization': 'Bearer $token'
     }; // Replace this with your endpoint
 
     try {
@@ -258,7 +259,7 @@ class _HomeScreenState extends State<HomeScreen> {
       fetchTopPrestations(),
       _fetchUserData(),
       fetchAllPrestations(),
-      fetchActiviteTermineeNonEvaluee(),
+      fetchActiviteTermineeNonEvaluee(_token),
     ]);
     showRatingDialog();
   }
