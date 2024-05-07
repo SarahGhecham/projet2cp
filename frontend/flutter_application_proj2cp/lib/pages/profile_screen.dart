@@ -4,6 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:convert';
+
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
+import 'dart:async';
+
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -45,6 +51,7 @@ class _ProfileState extends State<Profile> {
     await Future.wait([_fetchUserData()]);
   }
 
+
   Future<void> _fetchUserData() async {
     final url = Uri.parse(
         'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/Affichermonprofil'); // Replace with your endpoint
@@ -84,6 +91,19 @@ class _ProfileState extends State<Profile> {
     }
   }
 
+  bool _isAddressMatchingSuggestion(String address) {
+    String cleanedAddress =
+        address.replaceAll(' ', ''); // Remove spaces from the address
+    for (var suggestion in _predictions) {
+      String cleanedSuggestion = suggestion["description"]
+          .replaceAll(' ', ''); // Remove spaces from the suggestion
+      if (cleanedSuggestion == cleanedAddress) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   List<dynamic> _predictions = [];
   bool _showSuggestions = true;
   bool _suggestionSelected = false;
@@ -100,7 +120,9 @@ class _ProfileState extends State<Profile> {
     setState(() {
       _predictions = data['predictions'];
     });
-  }
+  }  
+  
+
 
   Future<void> updateClientImage(File image, String token) async {
     // Replace "http://localhost:3000" with your server URL
@@ -330,15 +352,22 @@ class _ProfileState extends State<Profile> {
                     height: 33,
                     child: ElevatedButton(
                       onPressed: () {
-                        if (_isEditing && _suggestionSelected) {
-                          _saveChanges();
-                          updateClient(_userData);
-                          _toggleEditing(false);
-                        } else if (_isEditing && !_suggestionSelected) {
-                          setState(() {
-                            _addressErrorText =
-                                'Veuillez choisir un emplacement de la liste ';
-                          });
+                        if (_isEditing) {
+                          // Check if the address field matches any of the suggestions
+                          bool addressMatchesSuggestion =
+                              _isAddressMatchingSuggestion(
+                                  _addressController.text);
+
+                          if (addressMatchesSuggestion || _suggestionSelected) {
+                            _saveChanges();
+                            updateClient(_userData);
+                            _toggleEditing(false);
+                          } else {
+                            setState(() {
+                              _addressErrorText =
+                                  'Veuillez choisir un emplacement de la liste ';
+                            });
+                          }
                         } else {
                           _toggleEditing(true);
                         }
