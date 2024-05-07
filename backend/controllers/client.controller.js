@@ -1116,7 +1116,7 @@ async function ActiviteTerminee(req, res) {
     }
   }
   async function ActiviteTermineeNonEvaluee(req, res) {
-    const clientId = req.Userid;
+    const clientId = req.userId;
   
     try {
       const maintenant = new Date();
