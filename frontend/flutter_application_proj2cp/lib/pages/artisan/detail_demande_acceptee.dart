@@ -1,26 +1,245 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_application_proj2cp/config.dart';
+import 'package:intl/intl.dart';
 
 class DemandeAcceptee extends StatefulWidget {
-  const DemandeAcceptee({Key? key}) : super(key: key);
+  final int demandeID;
+  final int rdvID;
+  @override
+  const DemandeAcceptee({
+    Key? key,
+    required this.demandeID,
+    required this.rdvID,
+  }) : super(key: key);
 
   @override
   State<DemandeAcceptee> createState() => _DemandeAccepteeState();
 }
 
 class _DemandeAccepteeState extends State<DemandeAcceptee> {
-  var nomArtisan = "Karim Mouloud";
-  var note = "4.7";
-  var telephone = "0771253705";
-  var date = "merc 13 jan";
-  var heure = "13h";
-  var adresse = "Cite 289 logements Jijel N113";
-  var prix = "1000da";
-  var prestation = "Peinture de mûrs";
-  var duree = "1h-2h";
-  bool urgente = true;
-  bool ecologique = true;
+  late String _token;
+  Map<String, dynamic> data = {};
+  Future<void> fetchData() async {
+    final prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('token') ?? '';
+    print('Token: $_token');
+    await Future.wait([_fetchUserData()]);
+  }
+
+  Future<void> annulerDemande(String token, int demandeid) async {
+    // Construct the URL for your backend endpoint
+    String url =
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/annulerDemande';
+
+    // Replace 'your_auth_token' with your actual JWT token
+
+    // Create request headers with the JWT token
+    Map<String, String> headers = {
+      'Content-Type': 'application/json', // Specify JSON content type
+      'Authorization': 'Bearer $token', // Add the JWT token to the headers
+    };
+
+    // Construct the request body
+    Map<String, dynamic> data = {'demandeId': demandeid};
+    String jsonData = jsonEncode(data);
+
+    try {
+      // Send the POST request with the headers and body
+      var response =
+      await http.post(Uri.parse(url), headers: headers, body: jsonData);
+
+      // Check the response status code
+      if (response.statusCode == 200) {
+        // Request succeeded
+        print('POST request successful');
+      } else {
+        // Request failed
+        print('POST request failed with status code: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Handle errors
+      print('Error sending POST request: $error');
+    }
+  }
+
+  Future<void> _fetchUserData() async {
+    final url = Uri.parse(
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/artisan/DetailsDemandeConfirmee/${widget.rdvID}');
+    try {
+      final response = await http.get(
+        url,
+        headers: {'Authorization': 'Bearer $_token'},
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          final responseData = json.decode(response.body);
+
+          // Artisan data
+          final artisanData =
+          responseData != null ? responseData['client'] ?? {} : {};
+          final client = {
+            'Username': artisanData != null ? artisanData['Username'] ?? '' : '',
+
+          };
+
+// RDV affich data
+          final rdvAffichData =
+          responseData != null ? responseData['rdvAffich'] ?? {} : {};
+          String dateDebutString =
+          rdvAffichData != null ? rdvAffichData['DateDebut'] ?? '' : '';
+          String heureDebutString =
+          rdvAffichData != null ? rdvAffichData['HeureDebut'] ?? '' : '';
+
+          String formattedDateDebut = '';
+          String formattedHeureDebut = '';
+
+          if (dateDebutString.isNotEmpty) {
+            // Parse date string to DateTime object
+            DateTime dateDebut = DateTime.parse(dateDebutString);
+
+            // Format the date into 'dd/MM/yyyy' format
+            formattedDateDebut =
+                DateFormat('dd/MM/yyyy HH:mm').format(dateDebut);
+          }
+
+          if (heureDebutString.isNotEmpty) {
+            // Convert time string to TimeOfDay object
+            TimeOfDay heureDebut = TimeOfDay.fromDateTime(
+                DateFormat('HH:mm:ss').parse(heureDebutString));
+
+            // Format the TimeOfDay object into 'HH:mm' format
+            formattedHeureDebut =
+                heureDebut.format(context); // context is your BuildContext
+          }
+
+          final rdvAffich = {
+            'date': formattedDateDebut,
+            'heure': formattedHeureDebut,
+          };
+
+// Prestation data
+          final prestationData =
+          responseData != null ? responseData['prestation'] ?? {} : {};
+          final prestation = {
+            'Nom': prestationData != null ? prestationData['Nom'] ?? '' : '',
+            'Materiel':
+            prestationData != null ? prestationData['Materiel'] ?? '' : '',
+            'DureeMax':
+            prestationData != null ? prestationData['DureeMax'] ?? '' : '',
+            'DureeMin':
+            prestationData != null ? prestationData['DureeMin'] ?? '' : '',
+            'Ecologique': prestationData != null
+                ? prestationData['Ecologique'] ?? ''
+                : '',
+            'Image':
+            prestationData != null ? prestationData['Image'] ?? '' : '',
+            'TarifJourMin': prestationData != null
+                ? prestationData['TarifJourMin'] ?? ''
+                : '',
+            'TarifJourMax': prestationData != null
+                ? prestationData['TarifJourMax'] ?? ''
+                : '',
+          };
+
+// Demande affich data
+          final demandeAffichData =
+          responseData != null ? responseData['demandeAffich'] ?? {} : {};
+          final demandeAffich = {
+            'Description': demandeAffichData != null
+                ? demandeAffichData['Description'] ?? ''
+                : '',
+            'Localisation': demandeAffichData != null
+                ? demandeAffichData['Localisation'] ?? ''
+                : '',
+            'Urgent': demandeAffichData != null
+                ? demandeAffichData['Urgente'] ?? ''
+                : '',
+          };
+
+// Combine all data
+          data = {
+            'client': client,
+            'rdvAffich': rdvAffich,
+            'prestation': prestation,
+            'demandeAffich': demandeAffich,
+          };
+        });
+        print('_userData: $data'); // Debugging print
+      } else {
+        print('Failed to fetch user data');
+        print('Response Status Code: ${response.statusCode}');
+        print('Response Body: ${response.body}');
+      }
+    } catch (error) {
+      print('Error fetching user data: $error');
+    }
+  }
+
+  /* Future<void> _fetchUserData() async {
+    final url = Uri.parse(
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/DetailsDemandeConfirmee/${widget.rdvID}'); // Replace with your endpoint
+    try {
+      final response = await http.get(
+        url,
+        headers: {'Authorization': 'Bearer $_token'},
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          final responseData = json.decode(response.body);
+          data = {
+            'artisan': {
+              'Nom': responseData['artisan']['NomArtisan'],
+              'Prenom': responseData['artisan']['PrenomArtisan'],
+              'Note': responseData['artisan']['Note'],
+              'Numero': responseData['artisan']['NumeroTelArtisan'],
+              'Photo': responseData['artisan']['photo'],
+            },
+            'rdvAffich': {
+              'date': responseData['rdvAffich']['DateDebut'],
+              'heure': responseData['redAffich']['HeureDebut'],
+            },
+            'prestation': {
+              'Nom': responseData['prestation']['NomPrestation'],
+              'Materiel': responseData['prestation']['Maéeriel'],
+              'DureeMax': responseData['prestation']['DuréeMax'],
+              'DurreMin': responseData['prestation']['DuréeMin'],
+              'Ecologique': responseData['prestation']['Ecologique'],
+              'Image': responseData['prestation']['Image'],
+              'TarifJourMin': responseData['prestation']['TarifJourMin'],
+              'TarifJourMax': responseData['prestation']['TarifJourMax'],
+            },
+            'demandeAffich': {
+              'Description': responseData['demandeAffich']['Description'],
+              'Localisation': responseData['demandeAffich']['Localisation'],
+              'Urgent': responseData['demandeAffich']['Urgente'],
+            },
+          };
+        });
+        print('_userData: $data'); // Debugging print
+      } else {
+        print('Failed to fetch user data');
+        print('Response Status Code: ${response.statusCode}');
+        print('Response Body: ${response.body}');
+      }
+    } catch (error) {
+      print('Error fetching user data: $error');
+    }
+  }*/
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +249,11 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
         backgroundColor: Colors.white,
         title: Row(
           children: [
-            const SizedBox(width: 90),
+            const SizedBox(width: 100),
             Text(
               "Details",
               style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
+                  fontSize: 20, fontWeight: FontWeight.w600),
             ),
           ],
         ),
@@ -57,7 +274,8 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment:
+                    CrossAxisAlignment.start, // Align children to the start
                     children: [
                       Container(
                         width: 80,
@@ -68,8 +286,8 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8.0),
-                          child: Image.asset(
-                            'assets/lavage_sol.png',
+                          child: Image.network(
+                            data['prestation']['Image'].toString(),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -88,14 +306,15 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
                                     text: TextSpan(
                                       children: [
                                         TextSpan(
-                                          text: "Peinture de Murs et Plafonds",
+                                          text: data['prestation']['Nom'],
                                           style: GoogleFonts.poppins(
                                             color: const Color(0xFF05564B),
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
-                                        if (ecologique) ...[
+                                        if (data['prestation']
+                                        ['Ecologique']) ...[
                                           WidgetSpan(
                                             child: Padding(
                                               padding: const EdgeInsets.only(
@@ -116,7 +335,7 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              "Acceptée le 23 Jan à 12:00",
+                              "Confirmé le 23 Jan à 12:00",
                               softWrap: true,
                               style: GoogleFonts.poppins(fontSize: 12),
                             ),
@@ -132,18 +351,18 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 50.0),
               child: Text(
-                "Client",
+                "Préstataire",
                 style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                    fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
             const SizedBox(height: 20),
             Center(
               child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: 300, // Limiting maximum width
+                ),
                 height: 80,
-                width: 300,
                 decoration: BoxDecoration(
                   color: const Color(0xFFDCC8C5).withOpacity(0.22),
                   borderRadius: BorderRadius.circular(10),
@@ -158,45 +377,46 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
                     Container(
                       height: 50,
                       width: 50,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(
-                          image: AssetImage("assets/pdp_user.jpg"),
+                          image: AssetImage(
+                            "assets/artisan.jpg",
+                          ),
                           fit: BoxFit.cover,
                         ),
                       ),
                     ),
-                    SizedBox(width: 15),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 15),
-                        Row(
-                          children: [
-                            Text(
-                              nomArtisan,
-                              style: GoogleFonts.poppins(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
+                    SizedBox(width: 15), // Add spacing between image and column
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment:
+                        CrossAxisAlignment.start, // Align children to start
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            data['client']['Username'],
+                            style: GoogleFonts.poppins(
+                                fontSize: 15, fontWeight: FontWeight.w600),
+                          ),
+                          Row(
+                            children: [
+                              SvgPicture.asset("assets/telephone.svg"),
+                              SizedBox(
+                                  width:
+                                  5), // Adjust spacing between phone icon and number
+                              Expanded(
+                                child: Text(
+                                  "0550765320",
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                        Row(
-                          children: [
-                            SvgPicture.asset("assets/telephone.svg"),
-                            SizedBox(width: 10),
-                            Text(
-                              telephone,
-                              style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -208,16 +428,15 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
               child: Text(
                 "Informations",
                 style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                    fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
             SizedBox(height: 20),
             Center(
               child: Container(
-                height: 430,
-                width: 300,
+                constraints: BoxConstraints(
+                  maxWidth: 300, // Limiting maximum width
+                ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
@@ -228,79 +447,73 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      SizedBox(height: 10),
                       Row(
                         children: [
                           SizedBox(width: 10),
-                          SvgPicture.asset("assets/calendar.svg",
-                              color: Color(0xff05564B).withOpacity(1)),
+                          SvgPicture.asset("assets/calendar.svg"),
                           SizedBox(width: 15),
                           Text(
-                            date,
+                            data['rdvAffich']['date'].toString(),
                             style: GoogleFonts.poppins(fontSize: 15),
                           ),
-                          SizedBox(width: 10),
+                          SizedBox(width: 5),
                           Text(
-                            heure,
-                            style: GoogleFonts.poppins(
-                              color: Color(0xFF777777),
-                              fontSize: 15,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 15),
-                      Row(
-                        children: [
-                          SizedBox(width: 8),
-                          SvgPicture.asset("assets/clock.svg"),
-                          SizedBox(width: 15),
-                          Text(
-                            duree,
+                            data['rdvAffich']['heure'].toString(),
                             style: GoogleFonts.poppins(fontSize: 15),
                           ),
                         ],
                       ),
-                      SizedBox(height: 15),
+                      SizedBox(height: 20),
                       Row(
                         children: [
                           SizedBox(width: 6),
                           SvgPicture.asset("assets/pin_light.svg"),
                           SizedBox(width: 10),
-                          Text(
-                            adresse,
-                            style: GoogleFonts.poppins(fontSize: 15),
+                          Expanded(
+                            child: Text(
+                              data['demandeAffich']['Localisation'].toString(),
+                              style: GoogleFonts.poppins(fontSize: 15),
+                            ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 15),
+                      SizedBox(height: 20),
                       Row(
                         children: [
                           SizedBox(width: 10),
                           SvgPicture.asset("assets/money.svg"),
                           SizedBox(width: 15),
                           Text(
-                            prix,
+                            "${data['prestation']['TarifJourMin']} - ${data['prestation']['TarifJourMax']}",
                             style: GoogleFonts.poppins(fontSize: 15),
                           ),
-                        ],
-                      ),
-                      SizedBox(height: 15),
-                      Row(
-                        children: [
-                          SizedBox(width: 10),
-                          SvgPicture.asset("assets/outils.svg",
-                              color: Color(0xff05564B).withOpacity(1)),
-                          SizedBox(width: 15),
                           Text(
-                            prestation,
-                            softWrap: true,
-                            style: GoogleFonts.poppins(fontSize: 15),
+                            "/h",
+                            style: GoogleFonts.poppins(
+                                color: Color(0xFF777777), fontSize: 15),
                           ),
                         ],
                       ),
-                      SizedBox(height: 15),
+                      SizedBox(height: 20),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(width: 15),
+                          SvgPicture.asset("assets/outils.svg"),
+                          SizedBox(width: 15),
+                          Expanded(
+                            child: Text(
+                              data['prestation']['Materiel'].toString(),
+                              softWrap: true,
+                              style: GoogleFonts.poppins(fontSize: 15),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
                       Row(
                         children: [
                           SizedBox(width: 10),
@@ -308,33 +521,36 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
                               color: Color(0xff05564B).withOpacity(1)),
                           SizedBox(width: 15),
                           Text(
-                            urgente ? "Urgente" : "Pas urgente",
+                            data['demandeAffich']['Urgent']
+                                ? "Urgente"
+                                : "Pas urgente",
                             style: GoogleFonts.poppins(fontSize: 15),
                           ),
                         ],
                       ),
-                      SizedBox(height: 40),
+                      SizedBox(height: 30),
                       Stack(
                         children: [
                           Positioned(
                             child: Container(
-                              height: 110,
-                              width: 270,
+                              constraints: BoxConstraints(
+                                  maxWidth: 270), // Limiting maximum width
+                              height: 150,
                               decoration: BoxDecoration(
-                                color:
-                                    const Color(0xFFDCC8C5).withOpacity(0.22),
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color: const Color(0xFFDCC8C5),
-                                  width: 2,
-                                ),
-                              ),
+                                  color:
+                                  const Color(0xFFDCC8C5).withOpacity(0.22),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: const Color(0xFFDCC8C5),
+                                    width: 2,
+                                  )),
                               child: Center(
                                 child: Padding(
                                   padding: const EdgeInsets.all(20.0),
                                   child: Text(
-                                    "Nettoyage complet et professionnel des sols avec des produits efficaces et non nocifs ",
-                                    style: GoogleFonts.poppins(fontSize: 12),
+                                    data['demandeAffich']['Description']
+                                        .toString(),
+                                    style: GoogleFonts.poppins(),
                                   ),
                                 ),
                               ),
@@ -355,10 +571,9 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
                                   child: Text(
                                     "Description",
                                     style: GoogleFonts.poppins(
-                                      color: const Color(0xFF05564B),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                        color: const Color(0xFF05564B),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600),
                                   ),
                                 ),
                               ),
@@ -376,10 +591,12 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
               child: Align(
                 alignment: Alignment.bottomRight,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    annulerDemande(_token, widget.demandeID);
+                  },
                   style: ButtonStyle(
                     minimumSize:
-                        MaterialStateProperty.all<Size>(const Size(100, 30)),
+                    MaterialStateProperty.all<Size>(const Size(100, 30)),
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
