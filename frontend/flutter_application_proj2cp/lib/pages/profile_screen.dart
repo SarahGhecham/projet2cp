@@ -35,6 +35,7 @@ class _ProfileState extends State<Profile> {
     _isEditing = false;
     _scrollController = ScrollController();
     bool _showSuggestions = false;
+
     fetchData();
   }
 
@@ -50,7 +51,6 @@ class _ProfileState extends State<Profile> {
     print('Token: $_token');
     await Future.wait([_fetchUserData()]);
   }
-
 
   Future<void> _fetchUserData() async {
     final url = Uri.parse(
@@ -92,16 +92,21 @@ class _ProfileState extends State<Profile> {
   }
 
   bool _isAddressMatchingSuggestion(String address) {
-    String cleanedAddress =
-        address.replaceAll(' ', ''); // Remove spaces from the address
+    String cleanedAddress = _cleanAddress(address.trim());
+
     for (var suggestion in _predictions) {
-      String cleanedSuggestion = suggestion["description"]
-          .replaceAll(' ', ''); // Remove spaces from the suggestion
+      String cleanedSuggestion =
+          _cleanAddress(suggestion["description"].trim());
       if (cleanedSuggestion == cleanedAddress) {
         return true;
       }
     }
     return false;
+  }
+
+  String _cleanAddress(String address) {
+    // Remove spaces and special characters from the address
+    return address.replaceAll(RegExp(r'[^\w\s]+'), '');
   }
 
   List<dynamic> _predictions = [];
@@ -110,6 +115,27 @@ class _ProfileState extends State<Profile> {
   String _addressErrorText = '';
   @override
   void _searchPlaces(String input) async {
+    const apiKey = 'AIzaSyD_d366EANPIHugZe9YF5QVxHHa_Bzef_4';
+    String url;
+
+    if (input.isEmpty) {
+      // Fetch predictions without a specific query
+      url =
+          'https://maps.googleapis.com/maps/api/place/autocomplete/json?types=establishment&key=$apiKey&language=fr';
+    } else {
+      url =
+          'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=establishment&key=$apiKey&language=fr';
+    }
+
+    final response = await http.get(Uri.parse(url));
+    final data = json.decode(response.body);
+
+    setState(() {
+      _predictions = data['predictions'];
+    });
+  }
+
+  /*void _searchPlaces(String input) async {
     const apiKey = 'AIzaSyD_d366EANPIHugZe9YF5QVxHHa_Bzef_4';
     final url =
         'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=(cities)&key=$apiKey&language=fr';
@@ -120,9 +146,7 @@ class _ProfileState extends State<Profile> {
     setState(() {
       _predictions = data['predictions'];
     });
-  }  
-  
-
+  }*/
 
   Future<void> updateClientImage(File image, String token) async {
     // Replace "http://localhost:3000" with your server URL
@@ -357,8 +381,12 @@ class _ProfileState extends State<Profile> {
                           bool addressMatchesSuggestion =
                               _isAddressMatchingSuggestion(
                                   _addressController.text);
+                          print(_addressController.text);
 
-                          if (addressMatchesSuggestion || _suggestionSelected) {
+                          if (addressMatchesSuggestion ||
+                              _suggestionSelected ||
+                              _addressController.text.isEmpty ||
+                              _addressErrorText.isEmpty) {
                             _saveChanges();
                             updateClient(_userData);
                             _toggleEditing(false);
@@ -436,7 +464,7 @@ class _ProfileState extends State<Profile> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Points',
+                            '  Points',
                             style: TextStyle(
                               color: Color(0xFFFF8787),
                               fontSize: 12,
