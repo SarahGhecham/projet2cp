@@ -482,7 +482,7 @@ async function updateClient(req, res) {
 }
 
 function updateClientImage(req, res) {
-    const id = req.userid; // Extract client ID from request parameters
+    const id = req.userId; // Extract client ID from request parameters
 
   // Check if a file is uploaded
   if (!req.file) {
