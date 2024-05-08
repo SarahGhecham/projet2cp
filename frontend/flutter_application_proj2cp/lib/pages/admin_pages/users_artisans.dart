@@ -26,7 +26,7 @@ class ArtisansList extends StatefulWidget {
 class _ArtisansListState extends State<ArtisansList> {
   List<Artisan?> _artisans = [];
   late String _token;
-  final defaultPfp = AssetImage('assets/pdp_user.jpg');
+  final defaultPfp = AssetImage('assets/pasdepfp.png');
 
   @override
   @override
@@ -88,8 +88,7 @@ class _ArtisansListState extends State<ArtisansList> {
           color: creme,
           borderRadius: BorderRadius.circular(30),
           image: DecorationImage(
-            image:
-                NetworkImage(artisan.image!), // Use ! to assert non-nullability
+            image: NetworkImage(artisan.image!),
             fit: BoxFit.cover,
           ),
         ),

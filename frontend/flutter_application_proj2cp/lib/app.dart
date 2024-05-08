@@ -7,6 +7,7 @@ import 'package:flutter_application_proj2cp/pages/admin_pages/drawer_services.da
 import 'package:flutter_application_proj2cp/pages/admin_pages/page_acc_admin.dart';
 
 import 'package:flutter_application_proj2cp/pages/admin_pages/profil_admin.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/profil_client.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/users_clients.dart';
 
 import 'package:flutter_application_proj2cp/pages/artisan/activiteArtisan_encours.dart';
@@ -71,7 +72,7 @@ class App extends StatelessWidget {
               iconTheme: const IconThemeData(color: vertClair),
             ),*/
 
-            home: BottomNavBarAdmin(),
+            home: DrawerUsers(),
           ),
         );
       },
