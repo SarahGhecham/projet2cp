@@ -49,7 +49,7 @@ class _HomePageAdminState extends State<HomePageAdmin> {
   int _nombreDemandes = 0;
   late String _token;
   final defaultImageUrl =
-      'http://192.168.100.7:3000/imageClient/1714391607342.jpg';
+      'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/imageClient/1714391607342.jpg';
 
   @override
   void initState() {
@@ -90,10 +90,11 @@ class _HomePageAdminState extends State<HomePageAdmin> {
   }
 
   Future<void> _fetchUserData() async {
-    final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/1');
+    final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins');
     try {
       final response = await http.get(
         url,
+        headers: {'Authorization': 'Bearer $_token'},
       );
 
       if (response.statusCode == 200) {
@@ -143,7 +144,7 @@ class _HomePageAdminState extends State<HomePageAdmin> {
                   ),
                 ),
                 Text(
-                  'Salut ${_headerAdmin.prenomAdmin.substring(0, 1).toUpperCase()}. ${_headerAdmin.nomAdmin}',
+                  'Salut Admin',
                   style: GoogleFonts.poppins(
                     fontSize: 20,
                     fontWeight: FontWeight.w400,

@@ -57,7 +57,7 @@ class _DrawerServicesState extends State<DrawerServices> {
 
   Future<void> fetchDomaines() async {
     final url =
-        Uri.parse('http://192.168.100.7:3000/pageaccueil/AfficherDomaines');
+        Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/pageaccueil/AfficherDomaines');
     try {
       final response = await http.get(
         url,
@@ -98,7 +98,7 @@ class _DrawerServicesState extends State<DrawerServices> {
 
   Future<void> fetchEcoServices() async {
     final url = Uri.parse(
-        'http://192.168.100.7:3000/pageaccueil/AfficherPrestationsEco');
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/pageaccueil/AfficherPrestationsEco');
     try {
       final response = await http.get(
         url,
@@ -149,7 +149,7 @@ class _DrawerServicesState extends State<DrawerServices> {
 
   Future<void> fetchTopPrestations() async {
     final url = Uri.parse(
-        'http://192.168.100.7:3000/pageaccueil/AfficherPrestationsTop');
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/pageaccueil/AfficherPrestationsTop');
     try {
       final response = await http.get(
         url,
@@ -200,7 +200,7 @@ class _DrawerServicesState extends State<DrawerServices> {
 
   Future<void> fetchAllPrestations() async {
     final url =
-        Uri.parse('http://192.168.100.7:3000/pageaccueil/AfficherToutesPrestation');
+        Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/pageaccueil/AfficherToutesPrestation');
 
     try {
       final response = await http.get(

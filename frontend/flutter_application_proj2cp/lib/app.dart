@@ -71,7 +71,7 @@ class App extends StatelessWidget {
               iconTheme: const IconThemeData(color: vertClair),
             ),*/
 
-            home: BottomNavBarAdmin(),
+            home: LogInPage(),
           ),
         );
       },

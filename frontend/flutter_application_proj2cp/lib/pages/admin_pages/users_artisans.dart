@@ -45,7 +45,7 @@ class _ArtisansListState extends State<ArtisansList> {
   }
 
   Future<void> fetchAllArtisans() async {
-    final url = Uri.parse('http://10.0.2.2:3000/admins/Afficher/Artisans');
+    final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/Afficher/Artisans');
     try {
       final response = await http.get(
         url,

@@ -11,6 +11,7 @@ import 'package:flutter_application_proj2cp/config.dart';
 class Client {
   final String name;
   final String photoDeProfil;
+
   Client({
     required this.name,
     required this.photoDeProfil,
@@ -44,14 +45,13 @@ class _ClientsListState extends State<ClientsList> {
   }
 
   Future<void> fetchAllClients() async {
-    final url = Uri.parse('http://10.0.2.2:3000/admins/Afficher/Clients');
+    final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/Afficher/Clients');
     try {
       final response = await http.get(
         url,
         headers: {'Authorization': 'Bearer $_token'},
       );
       if (response.statusCode == 200) {
-        //print("coucou");
         List<dynamic> data = json.decode(response.body);
         final List<Client?> clients = [];
         for (var item in data) {
@@ -79,51 +79,58 @@ class _ClientsListState extends State<ClientsList> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView.builder(
-          padding:
-              const EdgeInsets.only(bottom: kBottomNavigationBarHeight + 70),
-          itemCount: _clients.length,
-          itemBuilder: (context, index) {
-            final client = _clients[index];
-            return Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: creme, width: 1),
-                ),
+        padding: const EdgeInsets.only(bottom: kBottomNavigationBarHeight + 70),
+        itemCount: _clients.length,
+        itemBuilder: (context, index) {
+          final client = _clients[index];
+          return Container(
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(color: creme, width: 1),
               ),
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 65,
-                      height: 65,
-                      decoration: BoxDecoration(
-                        color: creme,
-                        borderRadius: BorderRadius.circular(40),
-                        image: DecorationImage(
-                          image: NetworkImage(client?.photoDeProfil ?? ''),
-                          fit: BoxFit.cover,
-                        ),
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Container(
+                    width: 65,
+                    height: 65,
+                    decoration: BoxDecoration(
+                      color: creme,
+                      borderRadius: BorderRadius.circular(40),
+                      image: client?.photoDeProfil != null
+                          ? DecorationImage(
+                              image: NetworkImage(client!.photoDeProfil),
+                              fit: BoxFit.cover,
+                              onError: (exception, stackTrace) =>
+                                  print('Error loading image: $exception'),
+                            )
+                          : DecorationImage(
+                              image: AssetImage('assets/placeholder.png'), // Placeholder image
+                              fit: BoxFit.cover,
+                            ),
+                  ),
+                  ),
+                  SizedBox(
+                    width: 15,
+                  ),
+                  Text(
+                    client?.name ?? '',
+                    style: GoogleFonts.poppins(
+                      textStyle: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 12,
                       ),
                     ),
-                    SizedBox(
-                      width: 15,
-                    ),
-                    Text(
-                      client?.name ?? '',
-                      style: GoogleFonts.poppins(
-                        textStyle: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 12,
-                        ),
-                      ),
-                    )
-                  ],
-                ),
+                  ),
+                ],
               ),
-            );
-          }),
+            ),
+          );
+        },
+      ),
     );
   }
 }
