@@ -11,6 +11,7 @@ import 'package:flutter_application_proj2cp/pages/admin_pages/search_bar.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/users_artisans.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/users_clients.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DrawerUsers extends StatefulWidget {
   final bool showClients;
@@ -26,6 +27,7 @@ class _DrawerUsersState extends State<DrawerUsers> {
   int _currentPageIndex = 2;
   bool _showClients = true;
   late String _token;
+  List<Client?> _clients = [];
 
   void onPageSelected(int index) {
     setState(() {
@@ -33,12 +35,12 @@ class _DrawerUsersState extends State<DrawerUsers> {
     });
   }
 
-  @override
   void initState() {
     super.initState();
     _showClients = widget.showClients;
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
@@ -53,7 +55,7 @@ class _DrawerUsersState extends State<DrawerUsers> {
             child: Column(
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(left: 25.0),
@@ -71,107 +73,110 @@ class _DrawerUsersState extends State<DrawerUsers> {
                         ),
                       ),
                     ),
-                    Expanded(
+                    /* Expanded(
                       flex: 2,
                       child: BarRecherche(),
+                    ),*/
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Container(
+                            width: 270,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: cremeClair,
+                              border: Border.all(color: creme, width: 1.5),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _showClients = true;
+                                    });
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: _showClients
+                                          ? vertFonce
+                                          : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 35, vertical: 5),
+                                    child: Text(
+                                      'Clients',
+                                      style: TextStyle(
+                                        color: _showClients
+                                            ? Colors.white
+                                            : cremeClair,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _showClients = false;
+                                    });
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: !_showClients
+                                          ? vertFonce
+                                          : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 35, vertical: 5),
+                                    child: Text(
+                                      'Artisans',
+                                      style: TextStyle(
+                                        color: !_showClients
+                                            ? Colors.white
+                                            : cremeClair,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Visibility(
+                            visible: !_showClients,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 10.0),
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => CreerArtisan(),
+                                    ),
+                                  );
+                                },
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Image.asset(
+                                      'assets/icons/ajouter.png',
+                                      width: 30,
+                                      height: 30,
+                                    ),
+                                    // SizedBox(width: 5),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 25.0, left: 35),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                        width: 270,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: cremeClair,
-                          border: Border.all(color: creme, width: 1.5),
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _showClients = true;
-                                });
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: _showClients
-                                      ? vertFonce
-                                      : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 35, vertical: 5),
-                                child: Text(
-                                  'Clients',
-                                  style: TextStyle(
-                                    color: _showClients
-                                        ? Colors.white
-                                        : cremeClair,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _showClients = false;
-                                });
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: !_showClients
-                                      ? vertFonce
-                                      : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 35, vertical: 5),
-                                child: Text(
-                                  'Artisans',
-                                  style: TextStyle(
-                                    color: !_showClients
-                                        ? Colors.white
-                                        : cremeClair,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Visibility(
-                        visible: !_showClients,
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => CreerArtisan(),
-                              ),
-                            );
-                          },
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Image.asset(
-                                'assets/icons/ajouter.png',
-                                width: 30,
-                                height: 30,
-                              ),
-                              // SizedBox(width: 5),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
                 SizedBox(
                   height: MediaQuery.of(context).size.height -

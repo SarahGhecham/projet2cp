@@ -46,7 +46,7 @@ class _CreerArtisanState extends State<CreerArtisan> {
   final _localisationController = TextEditingController();
   List<Map<String, dynamic>> _domainesOptions = [];
   List<Prestation> _prestationsOptions = [];
-  List<Prestation> _prestationsChoisis = [];
+  List<Prestation> _prestationsChoisis = []; //cc
 
   String? _selectedDomaine;
   int? _selectedDomaineId;
@@ -76,7 +76,7 @@ class _CreerArtisanState extends State<CreerArtisan> {
     final domaineId = _selectedDomaineId;
     final prestationsIds =
         _prestationsChoisis.map((prestation) => prestation.id).toList();
-    print(prestationsIds);
+    // print(prestationsIds);
     if (prestationsIds.isEmpty) {
       print('Error: prestationsIds list is empty');
       return;
@@ -114,13 +114,99 @@ class _CreerArtisanState extends State<CreerArtisan> {
       } else if (response.statusCode == 400) {
         var responseData = json.decode(response.body);
         var errorMessage = responseData['message'];
-        // Handle specific error cases (e.g., invalid address)
-        print('Failed to create artisan: $errorMessage');
+        if (errorMessage.contains("n'est pas rempli")) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Inscription échouée'),
+              content: Text(errorMessage),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        } else if (errorMessage
+            .contains("numéro de téléphone n'a pas le bon format")) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Inscription échouée'),
+              content: Text(errorMessage),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        } else if (errorMessage == "L'adresse saisie est invalide") {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Inscription échouée'),
+              content: Text(errorMessage),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        } else if (errorMessage == 'Compte email déjà existant' ||
+            errorMessage == 'Compte email existant') {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Inscription échouée'),
+              content: Text(errorMessage),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        } else {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Inscription échouée'),
+              content:
+                  const Text('Impossible de s\'inscrire. Veuillez réessayer.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
       } else {
-        print('Failed to create artisan. Status code: ${response.statusCode}');
+        print('L\'inscription a échoué');
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Inscription échouée'),
+            content:
+                const Text('Impossible de s\'inscrire. Veuillez réessayer.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
       }
     } catch (error) {
-      print('Error creating artisan: $error');
+      print('Error: $error');
     }
   }
 
@@ -207,9 +293,13 @@ class _CreerArtisanState extends State<CreerArtisan> {
                 },
               ),
             ),
+            SizedBox(
+              width: 8,
+            ),
             Padding(
-              padding: const EdgeInsets.only(top: 30, left: 20),
-              child: Text(
+              padding: const EdgeInsets.only(top: 30),
+              child: Center(
+                  child: Text(
                 'Ajouter un artisan',
                 style: GoogleFonts.poppins(
                   textStyle: TextStyle(
@@ -217,7 +307,7 @@ class _CreerArtisanState extends State<CreerArtisan> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-              ),
+              )),
             ),
           ],
         ),
@@ -468,35 +558,37 @@ class _CreerArtisanState extends State<CreerArtisan> {
                 )),
             Padding(
                 padding: const EdgeInsets.only(top: 20.0),
-                child: Container(
-                  height: 45,
-                  //width: 310,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFDCC8C5).withOpacity(0.22),
-                    border: Border.all(
-                      color: const Color(0xFFDCC8C5),
-                      width: 1,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                child: SizedBox(
+                  width: 310,
                   child: DropdownButtonHideUnderline(
                     child: Container(
+                      height: 47,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFDCC8C5).withOpacity(0.22),
+                        border: Border.all(
+                          color: const Color(0xFFDCC8C5),
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       padding: EdgeInsets.only(left: 10),
-                      //width: double.infinity,
                       child: DropdownButton<String>(
                         value: _selectedPrestation?.nomPrestation,
+                        isExpanded: true,
                         hint: Text(
                           "Types des prestations", // Your hint text here
                           style: TextStyle(
                             color: Color(0xFF777777),
                           ),
                         ),
-                        // value: _selectedDomaine,
-
                         items: _prestationsOptions.map((prestation) {
                           return DropdownMenuItem<String>(
                             value: prestation.nomPrestation,
-                            child: Text(prestation.nomPrestation),
+                            child: Text(
+                              prestation.nomPrestation,
+                              overflow: TextOverflow
+                                  .ellipsis, // Handle long text with ellipsis
+                            ),
                           );
                         }).toList(),
                         onChanged: (selectedPrestation) {
