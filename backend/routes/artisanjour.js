@@ -12,6 +12,5 @@ router.get('/planning/:id',artisanJourController.displayplanningofArtisan);
 router.post('/addHorrairesToArtisan/:artisanId', artisanJourController.addHorrairesToArtisan),
 router.get('/HorairesJour',artisanJourController.getArtisanHorairesByJour),
 router.delete('/deletehorairesFromArtisan/:artisanId',artisanJourController.deleteHorraires);
-
-
+router.get('/HorairesJour2',artisanJourController.getArtisanHorairesByJour2);
 module.exports = router;
