@@ -482,7 +482,7 @@ async function updateClient(req, res) {
 }
 
 function updateClientImage(req, res) {
-    const id = req.userid; // Extract client ID from request parameters
+    const id = req.userId; // Extract client ID from request parameters
 
   // Check if a file is uploaded
   if (!req.file) {
@@ -915,7 +915,7 @@ async function annulerDemande(req, res) {
   const demandeId = req.body.demandeId;
 
     try {
-        const demande = await models.RDV.findByPk(demandeId);
+        const demande = await models.Demande.findByPk(demandeId);
         if (!demande) {
             return res.status(404).json({ message: `La demande avec l'ID ${demandeId} n'existe pas.` });
         }
@@ -1116,7 +1116,7 @@ async function ActiviteTerminee(req, res) {
     }
   }
   async function ActiviteTermineeNonEvaluee(req, res) {
-    const clientId = req.Userid;
+    const clientId = req.userId;
   
     try {
       const maintenant = new Date();

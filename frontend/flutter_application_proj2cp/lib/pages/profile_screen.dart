@@ -4,6 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:convert';
+
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
+import 'dart:async';
+
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -29,6 +35,7 @@ class _ProfileState extends State<Profile> {
     _isEditing = false;
     _scrollController = ScrollController();
     bool _showSuggestions = false;
+
     fetchData();
   }
 
@@ -84,12 +91,51 @@ class _ProfileState extends State<Profile> {
     }
   }
 
+  bool _isAddressMatchingSuggestion(String address) {
+    String cleanedAddress = _cleanAddress(address.trim());
+
+    for (var suggestion in _predictions) {
+      String cleanedSuggestion =
+          _cleanAddress(suggestion["description"].trim());
+      if (cleanedSuggestion == cleanedAddress) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  String _cleanAddress(String address) {
+    // Remove spaces and special characters from the address
+    return address.replaceAll(RegExp(r'[^\w\s]+'), '');
+  }
+
   List<dynamic> _predictions = [];
   bool _showSuggestions = true;
   bool _suggestionSelected = false;
   String _addressErrorText = '';
   @override
   void _searchPlaces(String input) async {
+    const apiKey = 'AIzaSyD_d366EANPIHugZe9YF5QVxHHa_Bzef_4';
+    String url;
+
+    if (input.isEmpty) {
+      // Fetch predictions without a specific query
+      url =
+          'https://maps.googleapis.com/maps/api/place/autocomplete/json?types=establishment&key=$apiKey&language=fr';
+    } else {
+      url =
+          'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=establishment&key=$apiKey&language=fr';
+    }
+
+    final response = await http.get(Uri.parse(url));
+    final data = json.decode(response.body);
+
+    setState(() {
+      _predictions = data['predictions'];
+    });
+  }
+
+  /*void _searchPlaces(String input) async {
     const apiKey = 'AIzaSyD_d366EANPIHugZe9YF5QVxHHa_Bzef_4';
     final url =
         'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=(cities)&key=$apiKey&language=fr';
@@ -100,7 +146,7 @@ class _ProfileState extends State<Profile> {
     setState(() {
       _predictions = data['predictions'];
     });
-  }
+  }*/
 
   Future<void> updateClientImage(File image, String token) async {
     // Replace "http://localhost:3000" with your server URL
@@ -132,6 +178,7 @@ class _ProfileState extends State<Profile> {
 
         if (data['success'] == true) {
           // Client image updated successfully
+          await _fetchUserData();
           print('Client image updated successfully');
         } else {
           // Image upload failed
@@ -202,8 +249,6 @@ class _ProfileState extends State<Profile> {
     _userData['AdresseClient'] = _addressController.text.isNotEmpty
         ? _addressController.text
         : _userData['AdresseClient'];
-
-    _userData['photo'] = _pickedImagePath;
   }
 
   @override
@@ -331,15 +376,26 @@ class _ProfileState extends State<Profile> {
                     height: 33,
                     child: ElevatedButton(
                       onPressed: () {
-                        if (_isEditing && _suggestionSelected) {
-                          _saveChanges();
-                          updateClient(_userData);
-                          _toggleEditing(false);
-                        } else if (_isEditing && !_suggestionSelected) {
-                          setState(() {
-                            _addressErrorText =
-                                'Veuillez choisir un emplacement de la liste ';
-                          });
+                        if (_isEditing) {
+                          // Check if the address field matches any of the suggestions
+                          bool addressMatchesSuggestion =
+                              _isAddressMatchingSuggestion(
+                                  _addressController.text);
+                          print(_addressController.text);
+
+                          if (addressMatchesSuggestion ||
+                              _suggestionSelected ||
+                              _addressController.text.isEmpty ||
+                              _addressErrorText.isEmpty) {
+                            _saveChanges();
+                            updateClient(_userData);
+                            _toggleEditing(false);
+                          } else {
+                            setState(() {
+                              _addressErrorText =
+                                  'Veuillez choisir un emplacement de la liste ';
+                            });
+                          }
                         } else {
                           _toggleEditing(true);
                         }
@@ -408,7 +464,7 @@ class _ProfileState extends State<Profile> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Points',
+                            '  Points',
                             style: TextStyle(
                               color: Color(0xFFFF8787),
                               fontSize: 12,

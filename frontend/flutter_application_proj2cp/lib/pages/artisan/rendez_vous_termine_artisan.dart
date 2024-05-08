@@ -2,26 +2,210 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_application_proj2cp/config.dart';
+import 'package:intl/intl.dart';
 
 class RDV_confirmeartisanPage extends StatefulWidget {
-  const RDV_confirmeartisanPage({super.key});
+  final int demandeID;
+  final int rdvID;
+  @override
+  const RDV_confirmeartisanPage({
+    Key? key,
+    required this.demandeID,
+    required this.rdvID,
+  }) : super(key: key);
 
   @override
-  State<RDV_confirmeartisanPage> createState() =>
-      _RDV_confirmeartisanPageState();
+  State<RDV_confirmeartisanPage> createState() => _RDV_confirmeartisanPageState();
 }
 
 class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
-  var nomartisan = "Karim Mouloud";
-  var note = "4.7";
-  var telephone = "07 71253705";
-  var date = "merc 13 jan";
-  var heure = "13h";
-  var adresse = "Cite 289 logements Jijel N113";
-  var prix = "1000da";
-  var prestation = "Peinture de mûrs";
-  bool ecologique = true;
-  bool urgente = true;
+  late String _token;
+  Map<String, dynamic> data = {};
+  Future<void> fetchData() async {
+    final prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('token') ?? '';
+    print('Token: $_token');
+    await Future.wait([_fetchUserData()]);
+  }
+
+
+  Future<void> _fetchUserData() async {
+    final url = Uri.parse(
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/artisan/DetailsRDVTermine/${widget.rdvID}');
+    try {
+      final response = await http.get(
+        url,
+        headers: {'Authorization': 'Bearer $_token'},
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          final responseData = json.decode(response.body);
+
+          // Artisan data
+          final artisanData =
+          responseData != null ? responseData['client'] ?? {} : {};
+          final client = {
+            'Username': artisanData != null ? artisanData['Username'] ?? '' : '',
+
+          };
+
+// RDV affich data
+          final rdvAffichData =
+          responseData != null ? responseData['rdvAffich'] ?? {} : {};
+          String dateDebutString =
+          rdvAffichData != null ? rdvAffichData['DateDebut'] ?? '' : '';
+          String heureDebutString =
+          rdvAffichData != null ? rdvAffichData['HeureDebut'] ?? '' : '';
+
+          String formattedDateDebut = '';
+          String formattedHeureDebut = '';
+
+          if (dateDebutString.isNotEmpty) {
+            // Parse date string to DateTime object
+            DateTime dateDebut = DateTime.parse(dateDebutString);
+
+            // Format the date into 'dd/MM/yyyy' format
+            formattedDateDebut =
+                DateFormat('dd/MM/yyyy HH:mm').format(dateDebut);
+          }
+
+          if (heureDebutString.isNotEmpty) {
+            // Convert time string to TimeOfDay object
+            TimeOfDay heureDebut = TimeOfDay.fromDateTime(
+                DateFormat('HH:mm:ss').parse(heureDebutString));
+
+            // Format the TimeOfDay object into 'HH:mm' format
+            formattedHeureDebut =
+                heureDebut.format(context); // context is your BuildContext
+          }
+
+          final rdvAffich = {
+            'date': formattedDateDebut,
+            'heure': formattedHeureDebut,
+          };
+
+// Prestation data
+          final prestationData =
+          responseData != null ? responseData['prestation'] ?? {} : {};
+          final prestation = {
+            'Nom': prestationData != null ? prestationData['Nom'] ?? '' : '',
+            'Materiel':
+            prestationData != null ? prestationData['Materiel'] ?? '' : '',
+            'DureeMax':
+            prestationData != null ? prestationData['DureeMax'] ?? '' : '',
+            'DureeMin':
+            prestationData != null ? prestationData['DureeMin'] ?? '' : '',
+            'Ecologique': prestationData != null
+                ? prestationData['Ecologique'] ?? ''
+                : '',
+            'Image':
+            prestationData != null ? prestationData['Image'] ?? '' : '',
+            'TarifJourMin': prestationData != null
+                ? prestationData['TarifJourMin'] ?? ''
+                : '',
+            'TarifJourMax': prestationData != null
+                ? prestationData['TarifJourMax'] ?? ''
+                : '',
+          };
+
+// Demande affich data
+          final demandeAffichData =
+          responseData != null ? responseData['demandeAffich'] ?? {} : {};
+          final demandeAffich = {
+            'Description': demandeAffichData != null
+                ? demandeAffichData['Description'] ?? ''
+                : '',
+            'Localisation': demandeAffichData != null
+                ? demandeAffichData['Localisation'] ?? ''
+                : '',
+            'Urgent': demandeAffichData != null
+                ? demandeAffichData['Urgente'] ?? ''
+                : '',
+          };
+
+// Combine all data
+          data = {
+            'client': client,
+            'rdvAffich': rdvAffich,
+            'prestation': prestation,
+            'demandeAffich': demandeAffich,
+          };
+        });
+        print('_userData: $data'); // Debugging print
+      } else {
+        print('Failed to fetch user data');
+        print('Response Status Code: ${response.statusCode}');
+        print('Response Body: ${response.body}');
+      }
+    } catch (error) {
+      print('Error fetching user data: $error');
+    }
+  }
+
+  /* Future<void> _fetchUserData() async {
+    final url = Uri.parse(
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/DetailsDemandeConfirmee/${widget.rdvID}'); // Replace with your endpoint
+    try {
+      final response = await http.get(
+        url,
+        headers: {'Authorization': 'Bearer $_token'},
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          final responseData = json.decode(response.body);
+          data = {
+            'artisan': {
+              'Nom': responseData['artisan']['NomArtisan'],
+              'Prenom': responseData['artisan']['PrenomArtisan'],
+              'Note': responseData['artisan']['Note'],
+              'Numero': responseData['artisan']['NumeroTelArtisan'],
+              'Photo': responseData['artisan']['photo'],
+            },
+            'rdvAffich': {
+              'date': responseData['rdvAffich']['DateDebut'],
+              'heure': responseData['redAffich']['HeureDebut'],
+            },
+            'prestation': {
+              'Nom': responseData['prestation']['NomPrestation'],
+              'Materiel': responseData['prestation']['Maéeriel'],
+              'DureeMax': responseData['prestation']['DuréeMax'],
+              'DurreMin': responseData['prestation']['DuréeMin'],
+              'Ecologique': responseData['prestation']['Ecologique'],
+              'Image': responseData['prestation']['Image'],
+              'TarifJourMin': responseData['prestation']['TarifJourMin'],
+              'TarifJourMax': responseData['prestation']['TarifJourMax'],
+            },
+            'demandeAffich': {
+              'Description': responseData['demandeAffich']['Description'],
+              'Localisation': responseData['demandeAffich']['Localisation'],
+              'Urgent': responseData['demandeAffich']['Urgente'],
+            },
+          };
+        });
+        print('_userData: $data'); // Debugging print
+      } else {
+        print('Failed to fetch user data');
+        print('Response Status Code: ${response.statusCode}');
+        print('Response Body: ${response.body}');
+      }
+    } catch (error) {
+      print('Error fetching user data: $error');
+    }
+  }*/
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,12 +214,7 @@ class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
         backgroundColor: Colors.white,
         title: Row(
           children: [
-            SizedBox(
-              height: 18,
-              width: 25,
-              child: SvgPicture.asset("assets/fleche.svg"),
-            ),
-            const SizedBox(width: 130),
+            const SizedBox(width: 100),
             Text(
               "Details",
               style: GoogleFonts.poppins(
@@ -61,7 +240,7 @@ class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
                   padding: const EdgeInsets.all(10.0),
                   child: Row(
                     crossAxisAlignment:
-                        CrossAxisAlignment.start, // Align children to the start
+                    CrossAxisAlignment.start, // Align children to the start
                     children: [
                       Container(
                         width: 80,
@@ -72,8 +251,8 @@ class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8.0),
-                          child: Image.asset(
-                            'assets/lavage_sol.png',
+                          child: Image.network(
+                            data['prestation']['Image'].toString(),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -92,14 +271,15 @@ class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
                                     text: TextSpan(
                                       children: [
                                         TextSpan(
-                                          text: "Peinture de Murs et Plafonds",
+                                          text: data['prestation']['Nom'],
                                           style: GoogleFonts.poppins(
                                             color: const Color(0xFF05564B),
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
-                                        if (ecologique) ...[
+                                        if (data['prestation']
+                                        ['Ecologique']) ...[
                                           WidgetSpan(
                                             child: Padding(
                                               padding: const EdgeInsets.only(
@@ -136,7 +316,7 @@ class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 50.0),
               child: Text(
-                "Client",
+                "Préstataire",
                 style: GoogleFonts.poppins(
                     fontSize: 16, fontWeight: FontWeight.w600),
               ),
@@ -144,8 +324,10 @@ class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
             const SizedBox(height: 20),
             Center(
               child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: 300, // Limiting maximum width
+                ),
                 height: 80,
-                width: 300,
                 decoration: BoxDecoration(
                   color: const Color(0xFFDCC8C5).withOpacity(0.22),
                   borderRadius: BorderRadius.circular(10),
@@ -160,42 +342,46 @@ class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
                     Container(
                       height: 50,
                       width: 50,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(
-                          image: AssetImage("assets/artisan.jpg"),
+                          image: AssetImage(
+                            "assets/artisan.jpg",
+                          ),
                           fit: BoxFit.cover,
                         ),
                       ),
                     ),
                     SizedBox(width: 15), // Add spacing between image and column
-                    Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start, // Align children to start
-                      children: [
-                        SizedBox(height: 15),
-                        Row(
-                          children: [
-                            Text(
-                              nomartisan,
-                              style: GoogleFonts.poppins(
-                                  fontSize: 15, fontWeight: FontWeight.w600),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                        Row(
-                          children: [
-                            SvgPicture.asset("assets/telephone.svg"),
-                            SizedBox(width: 10),
-                            Text(
-                              telephone,
-                              style: GoogleFonts.poppins(
-                                  fontSize: 14, fontWeight: FontWeight.w600),
-                            ),
-                          ],
-                        ),
-                      ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment:
+                        CrossAxisAlignment.start, // Align children to start
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            data['client']['Username'],
+                            style: GoogleFonts.poppins(
+                                fontSize: 15, fontWeight: FontWeight.w600),
+                          ),
+                          Row(
+                            children: [
+                              SvgPicture.asset("assets/telephone.svg"),
+                              SizedBox(
+                                  width:
+                                  5), // Adjust spacing between phone icon and number
+                              Expanded(
+                                child: Text(
+                                  "0550765320",
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -213,8 +399,9 @@ class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
             SizedBox(height: 20),
             Center(
               child: Container(
-                height: 480,
-                width: 300,
+                constraints: BoxConstraints(
+                  maxWidth: 300, // Limiting maximum width
+                ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
@@ -225,22 +412,22 @@ class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      SizedBox(height: 10),
                       Row(
                         children: [
                           SizedBox(width: 10),
                           SvgPicture.asset("assets/calendar.svg"),
                           SizedBox(width: 15),
                           Text(
-                            date,
+                            data['rdvAffich']['date'].toString(),
                             style: GoogleFonts.poppins(fontSize: 15),
                           ),
-                          SizedBox(width: 10),
+                          SizedBox(width: 5),
                           Text(
-                            heure,
-                            style: GoogleFonts.poppins(
-                                color: Color(0xFF777777), fontSize: 15),
+                            data['rdvAffich']['heure'].toString(),
+                            style: GoogleFonts.poppins(fontSize: 15),
                           ),
                         ],
                       ),
@@ -250,9 +437,11 @@ class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
                           SizedBox(width: 6),
                           SvgPicture.asset("assets/pin_light.svg"),
                           SizedBox(width: 10),
-                          Text(
-                            adresse,
-                            style: GoogleFonts.poppins(fontSize: 15),
+                          Expanded(
+                            child: Text(
+                              data['demandeAffich']['Localisation'].toString(),
+                              style: GoogleFonts.poppins(fontSize: 15),
+                            ),
                           ),
                         ],
                       ),
@@ -263,21 +452,29 @@ class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
                           SvgPicture.asset("assets/money.svg"),
                           SizedBox(width: 15),
                           Text(
-                            prix,
+                            "${data['prestation']['TarifJourMin']} - ${data['prestation']['TarifJourMax']}",
                             style: GoogleFonts.poppins(fontSize: 15),
+                          ),
+                          Text(
+                            "/h",
+                            style: GoogleFonts.poppins(
+                                color: Color(0xFF777777), fontSize: 15),
                           ),
                         ],
                       ),
                       SizedBox(height: 20),
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(width: 15),
                           SvgPicture.asset("assets/outils.svg"),
                           SizedBox(width: 15),
-                          Text(
-                            prestation,
-                            softWrap: true,
-                            style: GoogleFonts.poppins(fontSize: 15),
+                          Expanded(
+                            child: Text(
+                              data['prestation']['Materiel'].toString(),
+                              softWrap: true,
+                              style: GoogleFonts.poppins(fontSize: 15),
+                            ),
                           ),
                         ],
                       ),
@@ -289,33 +486,24 @@ class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
                               color: Color(0xff05564B).withOpacity(1)),
                           SizedBox(width: 15),
                           Text(
-                            urgente ? "Urgente" : "Pas urgente",
+                            data['demandeAffich']['Urgent']
+                                ? "Urgente"
+                                : "Pas urgente",
                             style: GoogleFonts.poppins(fontSize: 15),
                           ),
                         ],
                       ),
-                      SizedBox(height: 20),
-                      Row(
-                        children: [
-                          SizedBox(width: 10),
-                          SvgPicture.asset("assets/note.svg"),
-                          SizedBox(width: 15),
-                          Text(
-                            note,
-                            style: GoogleFonts.poppins(fontSize: 15),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 40),
+                      SizedBox(height: 30),
                       Stack(
                         children: [
                           Positioned(
                             child: Container(
+                              constraints: BoxConstraints(
+                                  maxWidth: 270), // Limiting maximum width
                               height: 150,
-                              width: 270,
                               decoration: BoxDecoration(
                                   color:
-                                      const Color(0xFFDCC8C5).withOpacity(0.22),
+                                  const Color(0xFFDCC8C5).withOpacity(0.22),
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
                                     color: const Color(0xFFDCC8C5),
@@ -325,7 +513,8 @@ class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
                                 child: Padding(
                                   padding: const EdgeInsets.all(20.0),
                                   child: Text(
-                                    "Nettoyage complet et professionnel des sols avec des produits efficaces et non nocifs ",
+                                    data['demandeAffich']['Description']
+                                        .toString(),
                                     style: GoogleFonts.poppins(),
                                   ),
                                 ),
