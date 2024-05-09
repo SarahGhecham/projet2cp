@@ -666,9 +666,9 @@ async function DetailsDemande(req, res) {
         if (!rdv) {
             return res.status(404).json({ message: `Le RDV pour la Demande avec l'ID ${demandeId} n'existe pas.` });
         }
-       console.log(rdv.Demande.ClientId);
+        console.log(rdv.Demande.ClientId);
         const client = await models.Client.findByPk(rdv.Demande.ClientId, {
-            attributes: ['Username','NumeroTelClient','photo']
+            attributes: ['Username','NumeroTelClient','photo','Points']
         });
 
         const rdvAffich = {
@@ -698,10 +698,16 @@ async function DetailsDemande(req, res) {
           (rdvDate.getMonth() === 10 && rdvDate.getDate() === 1);   
         console.log(isHoliday);
 
+        const Reduction=client.Points>10;
+        console.log(Reduction);
 
         let tarifJourMin = rdv.Demande.Prestation.Tarif.TarifJourMin;
         let tarifJourMax = rdv.Demande.Prestation.Tarif.TarifJourMax;
         console.log(tarifJourMin);
+                if (Reduction) {
+                    tarifJourMin *= (0.95);
+                    tarifJourMax *= (0.95);
+                    }
 
                 // Vérifier si c'est un jour férié et appliquer le pourcentage correspondant
                 if (isHoliday) {
