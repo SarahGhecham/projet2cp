@@ -1,4 +1,5 @@
 const models = require('../models');
+const { Op } = require('sequelize');
 
 async function getArtisanHorairesByJour(req, res) {
     try {
@@ -24,6 +25,45 @@ async function getArtisanHorairesByJour(req, res) {
             .filter(jour => jour.jour.toLowerCase() === jourToFind)
             // Map the filtered jours to extract heureDebut and heureFin
             .map(jour => ({ heureDebut: jour.HeureDebut, heureFin: jour.HeureFin }));
+
+        // Respond with the list of horaires
+        return res.status(200).json(horaires);
+    } catch (error) {
+        console.error('Error retrieving horaires by jour for artisan:', error);
+        return res.status(500).json({ message: 'Failed to retrieve horaires by jour for artisan.' });
+    }
+}
+
+
+async function getArtisanHorairesByJour2(req, res) {
+    try {
+        const artisanId = req.body.id;
+        let jourToFind = req.body.jour.toLowerCase();
+
+        // Find the artisan by ID
+        const artisan = await models.Artisan.findByPk(artisanId);
+
+        if (!artisan) {
+            return res.status(404).json({ message: `Artisan with ID ${artisanId} not found.` });
+        }
+
+        // Retrieve all artisan-jour associations for the artisan
+        const artisanJours = await models['artisan.jour'].findAll({ where: { artisanId } });
+
+        // Get all jour IDs associated with the artisan
+        const jourIds = artisanJours.map(aj => aj.jourId);
+
+        // Find all jours corresponding to the jour IDs
+        const jours = await models.Jour.findAll({ where: { id: jourIds } });
+
+        // Filter jours that match the given jour
+        const filteredJours = jours.filter(jour => jour.jour.toLowerCase() === jourToFind);
+
+        // Extract heureDebut and heureFin from the filtered jours
+        const horaires = filteredJours.map(jour => ({
+            heureDebut: jour.HeureDebut,
+            heureFin: jour.HeureFin
+        }));
 
         // Respond with the list of horaires
         return res.status(200).json(horaires);
@@ -76,6 +116,48 @@ async function addHorrairesToArtisan(req, res) {
         return res.status(500).json({ message: 'Failed to add jour to artisan. Please try again later.' });
     }
 }
+async function deleteHorraires(req, res) {
+    const artisanId = req.params.artisanId;
+    const { jour, HeureDebut, HeureFin } = req.body;
+
+    try {
+        // Find the artisan
+        const artisan = await models.Artisan.findByPk(artisanId);
+
+        if (!artisan) {
+            return res.status(404).json({ message: `Artisan with ID ${artisanId} not found` });
+        }
+
+        // Find the jour
+        const existingJour = await models.Jour.findOne({
+            where: {
+                jour: jour,
+                HeureDebut: HeureDebut,
+                HeureFin: HeureFin
+            }
+        });
+
+        if (!existingJour) {
+            return res.status(404).json({ message: `Jour with attributes ${JSON.stringify({ jour, HeureDebut, HeureFin })} not found` });
+        }
+
+        // Remove the association between artisan and jour
+        await artisan.removeJour(existingJour);
+
+        // Delete the jour entry from the Jour table
+        await existingJour.destroy();
+
+        return res.status(200).json({ 
+            message: `Jour with attributes ${JSON.stringify({ jour, HeureDebut, HeureFin })} successfully removed from artisan with ID ${artisanId}`,
+            deletedJour: existingJour
+        });
+    } catch (error) {
+        console.error('Error deleting jour from artisan:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+
 
 
 /*async function modifyJour(req, res) {
@@ -165,123 +247,6 @@ async function addHorrairesToArtisan(req, res) {
         return res.status(500).json({ message: 'Failed to modify jour horaires. Please try again later.' });
     }
 }
-
-async function modifyJour(req, res) {
-    try {
-        // Extract the jour ID from the request body
-        const { jourId, jour, HeureDebut, HeureFin } = req.body;
-
-        // Find the jour by ID
-        const existingJour = await models.Jour.findByPk(jourId);
-
-        // Check if the jour exists
-        if (!existingJour) {
-            return res.status(404).json({ message: `Jour with ID ${jourId} not found.` });
-        }
-
-        // Update the jour with the new data
-        await existingJour.update({
-            jour: jour,
-            HeureDebut: HeureDebut,
-            HeureFin: HeureFin
-        });
-
-        // Respond with success message and the updated jour
-        return res.status(200).json({ message: `Jour with ID ${jourId} updated successfully.`, jour: existingJour });
-    } catch (error) {
-        // Handle any errors that occur during the process
-        console.error('Error modifying jour:', error);
-        return res.status(500).json({ message: 'Failed to modify jour. Please try again later.' });
-    }
-}
-
-
-*/
-const jourController = require('../controllers/jour.controller');
-
-async function deleteHorraires(req, res) {
-    try {
-        const artisanId = req.params.artisanId;
-        const { jour, HeureDebut, HeureFin } = req.body;
-
-        // Find the jour by jour, HeureDebut, and HeureFin
-        const existingJour = await models.Jour.findOne({
-            where: {
-                jour: jour,
-                HeureDebut: HeureDebut,
-                HeureFin: HeureFin
-            }
-        });
-
-        // Check if the jour exists
-        if (!existingJour) {
-            return res.status(404).json({ message: `Jour with ${jour} and horaires ${JSON.stringify({ HeureDebut, HeureFin })} not found.` });
-        }
-
-        // Find the artisan by ID
-        const artisan = await models.Artisan.findByPk(artisanId);
-
-        // Check if the artisan exists
-        if (!artisan) {
-            return res.status(404).json({ message: `Artisan with ID ${artisanId} not found.` });
-        }
-
-        // Remove the association between artisan and jour
-        await artisan.removeJour(existingJour);
-
-        // Delete the jour using the deleteJour function from jour controller
-        await jourController.deleteJour(existingJour.id, res); // Pass existingJour.id instead of req
-
-        return res.status(200).json({ message: `Jour ${jour} with horaires ${JSON.stringify({ HeureDebut, HeureFin })} deleted successfully.` });
-    } catch (error) {
-        console.error('Error deleting jour and association:', error);
-        return res.status(500).json({ message: 'Failed to delete jour and association. Please try again later.' });
-    }
-}
-
-
-
-
-
-/*async function deleteJourFromArtisan(req, res) {
-    const artisanId = req.params.id;
-    const jourId = req.params.jourId;
-
-    try {
-        // Find the artisan
-        const artisan = await models.Artisan.findByPk(artisanId);
-
-        if (!artisan) {
-            return res.status(404).json({ message: `Artisan with ID ${artisanId} not found` });
-        }
-
-        // Find the jour
-        const jour = await models.Jour.findByPk(jourId);
-
-        if (!jour) {
-            return res.status(404).json({ message: `Jour with ID ${jourId} not found` });
-        }
-
-        // Store jour data before deletion
-        const jourData = {
-            id: jour.id,
-            jour: jour.jour,
-            HeureDebut: jour.HeureDebut,
-            HeureFin: jour.HeureFin
-        };
-
-        // Remove the association between artisan and jour
-        await artisan.removeJour(jour);
-
-        return res.status(200).json({ 
-            message: `Jour ${jourData.jour} (ID: ${jourData.id}) is successfully removed from artisan with ID ${artisanId}`,
-            deletedJour: jourData
-        });
-    } catch (error) {
-        console.error('Error deleting jour from artisan:', error);
-        return res.status(500).json({ message: 'Internal server error' });
-    }
-}
 */
 async function displayplanningofArtisan(req, res) {
     try {
@@ -337,6 +302,7 @@ module.exports = {
   //  modifyJour, //
   addHorrairesToArtisan ,
     getArtisanHorairesByJour,
-    deleteHorraires
+    getArtisanHorairesByJour2,
+    deleteHorraires 
 };
 
