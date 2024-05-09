@@ -630,6 +630,71 @@ async function DetailsDemandeConfirmee(req, res) {
     }
 }
 
+
+async function DetailsDemande(req, res) {
+    const artisanId = req.userId;
+    const demandeId = req.params.demandeId;
+
+    try {
+        const artisanDemande = await models.ArtisanDemande.findOne({
+            where: { 
+                DemandeId: demandeId,
+                ArtisanId: artisanId
+            }
+        });
+
+        if (!artisanDemande) {
+            return res.status(404).json({ message: `Aucune demande n'est associée à cet artisan pour la Demande avec l'ID ${demandeId}.` });
+        }
+
+        const rdv = await models.RDV.findOne({
+            where: { 
+                DemandeId: demandeId,
+                annule: false
+            },
+            include: [{
+                model: models.Demande,
+                include: [models.Prestation],
+                attributes: ['Description','Localisation','Urgente','ClientId']  
+            }]
+        });
+
+        if (!rdv) {
+            return res.status(404).json({ message: `Le RDV pour la Demande avec l'ID ${demandeId} n'existe pas.` });
+        }
+       console.log(rdv.Demande.ClientId);
+        const client = await models.Client.findByPk(rdv.Demande.ClientId, {
+            attributes: ['Username','NumeroTelClient','photo']
+        });
+
+        const rdvAffich = {
+            DateDebut: rdv.DateDebut,
+            HeureDebut: rdv.HeureDebut
+        };
+
+        const demandeAffich ={
+            Description: rdv.Demande.Description,
+            Localisation: rdv.Demande.Localisation,
+            Urgente: rdv.Demande.Urgente
+        };
+
+        const prestation = {
+            Nom: rdv.Demande.Prestation.NomPrestation,
+            Image: rdv.Demande.Prestation.imagePrestation,
+            Materiel: rdv.Demande.Prestation.Maéeriel,
+            DureeMax: rdv.Demande.Prestation.DuréeMax,
+            DurreMin: rdv.Demande.Prestation.DuréeMin,
+            Ecologique: rdv.Demande.Prestation.Ecologique,
+        };
+
+        return res.status(200).json({ client, rdvAffich, prestation, demandeAffich });
+    } catch (error) {
+        console.error("Erreur lors de la récupération des détails de la demande confirmée :", error);
+        return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
+    }
+}
+
+
 async function DetailsRDVTermine(req, res) {
     const artisanId = req.userId;
     const rdvId = req.body.rdvId;
@@ -798,5 +863,6 @@ module.exports = {
     DetailsRDVTermine,
     consulterdemandes,
     updateArtisanImage ,
-    getArtisanRdvs
+    getArtisanRdvs,
+    DetailsDemande
 }
