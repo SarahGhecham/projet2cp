@@ -621,6 +621,8 @@ async function DetailsDemandeConfirmee(req, res) {
             DureeMax: rdv.Demande.Prestation.DuréeMax,
             DurreMin: rdv.Demande.Prestation.DuréeMin,
             Ecologique: rdv.Demande.Prestation.Ecologique,
+            TarifJourMin: rdv.Demande.Prestation.Tarif.TarifJourMin,
+            TarifJourMax: rdv.Demande.Prestation.Tarif.TarifJourMax
         }
         return res.status(200).json({ client,rdvAffich, prestation, demandeAffich });
     } catch (error) {
