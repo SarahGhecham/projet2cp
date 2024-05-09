@@ -653,7 +653,12 @@ async function DetailsDemande(req, res) {
             },
             include: [{
                 model: models.Demande,
-                include: [models.Prestation],
+                include: [
+                    { 
+                      model: models.Prestation,
+                      include: [models.Tarif] // Ajouter l'inclusion du modèle Tarif ici
+                    }
+                  ],
                 attributes: ['Description','Localisation','Urgente','ClientId']  
             }]
         });
@@ -677,6 +682,45 @@ async function DetailsDemande(req, res) {
             Urgente: rdv.Demande.Urgente
         };
 
+        const rdvDate = new Date(rdv.DateDebut);
+        const isWeekend = rdvDate.getDay() === 6 || rdvDate.getDay() === 5; // 6 pour samedi, 5 pour vendredi
+        console.log(isWeekend);
+    
+        // Vérifier si l'heure du rendez-vous est la nuit (à partir de 21h)
+        const rdvHeure = new Date(rdv.HeureDebut).getHours();
+        const isNight = rdvHeure >= 21;
+        console.log(isNight);
+    
+        const isHoliday =
+          (rdvDate.getMonth() === 0 && rdvDate.getDate() === 1) || // Jour de l'an
+          (rdvDate.getMonth() === 4 && rdvDate.getDate() === 1) ||
+          (rdvDate.getMonth() === 6 && rdvDate.getDate() === 5) ||
+          (rdvDate.getMonth() === 10 && rdvDate.getDate() === 1);   
+        console.log(isHoliday);
+
+
+        let tarifJourMin = rdv.Demande.Prestation.Tarif.TarifJourMin;
+        let tarifJourMax = rdv.Demande.Prestation.Tarif.TarifJourMax;
+        console.log(tarifJourMin);
+
+                // Vérifier si c'est un jour férié et appliquer le pourcentage correspondant
+                if (isHoliday) {
+                tarifJourMin *= (1 + (rdv.Demande.Prestation.Tarif.PourcentageJourFérié / 100));
+                tarifJourMax *= (1 + (rdv.Demande.Prestation.Tarif.PourcentageJourFérié / 100));
+                }
+
+                // Vérifier si c'est la nuit et appliquer le pourcentage correspondant
+                if (isNight) {
+                tarifJourMin *= (1 + (rdv.Demande.Prestation.Tarif.PourcentageNuit / 100));
+                tarifJourMax *= (1 + (rdv.Demande.Prestation.Tarif.PourcentageJourFérié / 100));
+                }
+
+                // Vérifier si c'est un weekend et appliquer le pourcentage correspondant
+                if (isWeekend) {
+                tarifJourMin *= (1 + (rdv.Demande.Prestation.Tarif.PourcentageWeekend / 100));
+                tarifJourMax *= (1 + (rdv.Demande.Prestation.Tarif.PourcentageJourFérié / 100));
+                }
+
         const prestation = {
             Nom: rdv.Demande.Prestation.NomPrestation,
             Image: rdv.Demande.Prestation.imagePrestation,
@@ -684,11 +728,15 @@ async function DetailsDemande(req, res) {
             DureeMax: rdv.Demande.Prestation.DuréeMax,
             DurreMin: rdv.Demande.Prestation.DuréeMin,
             Ecologique: rdv.Demande.Prestation.Ecologique,
+            TarifJourMin: tarifJourMin,
+            TarifJourMax: tarifJourMax
         };
-
+        // Vérifier si la date du rendez-vous est un weekend
+   
+    
         return res.status(200).json({ client, rdvAffich, prestation, demandeAffich });
     } catch (error) {
-        console.error("Erreur lors de la récupération des détails de la demande confirmée :", error);
+        console.error("Erreur lors de la récupération des détails de la demande :", error);
         return res.status(500).json({ message: 'Une erreur s\'est produite lors du traitement de votre demande.' });
     }
 }
