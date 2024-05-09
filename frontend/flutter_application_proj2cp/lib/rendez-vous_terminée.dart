@@ -9,21 +9,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_application_proj2cp/config.dart';
 import 'package:intl/intl.dart';
 
-class demande_confirmePage extends StatefulWidget {
+class rdvtermineePage extends StatefulWidget {
   final int demandeID;
   final int rdvID;
   @override
-  const demande_confirmePage({
+  const  rdvtermineePage({
     Key? key,
     required this.demandeID,
     required this.rdvID,
   }) : super(key: key);
 
   @override
-  State<demande_confirmePage> createState() => _demande_confirmePageState();
+  State< rdvtermineePage> createState() => _rdvtermineePageState();
 }
 
-class _demande_confirmePageState extends State<demande_confirmePage> {
+class _rdvtermineePageState extends State<rdvtermineePage> {
   late String _token;
   Map<String, dynamic> data = {};
   Future<void> fetchData() async {

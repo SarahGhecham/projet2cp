@@ -1,12 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_application_proj2cp/config.dart';
+import 'package:flutter_application_proj2cp/parametre.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ProfileartisanPage extends StatefulWidget {
   const ProfileartisanPage({super.key});
@@ -17,7 +22,8 @@ class ProfileartisanPage extends StatefulWidget {
 
 class _ProfileartisanPageState extends State<ProfileartisanPage> {
   @override
-  var note = "4.5";
+  var note = "";
+  var domaine = "";
   final _debutController = TextEditingController();
   final _finController = TextEditingController();
   final _NomController = TextEditingController();
@@ -26,10 +32,187 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
   final _PhoneController = TextEditingController();
   final _RayonController = TextEditingController();
   final _AdresseController = TextEditingController();
+  final jourController = TextEditingController();
+
   int day = 0;
+  late String _token;
+  Map<String, dynamic> _userData = {};
+
+  Future<void> fetchData() async {
+    final prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('token') ?? '';
+    print('Token: $_token');
+    await Future.wait([_fetchUserData()]);
+  }
+
+  Future<void> _fetchUserData() async {
+    final url = Uri.parse(
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/artisan/Affichermonprofil'); // Replace with your endpoint
+    try {
+      final response = await http.get(
+        url,
+        headers: {'Authorization': 'Bearer $_token'},
+      );
+      print("ufhquwefhuweghwuegwug");
+      if (response.statusCode == 200) {
+        final userDataJson = json.decode(response.body);
+        print("llllllllllllllllllllllllllllllll");
+
+        if (userDataJson != null) {
+          print("ppppppppppppppppppppp");
+
+          setState(() {
+            print("kikkkkkkkkkkkkkkkkkkkkkkkkkkk");
+
+            _userData = {
+              'Nom': userDataJson['NomArtisan'] as String ?? '',
+              'Prenom': userDataJson['PrenomArtisan'] as String ?? '',
+              'Email': userDataJson['EmailArtisan'] as String ?? '',
+              'Numero': userDataJson['NumeroTelArtisan'] as String ?? '',
+              'Rayon': userDataJson['RayonKm']  ?? '', // Assuming 'RayonKm' is a string
+              'Adresse': userDataJson['AdresseArtisan']  ?? '',
+              'photo': userDataJson['photo'] ?? '',
+              'Disponibilite': userDataJson['Disponibilite'] as bool, // Assuming 'Disponibilite' is not a string
+              'Note': userDataJson['Note'] ?? '',
+              'Domaine': userDataJson['Domaine'] as String ?? '', // Assuming 'Domaine' is a string
+              'Prestations': userDataJson['Prestations'] as List<dynamic> ?? [],
+            };
+            print("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
+
+            _NomController.text = _userData['Nom'] ?? '';
+            _PrenomController.text = _userData['Prenom'] ?? '';
+            _EmailController.text = _userData['Email'] ?? '';
+            _PhoneController.text = _userData['Numero'] ?? '';
+            _AdresseController.text = _userData['Adresse'] ;
+            _RayonController.text = _userData['Rayon'] ;
+            _pickedImagePath = _userData['photo'] ?? '';
+            _dispo(_userData['Disponibilite']);
+            note = _userData['Note'] ?? '';
+            domaine = _userData['Domaine'] ?? '';
+            fetchHoraires();
+          });
+          print('_userData: $_userData'); // Debugging print
+        } else {
+          print('userDataJson is null');
+        }
+      } else {
+        print('Failed to fetch user data');
+        print('Response Status Code: ${response.statusCode}');
+        print('Response Body: ${response.body}');
+      }
+    } catch (error) {
+      print('Error fetching user data: $error');
+    }
+  }
+
+  void _saveChanges() {
+
+    _userData['Numero'] = _PhoneController.text.isNotEmpty
+        ? _PhoneController.text
+        : _userData['Numero'];
+
+    _userData['Rayon'] = _RayonController.text.isNotEmpty
+        ? _RayonController.text
+        : _userData['Rayon'];
+
+    _userData['Adresse'] = _AdresseController.text.isNotEmpty
+        ? _AdresseController.text
+        : _userData['Adresse'];
+
+    _userData['Disponibilite'] = dispo;
+
+    _userData['photo'] = _pickedImagePath;
+  }
+
+
+
+  Future<void> updateArtisanImage(File image) async {
+    // Replace "http://localhost:3000" with your server URL
+    String baseUrl =
+        "http://${AppConfig.serverAddress}:${AppConfig.serverPort}";
+
+    // Construct the endpoint URL
+    String endpoint = "$baseUrl/artisan/updateArtisanImage";
+
+    try {
+      // Create a multipart request
+      var request = http.MultipartRequest('POST', Uri.parse(endpoint));
+      print(image.path);
+
+      // Attach the image file to the request
+      request.files.add(await http.MultipartFile.fromPath('image', image.path));
+
+      // Add Authorization header with token
+      request.headers['Authorization'] = 'Bearer $_token';
+
+      // Send the request and await the response
+      var streamedResponse = await request.send();
+
+      // Close the response stream after using it
+      streamedResponse.stream.listen((value) {}).cancel();
+
+      // Get the response from the streamedResponse
+      var response = await http.Response.fromStream(streamedResponse);
+
+      // Check the response status
+      if (response.statusCode == 200) {
+        // Image uploaded successfully, parse the response
+        var data = jsonDecode(response.body);
+
+        if (data['success'] == true) {
+          // Client image updated successfully
+          print('Client image updated successfully');
+        } else {
+          // Image upload failed
+          print('Failed to update client image: ${data['message']}');
+        }
+      } else {
+        // Request failed
+        print('Request failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle errors
+      print('Error: $e');
+    }
+  }
+
+  Future<void> updateArtisan(Map<String, dynamic> updatedData) async {
+    final url = Uri.parse(
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/artisan/updateartisan'); // Replace with your endpoint
+    try {
+      final response = await http.patch(
+        url,
+        body: json.encode({
+          'AdresseArtisan': updatedData['Adresse'],
+          'NumeroTelArtisan': updatedData['Numero'],
+          'Disponibilite': updatedData['Disponibilite'],
+          'RayonKm': updatedData['Rayon'],
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_token'
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print('User data updated successfully');
+        _fetchUserData();
+      } else {
+        print('Failed to update user data');
+        print('Response Status Code: ${response.statusCode}');
+        print('Response Body: ${response.body}');
+      }
+    } catch (error) {
+      print('Error updating user data: $error');
+    }
+  }
+  final ImagePicker _imagePicker = ImagePicker();
+
+  var _pickedImagePath = null;
   @override
   void initState() {
     super.initState();
+    fetchData();
     day = 0; // Set initial day to 0
   }
   bool dispo = true;
@@ -41,8 +224,27 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
   }
   void changeDayValue(int newValue) {
     setState(() {
-      day = newValue; // Update the value of day
-    });
+      day = newValue;
+      switch (day) {
+        case 0:
+          jourController.text = 'dimanche';
+        case 1:
+          jourController.text = 'Lundi';
+        case 2:
+          jourController.text = 'Mardi';
+        case 3:
+          jourController.text = 'Mercredi';
+        case 4:
+          jourController.text = 'Jeudi';
+        case 5:
+          jourController.text = 'Vendredi';
+        case 6:
+          jourController.text = 'Samedi';
+        default:
+          jourController.text = 'dimanche';
+      }
+    }
+    );
   }
 
   bool _isEditing = false;
@@ -61,6 +263,58 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
     DateTime(2024, 4, 28),
     DateTime(2024, 4, 29),
   ];
+  Future<List<Map<String, dynamic>>> getArtisanHorairesByJour(String jour) async {
+    try {
+      // Endpoint URL for your backend API
+      final String apiUrl = 'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/artisanjour/HorairesJour/$jour';
+
+      // Request body
+      final Map<String, dynamic> body = {'jour': jour};
+
+      // Make POST request to the backend API
+      final response = await http.get(Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_token'
+        },
+      );
+
+      // Check if the request was successful
+      if (response.statusCode == 200) {
+        // Parse the response JSON
+        List<dynamic> responseData = json.decode(response.body);
+
+        // Convert response data to List<Map<String, dynamic>>
+        List<Map<String, dynamic>> horaires = responseData.map((item) {
+          return {
+            'heureDebut': item['heureDebut'],
+            'heureFin': item['heureFin'],
+          };
+        }).toList();
+
+        return horaires;
+      } else {
+        // If the request was not successful, throw an error
+        throw Exception('Failed to load horaires by jour');
+      }
+    } catch (error) {
+      // Catch any error that occurs during the process
+      throw Exception('Failed to load horaires by jour: $error');
+    }
+  }
+
+  void fetchHoraires() async {
+    String jour = 'mercredi'; // Replace with the desired jour
+    try {
+      List<Map<String, dynamic>> horaires = await getArtisanHorairesByJour(jour);
+      // Do something with the horaires
+      print('Horaires: $horaires');
+    } catch (error) {
+      // Handle errors
+      print('Error fetching horaires: $error');
+    }
+  }
+
 
   int selectedDayIndex = 0;
   Map<int, Map<TimeOfDay, TimeOfDay>> allHoraires = {
@@ -100,6 +354,37 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
       TimeOfDay(hour: 1, minute: 00): TimeOfDay(hour: 18, minute: 00),
     },
   };
+  /*Future<void> addJourToArtisan() async {
+
+    final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/artisan/${widget.artisanId}')
+    try {
+      final response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          // Add any required headers here, such as authorization token
+        },
+        body: jsonEncode(<String, dynamic>{
+          'jour': jourController.text,
+          'HeureDebut': _debutController.text,
+          'HeureFin': _finController.text,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        final responseData = json.decode(response.body);
+        print(responseData['message']);
+        // Handle successful response, if needed
+      } else {
+        // Handle error responses
+        print('Request failed with status: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Handle network errors
+      print('Error fetching data: $error');
+    }
+  }
+*/
 
   String _formatTime(TimeOfDay time) {
     return "${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}";
@@ -147,6 +432,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
     return TimeOfDay(hour: hour, minute: minute);
   }
 
+
   Widget build(BuildContext context) {
     Map<TimeOfDay, TimeOfDay> currentHoraire = allHoraires[day] ?? {};
     return Scaffold(
@@ -169,7 +455,12 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
               height: 32,
               child: Image.asset('assets/images/settings.png'),
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => parametrePage()),
+              );
+            },
           ),
         ],
       ),
@@ -191,6 +482,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                       if (pickedFile != null) {
                         setState(() {
                           File imageFile = File(pickedFile.path);
+                          updateArtisanImage(imageFile);
                         });
                       }
                     }
@@ -204,7 +496,13 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(30.0),
-                      child: Image.asset(
+                      child: _userData['photo'] != null
+                          ? Image.network(
+                        _userData[
+                        'photo'].toString(), // Utilisez l'URL de la photo de profil
+                        fit: BoxFit.cover,
+                      )
+                          : Image.asset(
                         'assets/artisan.jpg',
                         fit: BoxFit.cover,
                       ),
@@ -230,7 +528,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                     children: [
                       SvgPicture.asset("assets/star.svg"),
                       Text(
-                        note,
+                        note.toString(),
                         style: GoogleFonts.poppins(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
@@ -316,7 +614,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                     ),
                     child: Center(
                       child: Text(
-                        "Nettoyage",
+                        domaine,
                         style: GoogleFonts.poppins(
                             fontSize: 15, fontWeight: FontWeight.w600),
                       ),
@@ -327,7 +625,36 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        backgroundColor: Color(0xFFD6E3DC),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        content: Container(
+                          width:
+                          200.0, // Adjust the width as needed
+                          height:
+                          150.0, // Adjust the height as needed
+                          child: Center(
+                            child: ListView.builder(
+                              itemCount: _userData['Prestations'].length,
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                  title: Text(_userData['Prestations'][index], style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w700),),
+                                  // You can add more customization here if needed
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      );
+                    });
+
+              },
               style: ButtonStyle(
                 minimumSize:
                 MaterialStateProperty.all<Size>(const Size(315, 30)),
@@ -394,7 +721,6 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                       ? TextFormField(
                     controller: _NomController,
                     keyboardType: TextInputType.text,
-                    obscureText: true,
                     decoration: InputDecoration(
                       hintText: "Nom",
                       hintStyle: GoogleFonts.poppins(
@@ -411,7 +737,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                     padding: const EdgeInsets.symmetric(
                         vertical: 10.0, horizontal: 16.0),
                     child: Text(
-                      "Nom",
+                      _userData['Nom'].toString(),
                       style: GoogleFonts.poppins(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -453,7 +779,6 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                       ? TextFormField(
                     controller: _PrenomController,
                     keyboardType: TextInputType.text,
-                    obscureText: true,
                     decoration: InputDecoration(
                       hintText: "Prénom",
                       hintStyle: GoogleFonts.poppins(
@@ -469,7 +794,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                       : Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
                     child: Text(
-                      "Prénom",
+                      _userData['Prenom'].toString(),
                       style: GoogleFonts.poppins(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -512,7 +837,6 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                       ? TextFormField(
                     controller: _PhoneController,
                     keyboardType: TextInputType.text,
-                    obscureText: true,
                     decoration: InputDecoration(
                       hintText: "Numéro Téléphone",
                       hintStyle: GoogleFonts.poppins(
@@ -528,7 +852,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                       : Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
                     child: Text(
-                      "Téléphone",
+                      _userData['Numero'].toString(),
                       style: GoogleFonts.poppins(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -570,7 +894,6 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                       ? TextFormField(
                     controller: _EmailController,
                     keyboardType: TextInputType.text,
-                    obscureText: true,
                     decoration: InputDecoration(
                       hintText: "Email",
                       hintStyle: GoogleFonts.poppins(
@@ -586,7 +909,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                       : Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
                     child: Text(
-                      "Email",
+                      _userData['Email'].toString(),
                       style: GoogleFonts.poppins(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -628,7 +951,6 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                       ? TextFormField(
                     controller: _AdresseController,
                     keyboardType: TextInputType.text,
-                    obscureText: true,
                     decoration: InputDecoration(
                       hintText: "Adresse",
                       hintStyle: GoogleFonts.poppins(
@@ -644,7 +966,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                       : Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
                     child: Text(
-                      "Adresse",
+                      _userData['Adresse'].toString(),
                       style: GoogleFonts.poppins(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -686,7 +1008,6 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                       ? TextFormField(
                     controller: _RayonController,
                     keyboardType: TextInputType.text,
-                    obscureText: true,
                     decoration: InputDecoration(
                       hintText: "Rayon géographique",
                       hintStyle: GoogleFonts.poppins(
@@ -702,7 +1023,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                       : Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
                     child: Text(
-                      "Rayon géographique ",
+                      _userData['Rayon'].toString(),
                       style: GoogleFonts.poppins(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -721,6 +1042,8 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                   ElevatedButton(
                       onPressed: () {
                         if (_isEditing) {
+                          _saveChanges();
+                          updateArtisan(_userData);
                           _toggleEditing(false);
                         } else {
                           _toggleEditing(true);
@@ -740,6 +1063,39 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                       ),
                       child: Text(
                         _isEditing ? "Valider" : "Editer",
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 18,
+                        ),
+                      )),
+                ],
+              ),
+            ),
+            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                      onPressed: () {
+
+                      },
+                      style: ButtonStyle(
+                        minimumSize: MaterialStateProperty.all<Size>(
+                            const Size(150, 35)),
+                        shape:
+                        MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            const Color(0xFF05564B)),
+                      ),
+                      child: Text(
+                        "Commentaires",
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
@@ -1229,6 +1585,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                           child: SvgPicture.asset("assets/add.svg")),
                     ],
                   ),
+                  SizedBox(height: 90),
                 ],
               ),
             ),
