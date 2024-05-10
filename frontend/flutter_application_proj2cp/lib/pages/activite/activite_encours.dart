@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
+import 'package:flutter_application_proj2cp/demande_confirm%C3%A9.dart';
+import 'package:flutter_application_proj2cp/pages/mademande.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -41,19 +43,23 @@ class DemandesEnCours extends StatefulWidget {
 class _DemandesEnCoursState extends State<DemandesEnCours> {
   List<Demande?> demandesEnCours = [];
   late String _token;
+  late int rdv_id = 0;
+  late int demande_id = 0;
 
   @override
   void initState() {
     super.initState();
     fetchDemandesEnCours();
   }
-Future<void> fetchData() async {
+
+  Future<void> fetchData() async {
     final prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('token') ?? '';
     print('Token: $_token');
   }
+
   Future<void> fetchDemandesEnCours() async {
-   try {
+    try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token') ?? '';
       final response = await http.get(
@@ -67,12 +73,17 @@ Future<void> fetchData() async {
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         final List<Demande?> demandes = [];
+        int rdvId = 0; 
+        int demandeId = 0; 
 
         for (var item in data) {
           final rdv = item['rdv'];
+          ['DemandeId'];
           final demande = item['demande'];
           final confirme = item['confirme'];
           if (rdv != null && demande != null) {
+            final rdvId = item['rdv']['id'];
+            final demandeId = item['rdv']['DemandeId'];
             final String name = demande['Prestation']['nomPrestation'] ?? '';
             final String dateFin = demande['date'] ?? '';
             final String heureFin = demande['heure'] ?? '';
@@ -91,6 +102,8 @@ Future<void> fetchData() async {
 
         setState(() {
           demandesEnCours = demandes;
+          rdv_id = rdvId;
+          demande_id = demandeId;
           print('demandes: $demandesEnCours');
         });
       } else {
@@ -113,75 +126,101 @@ Future<void> fetchData() async {
               ? 'assets/icons/confirmee.png'
               : 'assets/icons/acceptee.png';
 
-          return Container(
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(color: creme, width: 1),
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Stack(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 65,
-                          height: 65,
-                          decoration: BoxDecoration(
-                            color: creme,
-                            borderRadius: BorderRadius.circular(10),
-                            image: DecorationImage(
-                              image: NetworkImage(demande?.demandeImage ?? ''),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 15.0),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                demande?.name ?? '', // Utilisation de ?. et ??
-                                style: GoogleFonts.poppins(
-                                  textStyle: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 20),
-                              Text(
-                                demande?.orderTime ??
-                                    '', // Utilisation de ?. et ??
-                                style: GoogleFonts.poppins(
-                                  textStyle: TextStyle(
-                                    color: Colors.grey,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 9,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+          return GestureDetector(
+            onTap: () {
+              if (demande?.status ?? false) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => demande_confirmePage(
+                      rdvID: rdv_id,
+                      demandeID: demande_id,
                     ),
                   ),
-                  Positioned(
-                    right: 16.0, // Ajustez le padding ici
-                    top: 20,
-                    child: Image.asset(
-                      iconAsset,
-                      width: 20,
-                      height: 20,
-                    ), // Ajoutez l'icône ici
-                  ),
-                ],
+                );
+              } else {
+                // If status is false (acceptee), navigate to AccepteePage
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Mademande(
+                            demandeId: demande_id,
+                          )),
+                );
+              }
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(color: creme, width: 1),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Stack(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 65,
+                            height: 65,
+                            decoration: BoxDecoration(
+                              color: creme,
+                              borderRadius: BorderRadius.circular(10),
+                              image: DecorationImage(
+                                image:
+                                    NetworkImage(demande?.demandeImage ?? ''),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 15.0),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  demande?.name ??
+                                      '', // Utilisation de ?. et ??
+                                  style: GoogleFonts.poppins(
+                                    textStyle: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 20),
+                                Text(
+                                  demande?.orderTime ??
+                                      '', // Utilisation de ?. et ??
+                                  style: GoogleFonts.poppins(
+                                    textStyle: TextStyle(
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 9,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Positioned(
+                      right: 16.0, // Ajustez le padding ici
+                      top: 20,
+                      child: Image.asset(
+                        iconAsset,
+                        width: 20,
+                        height: 20,
+                      ), // Ajoutez l'icône ici
+                    ),
+                  ],
+                ),
               ),
             ),
           );
