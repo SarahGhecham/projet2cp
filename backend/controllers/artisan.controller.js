@@ -50,7 +50,7 @@ async function getArtisanRdvs(req, res) {
 }
 
 async function consulterdemandes(req, res) {
-    const artisanId = req.params.id;
+    const artisanId = req.userId;
 
     console.log('Artisan ID:', artisanId);
 
@@ -100,14 +100,17 @@ async function consulterdemandes(req, res) {
                 nomPrestation: demande.Prestation.NomPrestation,
                 Ecologique: demande.Prestation.Ecologique
             };
-
+            const rdv = await models.RDV.findOne({
+                where: { DemandeId: demande.id }
+            });
             // Push the demande with client and prestation details to the array
             demandsWithDetails.push({
                 id: demande.id,
                 Description:demande.Description ,
                 Urgente: demande.Urgente,
                 client: clientInfo,
-                prestation: prestationInfo
+                prestation: prestationInfo,
+                rdvId: rdv.id
             });
         }
 
