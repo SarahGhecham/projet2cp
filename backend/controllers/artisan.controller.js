@@ -2,7 +2,19 @@ const Validator=require('fastest-validator');
 const models=require('../models');
 const { Op } = require('sequelize');
 const bcrypt = require('bcrypt');
+const joursFeries = [
+    new Date('2024-01-01'), // Jour de l'an
+    new Date('2024-05-01'), // Fête du Travail
+    new Date('2024-07-05'), // Fête de l'Indépendance
+    new Date('2024-01-12'), //Yennayer
+    new Date('2024-06-16'), //Aid El-Adha
+    new Date('2024-07-07'), //Moharam
+    new Date('2024-07-17'), //Achoura
+    new Date('2024-09-15'), //Mouloud
 
+
+  ];
+  
 async function getArtisanRdvs(req, res) {
     const artisanId = req.params.id;
 
@@ -564,7 +576,13 @@ async function DetailsDemandeConfirmee(req, res) {
     try {
         const rdv = await models.RDV.findByPk(rdvId, {
             include: [
-                { model: models.Demande, include: [models.Prestation],
+                { model: models.Demande, 
+                    include: [
+                        {
+                          model: models.Prestation,
+                          include: [models.Tarif] 
+                        }
+                      ],
                     attributes: ['Description','Localisation','Urgente']
                  }
             ]
@@ -614,16 +632,61 @@ async function DetailsDemandeConfirmee(req, res) {
             Localisation: rdv.Demande.Localisation,
             Urgente: rdv.Demande.Urgente
         }
-        const prestation={
-            Nom: rdv.Demande.Prestation.NomPrestation,
-            Image: rdv.Demande.Prestation.imagePrestation,
-            Materiel: rdv.Demande.Prestation.Maéeriel,
-            DureeMax: rdv.Demande.Prestation.DuréeMax,
-            DurreMin: rdv.Demande.Prestation.DuréeMin,
-            Ecologique: rdv.Demande.Prestation.Ecologique,
-            TarifJourMin: rdv.Demande.Prestation.Tarif.TarifJourMin,
-            TarifJourMax: rdv.Demande.Prestation.Tarif.TarifJourMax
-        }
+        let tarifJourMin = rdv.Demande.Prestation.Tarif.TarifJourMin;
+    let tarifJourMax = rdv.Demande.Prestation.Tarif.TarifJourMax;
+
+    const rdvHeureDebut = new Date(rdv.HeureDebut);
+    const isNight = rdvHeureDebut.getHours() >= 21;
+
+    const rdvDateDebut = new Date(rdv.DateDebut);
+    const isWeekend = rdvDateDebut.getDay() === 5 || rdvDateDebut.getDay() === 6;
+    
+    const isJourFerie = joursFeries.some(jourFerie => {
+        return (
+          jourFerie.getDate() === rdvDateDebut.getDate() &&
+          jourFerie.getMonth() === rdvDateDebut.getMonth() &&
+          jourFerie.getFullYear() === rdvDateDebut.getFullYear()
+        );
+      });
+  
+    if (isNight) {
+        tarifJourMin *= (1 + (rdv.Demande.Prestation.Tarif.PourcentageNuit / 100));
+        tarifJourMax *= (1 + (rdv.Demande.Prestation.Tarif.PourcentageNuit / 100));
+    }
+    
+    if (isWeekend) {
+        tarifJourMin *= (1 + (rdv.Demande.Prestation.Tarif.PourcentageWeekend / 100));
+        tarifJourMax *= (1 + (rdv.Demande.Prestation.Tarif.PourcentageJourWeekend / 100));
+    }
+    
+    if (isJourFerie) {
+        tarifJourMin *= (1 + (rdv.Demande.Prestation.Tarif.PourcentageJourFérié / 100));
+        tarifJourMax *= (1 + (rdv.Demande.Prestation.Tarif.PourcentageJourFérié / 100));
+      }
+    const clientScore = await models.Client.findByPk(clientDemande.ClientId);
+    const reductionPercentage = clientScore.Points > 10 ? 0.1 : 0;
+
+    
+    
+    // Remise à zéro des points du client
+    if (client.Points > 10) {
+        
+    tarifJourMin *= (1 + (reductionPercentage / 100));
+    tarifJourMax *= (1 + (reductionPercentage / 100));
+      client.Points = 0;
+      await client.save();
+    }
+
+    const prestation = {
+      Nom: rdv.Demande.Prestation.NomPrestation,
+      Materiel: rdv.Demande.Prestation.Matériel,
+      Image: rdv.Demande.Prestation.imagePrestation,
+      DureeMax: rdv.Demande.Prestation.DuréeMax,
+      DureeMin: rdv.Demande.Prestation.DuréeMin,
+      Ecologique: rdv.Demande.Prestation.Ecologique,
+      TarifJourMin: tarifJourMin,
+      TarifJourMax: tarifJourMax,
+    };
         return res.status(200).json({ client,rdvAffich, prestation, demandeAffich });
     } catch (error) {
         console.error("Erreur lors de la récupération des détails de la demande confirmée :", error);
@@ -757,7 +820,13 @@ async function DetailsRDVTermine(req, res) {
     try {
         const rdv = await models.RDV.findByPk(rdvId, {
             include: [
-                { model: models.Demande, include: [models.Prestation],
+                { model: models.Demande, 
+                    include: [
+                        {
+                          model: models.Prestation,
+                          include: [models.Tarif] 
+                        }
+                      ],
                     attributes: ['Description','Localisation','Urgente']
                 }
             ]
@@ -817,16 +886,61 @@ async function DetailsRDVTermine(req, res) {
             Localisation: rdv.Demande.Localisation,
             Urgente: rdv.Demande.Urgente
         }
-        const prestation = {
-            Nom: rdv.Demande.Prestation.NomPrestation,
-            Materiel: rdv.Demande.Prestation.Matériel,
-            Image: rdv.Demande.Prestation.imagePrestation,
-            DureeMax: rdv.Demande.Prestation.DuréeMax,
-            DureeMin: rdv.Demande.Prestation.DuréeMin,
-            Ecologique: rdv.Demande.Prestation.Ecologique,
-            TarifJourMin: rdv.Demande.Prestation.Tarif.TarifJourMin,
-            TarifJourMax: rdv.Demande.Prestation.Tarif.TarifJourMax
-        };
+        let tarifJourMin = rdv.Demande.Prestation.Tarif.TarifJourMin;
+    let tarifJourMax = rdv.Demande.Prestation.Tarif.TarifJourMax;
+
+    const rdvHeureDebut = new Date(rdv.HeureDebut);
+    const isNight = rdvHeureDebut.getHours() >= 21;
+
+    const rdvDateDebut = new Date(rdv.DateDebut);
+    const isWeekend = rdvDateDebut.getDay() === 5 || rdvDateDebut.getDay() === 6;
+
+    const isJourFerie = joursFeries.some(jourFerie => {
+        return (
+          jourFerie.getDate() === rdvDateDebut.getDate() &&
+          jourFerie.getMonth() === rdvDateDebut.getMonth() &&
+          jourFerie.getFullYear() === rdvDateDebut.getFullYear()
+        );
+      });
+  
+    if (isNight) {
+      tarifJourMin += tarifJourMin * rdv.Demande.Prestation.Tarif.PourcentageNuit;
+      tarifJourMax += tarifJourMax * rdv.Demande.Prestation.Tarif.PourcentageNuit;
+    }
+    
+    if (isWeekend) {
+      tarifJourMin += tarifJourMin * rdv.Demande.Prestation.Tarif.PourcentageWeekend;
+      tarifJourMax += tarifJourMax * rdv.Demande.Prestation.Tarif.PourcentageWeekend;
+    }
+
+    if (isJourFerie) {
+        tarifJourMin *= (1 + (rdv.Demande.Prestation.Tarif.PourcentageJourFérié / 100));
+        tarifJourMax *= (1 + (rdv.Demande.Prestation.Tarif.PourcentageJourFérié / 100));
+      }
+    const clientScore = await models.Client.findByPk(clientDemande.ClientId);
+    const reductionPercentage = clientScore.Points > 10 ? 0.1 : 0;
+
+   
+    
+    // Remise à zéro des points du client
+    if (client.Points > 10) {
+        
+    tarifJourMin *= (1 + (reductionPercentage / 100));
+    tarifJourMax *= (1 + (reductionPercentage / 100));
+      client.Points = 0;
+      await client.save();
+    }
+
+    const prestation = {
+      Nom: rdv.Demande.Prestation.NomPrestation,
+      Materiel: rdv.Demande.Prestation.Matériel,
+      Image: rdv.Demande.Prestation.imagePrestation,
+      DureeMax: rdv.Demande.Prestation.DuréeMax,
+      DureeMin: rdv.Demande.Prestation.DuréeMin,
+      Ecologique: rdv.Demande.Prestation.Ecologique,
+      TarifJourMin: tarifJourMin,
+      TarifJourMax: tarifJourMax,
+    };
 
         return res.status(200).json({ client,rdvAffich, prestation, demandeAffich });
     } catch (error) {
