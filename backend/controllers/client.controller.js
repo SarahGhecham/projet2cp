@@ -1407,7 +1407,7 @@ async function DetailsRDVTermine(req, res) {
 
 
 async function getCommentaires(req, res) {
-  const artisanId = req.artisanId;
+  const artisanId = req.params.artisanId;
   try {
       
       const demandesIds = await models.ArtisanDemande.findAll({ where: { ArtisanId: artisanId }, attributes: ['DemandeId'] });
