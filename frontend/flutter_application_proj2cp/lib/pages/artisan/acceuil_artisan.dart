@@ -455,12 +455,12 @@ class _Acc_artisanState extends State<Acc_artisan> {
                                     onPressed: () {
                                       accepterRDV(clients[index].id, id, token);
                                       _removeClient(index);
-                                      Navigator.push(
+                                      /*Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 DemandeAcceptee()),
-                                      );
+                                      );*/
                                     },
                                     style: ButtonStyle(
                                       padding:

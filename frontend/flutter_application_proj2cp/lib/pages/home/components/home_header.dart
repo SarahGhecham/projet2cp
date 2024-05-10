@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_proj2cp/pages/mademande.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HomeHeader extends StatelessWidget {
@@ -34,19 +35,6 @@ class HomeHeader extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            GestureDetector(
-              onTap: () {
-                // Handle notifications action
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(right: 20.0),
-                child: Image.asset(
-                  'assets/icons/notifs.png',
-                  height: 30,
-                  width: 30,
-                ),
-              ),
-            ),
           ],
         ),
       ],
