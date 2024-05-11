@@ -4,7 +4,7 @@ import 'package:flutter_application_proj2cp/pages/admin_pages/orders_encours.dar
 import 'package:flutter_application_proj2cp/pages/admin_pages/orders_termines.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class DrawerOrders extends StatefulWidget {
+/*class DrawerOrders extends StatefulWidget {
   const DrawerOrders({super.key});
 
   @override
@@ -109,4 +109,4 @@ class _DrawerOrdersState extends State<DrawerOrders> {
       ),
     );
   }
-}
+}*/
