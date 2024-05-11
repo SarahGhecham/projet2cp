@@ -33,43 +33,21 @@ class helpPageState extends State<helpPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Center(
-          child: Text(
-            "Centre d'aide",
-            style:
-            GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
-          ),
+        title: Row(
+          children: [
+            SizedBox(width: 70),
+            Text(
+              "Centre d'aide",
+              style:
+              GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
+            ),
+          ],
         ),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             SizedBox(height: 30),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: Text(
-                "Tutoriel d’utilisation de l’application Beaver",
-                style: GoogleFonts.poppins(
-                    color: Color(0xFF05564B),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-            SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  height: 200,
-                  width: 350,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.black,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 40),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Row(

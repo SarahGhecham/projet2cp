@@ -56,8 +56,8 @@ class _DrawerServicesState extends State<DrawerServices> {
   }
 
   Future<void> fetchDomaines() async {
-    final url =
-        Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/pageaccueil/AfficherDomaines');
+    final url = Uri.parse(
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/pageaccueil/AfficherDomaines');
     try {
       final response = await http.get(
         url,
@@ -199,8 +199,8 @@ class _DrawerServicesState extends State<DrawerServices> {
   }
 
   Future<void> fetchAllPrestations() async {
-    final url =
-        Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/pageaccueil/AfficherToutesPrestation');
+    final url = Uri.parse(
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/pageaccueil/AfficherToutesPrestation');
 
     try {
       final response = await http.get(
@@ -375,7 +375,7 @@ class _DrawerServicesState extends State<DrawerServices> {
                       ),
                     ),
                   ),
-                  Padding(
+                  /*Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: IconButton(
                       icon: Image.asset(
@@ -392,7 +392,7 @@ class _DrawerServicesState extends State<DrawerServices> {
                         );
                       },
                     ),
-                  ),
+                  ),*/
                 ],
               ),
               SizedBox(
@@ -420,7 +420,7 @@ class _DrawerServicesState extends State<DrawerServices> {
                       ),
                     ),
                   ),
-                  Padding(
+                  /*Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: IconButton(
                       icon: Image.asset(
@@ -437,7 +437,7 @@ class _DrawerServicesState extends State<DrawerServices> {
                         );
                       },
                     ),
-                  ),
+                  ),*/
                 ],
               ),
               SizedBox(

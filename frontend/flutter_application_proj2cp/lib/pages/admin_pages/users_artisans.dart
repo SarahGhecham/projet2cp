@@ -1,8 +1,11 @@
+import 'dart:ffi';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/creer_artisan.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/profil_artisan.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -10,10 +13,27 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_application_proj2cp/config.dart';
 
 class Artisan {
-  final String nom;
-  final String prenom;
-  final String? image;
-  Artisan({required this.nom, required this.prenom, this.image});
+  String nom;
+  String prenom;
+  String email;
+  String numTel;
+  String adresse;
+  String? rayon;
+  String? image;
+  bool disponibilite;
+  int domaine;
+  String? note;
+  Artisan(
+      {required this.nom,
+      required this.prenom,
+      required this.email,
+      required this.numTel,
+      required this.adresse,
+      this.rayon,
+      required this.domaine,
+      required this.disponibilite,
+      this.note,
+      this.image});
 }
 
 class ArtisansList extends StatefulWidget {
@@ -45,7 +65,8 @@ class _ArtisansListState extends State<ArtisansList> {
   }
 
   Future<void> fetchAllArtisans() async {
-    final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/Afficher/Artisans');
+    final url = Uri.parse(
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/Afficher/Artisans');
     try {
       final response = await http.get(
         url,
@@ -63,6 +84,13 @@ class _ArtisansListState extends State<ArtisansList> {
             artisans.add(Artisan(
               nom: nom,
               prenom: prenom,
+              email: item['EmailArtisan'] as String,
+              numTel: item['NumeroTelArtisan'] as String,
+              adresse: item['AdresseArtisan'] as String,
+              disponibilite: item['Disponibilite'],
+              domaine: item['DomaineId'],
+              note: item['Note'],
+              rayon: item['RayonKm'],
               image: photoDeProfil,
             ));
           }
@@ -77,6 +105,17 @@ class _ArtisansListState extends State<ArtisansList> {
     } catch (error) {
       print('Error fetching artisans $error');
     }
+  }
+
+  void _navigateToProfile(Artisan artisan) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VoirProfilArtisan(
+          artisan: artisan,
+        ),
+      ),
+    );
   }
 
   Widget _buildProfileImage(Artisan? artisan) {
@@ -119,31 +158,38 @@ class _ArtisansListState extends State<ArtisansList> {
         itemCount: _artisans.length,
         itemBuilder: (context, index) {
           final artisan = _artisans[index];
-          return Container(
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(color: creme, width: 1),
+          return GestureDetector(
+            onTap: () {
+              if (artisan != null) {
+                _navigateToProfile(artisan);
+              }
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(color: creme, width: 1),
+                ),
               ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  _buildProfileImage(artisan),
-                  SizedBox(
-                    width: 15,
-                  ),
-                  Text(
-                    '${artisan?.nom ?? ''} ${artisan?.prenom ?? ''}',
-                    style: GoogleFonts.poppins(
-                      textStyle: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 14,
-                      ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    _buildProfileImage(artisan),
+                    SizedBox(
+                      width: 15,
                     ),
-                  )
-                ],
+                    Text(
+                      '${artisan?.nom ?? ''} ${artisan?.prenom ?? ''}',
+                      style: GoogleFonts.poppins(
+                        textStyle: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           );

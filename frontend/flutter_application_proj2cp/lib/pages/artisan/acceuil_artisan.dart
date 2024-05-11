@@ -17,20 +17,22 @@ class Acc_artisan extends StatefulWidget {
 
 class Demande {
   final int id;
-
+  final int rdvId;
   final bool urgente;
   final Map<String, dynamic> client;
   final Map<String, dynamic> prestation;
 
   Demande(
       {required this.id,
-      required this.client,
-      required this.prestation,
-      required this.urgente});
+        required this.rdvId,
+        required this.client,
+        required this.prestation,
+        required this.urgente});
 
   factory Demande.fromJson(Map<String, dynamic> json) {
     return Demande(
       id: json['id'],
+      rdvId: json['rdvId'],
       // If null, set it to an empty string
       client: json['client'] ?? {}, // If null, set it to an empty map
       prestation: json['prestation'] ?? {}, // If null, set it to an empty map
@@ -55,7 +57,7 @@ Future<List<Demande>> consulterDemandes(String token) async {
       List<dynamic> responseData = jsonDecode(response.body);
 
       List<Demande> demands =
-          responseData.map((data) => Demande.fromJson(data)).toList();
+      responseData.map((data) => Demande.fromJson(data)).toList();
 
       return demands;
     } else {
@@ -83,7 +85,7 @@ Future<String> fetchArtisanName(String token) async {
       // If the request is successful, parse the JSON response
       final jsonData = json.decode(response.body);
       return jsonData[
-          'NomArtisan']; // Assuming 'NomArtisan' is the key for the artisan's name
+      'NomArtisan']; // Assuming 'NomArtisan' is the key for the artisan's name
     } else {
       // If the request is unsuccessful, throw an exception with the error message
       throw Exception('Failed to load artisan name');
@@ -259,16 +261,7 @@ class _Acc_artisanState extends State<Acc_artisan> {
                     ),
                   ),
                   const Spacer(),
-                  GestureDetector(
-                    onTap: () {
-                      // Handle notification icon tap
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 30.0),
-                      child: Image.asset('assets/icons/notifs.png',
-                          height: 25, width: 25),
-                    ),
-                  ),
+
                 ],
               ),
             ],
@@ -309,7 +302,7 @@ class _Acc_artisanState extends State<Acc_artisan> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => Demandelancee()),
+                                builder: (context) => Demandelancee(demandeID: clients[index].id)),
                           );
                         },
                         child: Container(
@@ -337,32 +330,32 @@ class _Acc_artisanState extends State<Acc_artisan> {
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(45),
                                       child: clients.isNotEmpty &&
-                                              clients[index].client['photo'] !=
-                                                  null
+                                          clients[index].client['photo'] !=
+                                              null
                                           ? Image.network(
-                                              clients[index].client['photo'],
-                                              fit: BoxFit.cover,
-                                            )
+                                        clients[index].client['photo'],
+                                        fit: BoxFit.cover,
+                                      )
                                           : Container(
-                                              color: Colors.grey,
-                                              child: Icon(
-                                                Icons.person,
-                                                size: 40,
-                                                color: Colors.white,
-                                              ),
-                                            ),
+                                        color: Colors.grey,
+                                        child: Icon(
+                                          Icons.person,
+                                          size: 40,
+                                          color: Colors.white,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                   SizedBox(width: 10),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      CrossAxisAlignment.start,
                                       children: [
                                         SizedBox(height: 15),
                                         Row(
                                           crossAxisAlignment:
-                                              CrossAxisAlignment.center,
+                                          CrossAxisAlignment.center,
                                           children: [
                                             Expanded(
                                               child: RichText(
@@ -370,33 +363,33 @@ class _Acc_artisanState extends State<Acc_artisan> {
                                                   children: [
                                                     TextSpan(
                                                       text: clients[index]
-                                                              .prestation[
-                                                          'nomPrestation'],
+                                                          .prestation[
+                                                      'nomPrestation'],
                                                       style:
-                                                          GoogleFonts.poppins(
+                                                      GoogleFonts.poppins(
                                                         color: const Color(
                                                             0xFF05564B),
                                                         fontSize: 14,
                                                         fontWeight:
-                                                            FontWeight.w600,
+                                                        FontWeight.w600,
                                                       ),
                                                     ),
                                                     if (clients[index]
-                                                            .prestation[
-                                                        'Ecologique']) ...[
+                                                        .prestation[
+                                                    'Ecologique']) ...[
                                                       WidgetSpan(
                                                         child: Padding(
                                                           padding:
-                                                              const EdgeInsets
-                                                                  .only(
-                                                                  left: 2),
+                                                          const EdgeInsets
+                                                              .only(
+                                                              left: 2),
                                                           child:
-                                                              SvgPicture.asset(
+                                                          SvgPicture.asset(
                                                             'assets/leaf.svg',
                                                             color: const Color(
-                                                                    0xff05564B)
+                                                                0xff05564B)
                                                                 .withOpacity(
-                                                                    0.6),
+                                                                0.6),
                                                           ),
                                                         ),
                                                       ),
@@ -409,7 +402,7 @@ class _Acc_artisanState extends State<Acc_artisan> {
                                         ),
                                         Text(
                                           (clients[index].client['username'] !=
-                                                  null)
+                                              null)
                                               ? '${clients[index].client['username']} '
                                               : '',
                                           style: TextStyle(
@@ -433,7 +426,7 @@ class _Acc_artisanState extends State<Acc_artisan> {
                                         child: SvgPicture.asset(
                                           'assets/urgent.svg',
                                           color:
-                                              Color(0xffFF8787).withOpacity(1),
+                                          Color(0xffFF8787).withOpacity(1),
                                         ),
                                       ),
                                     ),
@@ -453,18 +446,23 @@ class _Acc_artisanState extends State<Acc_artisan> {
                                   ),
                                   child: TextButton(
                                     onPressed: () {
+                                      int rdv = clients[index].rdvId;
+                                      int dm = clients[index].id;
+                                      print(index);
+                                      print(clients[index].rdvId);
+                                      print(clients[index].id);
                                       accepterRDV(clients[index].id, id, token);
                                       _removeClient(index);
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                DemandeAcceptee()),
+                                                DemandeAcceptee(demandeID: dm,rdvID: rdv)),
                                       );
                                     },
                                     style: ButtonStyle(
                                       padding:
-                                          MaterialStateProperty.all<EdgeInsets>(
+                                      MaterialStateProperty.all<EdgeInsets>(
                                         EdgeInsets.zero,
                                       ),
                                     ),
@@ -500,7 +498,7 @@ class _Acc_artisanState extends State<Acc_artisan> {
                                     },
                                     style: ButtonStyle(
                                       padding:
-                                          MaterialStateProperty.all<EdgeInsets>(
+                                      MaterialStateProperty.all<EdgeInsets>(
                                         EdgeInsets.zero,
                                       ),
                                     ),

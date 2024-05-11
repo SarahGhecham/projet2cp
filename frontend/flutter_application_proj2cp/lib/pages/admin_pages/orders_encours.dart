@@ -1,108 +1,80 @@
-import 'dart:convert';
+/*import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
+import 'package:flutter_application_proj2cp/pages/activite/activite_encours.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_application_proj2cp/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:http/http.dart' as http;
 
-class Demande {
-  final String name;
-  final String orderTime;
-  final String demandeImage;
-  final bool status;
-  final int demandeId;
-  final int rdvId;
-
-
-  Demande({
-    required this.name,
-    required this.orderTime,
-    required this.demandeImage,
-    required this.status,
-    required this.demandeId,
-    required this.rdvId,
-  });
-}
-
-class DemandesEnCoursArtisan extends StatefulWidget {
+/*class ActiviteEnCoursAdmin extends StatefulWidget {
+  const ActiviteEnCoursAdmin({super.key});
 
   @override
-  _DemandesEnCoursArtisanState createState() => _DemandesEnCoursArtisanState();
+  State<ActiviteEnCoursAdmin> createState() => _ActiviteEnCoursAdminState();
 }
 
-class _DemandesEnCoursArtisanState extends State<DemandesEnCoursArtisan> {
+class _ActiviteEnCoursAdminState extends State<ActiviteEnCoursAdmin> {
   List<Demande?> demandesEnCours = [];
-    late String _token;
-
+  late String _token;
   @override
   void initState() {
     super.initState();
-    fetchDemandesArtisanEnCours();
+    fetchAllDemandesEnCours();
   }
+
   Future<void> fetchData() async {
     final prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('token') ?? '';
     print('Token: $_token');
   }
 
-Future<void> fetchDemandesArtisanEnCours() async {
- try {
+  Future<void> fetchAllDemandesEnCours() async {
+    try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token') ?? '';
+      print(token);
       final response = await http.get(
-        Uri.parse(
-            'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/artisan/AfficherActiviteEncours'),
+        Uri.parse('http://10.0.2.2:3000/admins/ActiviteEncourspourtout'),
         headers: {
           'Authorization': 'Bearer $token',
         },
       );
 
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        final List<Demande?> demandes = [];
+      print(response.body);
+      final List<dynamic> data = json.decode(response.body);
+      final List<Demande?> demandes = [];
 
-        for (var item in data) {
-          final rdv = item['rdv'];
-          final demande = item['demande'];
-          final confirme = item['confirme'];
-          if (rdv != null && demande != null) {
-            final String name = demande['Prestation']['nomPrestation'] ?? '';
-            final String dateFin = demande['date'] ?? '';
-            final String heureFin = demande['heure'] ?? '';
-            final String imagePrestation =
-                demande['Prestation']['imagePrestation'] ?? '';
-            final bool status = confirme;
-            final int demandeId = demande['id'];
-            final int rdvId = rdv['id'];
-            //print('image $imagePrestation');
-            demandes.add(Demande(
-            
-              name: name,
-              orderTime: '$dateFin, $heureFin',
-              demandeImage: imagePrestation,
-              status: status,
-              demandeId: demandeId,
-              rdvId: rdvId,
-            ));
-          }
+      for (var item in data) {
+        final rdv = item['rdv'];
+        final demande = item['demande'];
+        final confirme = item['confirme'];
+        if (rdv != null && demande != null) {
+          final String name = demande['Prestation']['nomPrestation'] ?? '';
+          final String dateFin = demande['date'] ?? '';
+          final String heureFin = demande['heure'] ?? '';
+          final String imagePrestation =
+              demande['Prestation']['imagePrestation'] ?? '';
+          final bool status = confirme;
+          print('image $imagePrestation');
+          demandes.add(Demande(
+            name: name,
+            orderTime: '$dateFin, $heureFin',
+            demandeImage: imagePrestation,
+            status: status,
+          ));
         }
-
-        setState(() {
-          demandesEnCours = demandes;
-          print('demandes: $demandesEnCours');
-        });
-      } else {
-        print('Failed to fetch demandes en cours: ${response.statusCode}');
       }
+
+      setState(() {
+        demandesEnCours = demandes;
+        print('demandes: $demandesEnCours');
+      });
     } catch (error) {
       print('Error fetching demandes en cours: $error');
     }
-}
+  }
 
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView.builder(
@@ -146,7 +118,7 @@ Future<void> fetchDemandesArtisanEnCours() async {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                demande?.name ?? '',
+                                demande?.name ?? '', // Utilisation de ?. et ??
                                 style: GoogleFonts.poppins(
                                   textStyle: TextStyle(
                                     color: Colors.black,
@@ -157,7 +129,8 @@ Future<void> fetchDemandesArtisanEnCours() async {
                               ),
                               SizedBox(height: 20),
                               Text(
-                                demande?.orderTime ?? '',
+                                demande?.orderTime ??
+                                    '', // Utilisation de ?. et ??
                                 style: GoogleFonts.poppins(
                                   textStyle: TextStyle(
                                     color: Colors.grey,
@@ -173,13 +146,13 @@ Future<void> fetchDemandesArtisanEnCours() async {
                     ),
                   ),
                   Positioned(
-                    right: 16.0,
+                    right: 16.0, // Ajustez le padding ici
                     top: 20,
                     child: Image.asset(
                       iconAsset,
                       width: 20,
                       height: 20,
-                    ),
+                    ), // Ajoutez l'icône ici
                   ),
                 ],
               ),
@@ -189,4 +162,4 @@ Future<void> fetchDemandesArtisanEnCours() async {
       ),
     );
   }
-}
+}*/*/

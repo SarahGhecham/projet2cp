@@ -5,6 +5,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_application_proj2cp/config.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -332,7 +333,7 @@ class _Lancerdemande3PageState extends State<Lancerdemande3Page> {
 
                 // Envoyer la requête POST
                 http.post(
-                  Uri.parse('http://192.168.100.7:3000/client/lancerdemande'),
+                  Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/lancerdemande'),
                   headers: <String, String>{
                     'Content-Type': 'application/json; charset=UTF-8',
                     'Authorization': 'Bearer $_token',

@@ -6,6 +6,7 @@ import 'package:flutter_application_proj2cp/pages/afficher_prestation.dart';
 import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
 import 'package:flutter_application_proj2cp/pages/profile_screen.dart';
 import 'package:flutter_application_proj2cp/pages/chat_screen.dart';
+
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});
 
@@ -20,8 +21,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
   final List<Widget> _pages = [
     HomeScreen(),
     Activite(),
-    ChatScreen(),
-    //PrestationPage(),
     Profile(),
   ];
 
@@ -79,16 +78,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       onTap: () => _onItemTapped(2),
                       child: Image.asset(
                         _selectedIndex == 2
-                            ? 'assets/images/chat_filled.png'
-                            : 'assets/images/chat_outline.png',
-                        width: 25,
-                        height: 25,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => _onItemTapped(3),
-                      child: Image.asset(
-                        _selectedIndex == 3
                             ? 'assets/images/profile_filled.png'
                             : 'assets/images/profile_notfilled.png',
                         width: 35,

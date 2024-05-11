@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_application_proj2cp/pages/artisan/Bottomnavbar_artisan.dart';
+import 'package:flutter_application_proj2cp/pages/artisan/acceuil_artisan.dart';
+import 'package:flutter_application_proj2cp/profile_artisan.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -87,7 +90,8 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
           responseData != null ? responseData['client'] ?? {} : {};
           final client = {
             'Username': artisanData != null ? artisanData['Username'] ?? '' : '',
-
+            'Photo': artisanData != null ? artisanData['photo'] ?? '' : '',
+            'Numero': artisanData != null ? artisanData['NumeroTelClient'] ?? '' : '',
           };
 
 // RDV affich data
@@ -106,8 +110,7 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
             DateTime dateDebut = DateTime.parse(dateDebutString);
 
             // Format the date into 'dd/MM/yyyy' format
-            formattedDateDebut =
-                DateFormat('dd/MM/yyyy HH:mm').format(dateDebut);
+            formattedDateDebut = DateFormat('dd/MM/yyyy').format(dateDebut);
           }
 
           if (heureDebutString.isNotEmpty) {
@@ -306,7 +309,7 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
                                     text: TextSpan(
                                       children: [
                                         TextSpan(
-                                          text: data['prestation']['Nom'],
+                                          text: data['prestation']['Nom'].toString(),
                                           style: GoogleFonts.poppins(
                                             color: const Color(0xFF05564B),
                                             fontSize: 16,
@@ -334,11 +337,6 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
                               ],
                             ),
                             const SizedBox(height: 10),
-                            Text(
-                              "Confirmé le 23 Jan à 12:00",
-                              softWrap: true,
-                              style: GoogleFonts.poppins(fontSize: 12),
-                            ),
                           ],
                         ),
                       ),
@@ -351,7 +349,7 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 50.0),
               child: Text(
-                "Préstataire",
+                "Client",
                 style: GoogleFonts.poppins(
                     fontSize: 16, fontWeight: FontWeight.w600),
               ),
@@ -380,8 +378,8 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(
-                          image: AssetImage(
-                            "assets/artisan.jpg",
+                          image: NetworkImage(
+                            data['client']['Photo'].toString(),
                           ),
                           fit: BoxFit.cover,
                         ),
@@ -395,7 +393,7 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            data['client']['Username'],
+                            data['client']['Username'].toString(),
                             style: GoogleFonts.poppins(
                                 fontSize: 15, fontWeight: FontWeight.w600),
                           ),
@@ -407,7 +405,7 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
                                   5), // Adjust spacing between phone icon and number
                               Expanded(
                                 child: Text(
-                                  "0550765320",
+                                  data['client']['Numero'],
                                   style: GoogleFonts.poppins(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600),
@@ -487,7 +485,7 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
                           SvgPicture.asset("assets/money.svg"),
                           SizedBox(width: 15),
                           Text(
-                            "${data['prestation']['TarifJourMin']} - ${data['prestation']['TarifJourMax']}",
+                            "${data['prestation']['TarifJourMin']}da - ${data['prestation']['TarifJourMax']}da",
                             style: GoogleFonts.poppins(fontSize: 15),
                           ),
                           Text(
@@ -548,8 +546,7 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
                                 child: Padding(
                                   padding: const EdgeInsets.all(20.0),
                                   child: Text(
-                                    data['demandeAffich']['Description']
-                                        .toString(),
+                                    data['demandeAffich']['Description'].toString(),
                                     style: GoogleFonts.poppins(),
                                   ),
                                 ),
@@ -593,6 +590,12 @@ class _DemandeAccepteeState extends State<DemandeAcceptee> {
                 child: ElevatedButton(
                   onPressed: () {
                     annulerDemande(_token, widget.demandeID);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              BottomNavBarartisan()),
+                    );
                   },
                   style: ButtonStyle(
                     minimumSize:

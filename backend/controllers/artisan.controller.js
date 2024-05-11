@@ -2,10 +2,25 @@ const Validator=require('fastest-validator');
 const models=require('../models');
 const { Op } = require('sequelize');
 const bcrypt = require('bcrypt');
+<<<<<<< HEAD
 const imageUploader = require('../helpers/image_uploader');
 const axios = require('axios');
 const jwt = require('jsonwebtoken');
+=======
+const joursFeries = [
+    new Date('2024-01-01'), // Jour de l'an
+    new Date('2024-05-01'), // Fête du Travail
+    new Date('2024-07-05'), // Fête de l'Indépendance
+    new Date('2024-01-12'), //Yennayer
+    new Date('2024-06-16'), //Aid El-Adha
+    new Date('2024-07-07'), //Moharam
+    new Date('2024-07-17'), //Achoura
+    new Date('2024-09-15'), //Mouloud
+>>>>>>> a8634aa5779eaed75aaa6bce0292f5c815846888
 
+
+  ];
+  
 async function getArtisanRdvs(req, res) {
     const artisanId = req.userId;
 
@@ -127,6 +142,7 @@ async function consulterdemandes(req, res) {
         return res.status(500).json({ message: 'Internal server error' });
     }
 }
+<<<<<<< HEAD
 async function AfficherProfil(req, res) {
     try {
         const id = req.userId;
@@ -143,31 +159,45 @@ async function AfficherProfil(req, res) {
                 if (prestation.Domaine) {
                     uniqueDomaine = prestation.Domaine;
                     break; // Sortir de la boucle une fois que le premier domaine est trouvé
+=======
+function AfficherProfil(req, res) {
+    const id = req.userId;
+    models.Artisan.findByPk(id, {
+        include: [{
+            model: models.Prestation,
+            include: models.Domaine
+        }]
+    })
+        .then(result => {
+            if (result) {
+                let domaine = null; // Domaine par défaut
+                if (result.Prestations.length > 0 && result.Prestations[0].Domaine) {
+                    domaine = result.Prestations[0].Domaine.NomDomaine; // Premier domaine rencontré
+>>>>>>> a8634aa5779eaed75aaa6bce0292f5c815846888
                 }
+                const artisanInfo = {
+                    NomArtisan: result.NomArtisan,
+                    PrenomArtisan: result.PrenomArtisan,
+                    EmailArtisan: result.EmailArtisan,
+                    AdresseArtisan: result.AdresseArtisan,
+                    NumeroTelArtisan: result.NumeroTelArtisan,
+                    Disponibilite: result.Disponibilite,
+                    photo: result.photo,
+                    Note: result.Note,
+                    RayonKm:result.RayonKm ,
+                    id:result.id,
+                    Domaine: domaine, // Afficher le domaine
+                    Prestations: result.Prestations.map(prestation => prestation.NomPrestation) // Afficher seulement les noms des prestations
+                };
+                res.status(200).json(artisanInfo);
+            } else {
+                res.status(404).json({ message: "Artisan not found" });
             }
-
-            const artisanInfo = {
-                NomArtisan: result.NomArtisan,
-                PrenomArtisan: result.PrenomArtisan,
-                EmailArtisan: result.EmailArtisan,
-                AdresseArtisan: result.AdresseArtisan,
-                NumeroTelArtisan: result.NumeroTelArtisan,
-                Disponibilite: result.Disponibilite,
-                photo: result.photo,
-                Note: result.Note,
-                RayonKm: result.RayonKm,
-                id: result.id,
-                Domaine: uniqueDomaine, // Utiliser le domaine unique trouvé
-                Prestations: result.Prestations.map(prestation => prestation.NomPrestation)
-            };
-            res.status(200).json(artisanInfo);
-        } else {
-            res.status(404).json({ message: "Artisan not found" });
-        }
-    } catch (error) {
-        console.error("Error fetching artisan profile:", error);
-        res.status(500).json({ message: "Something went wrong", error: error.message });
-    }
+        })
+        .catch(error => {
+            console.error("Error fetching artisan profile:", error);
+            res.status(500).json({ message: "Something went wrong", error: error });
+        });
 }
 
 async function validateAddress(address, Cleapi) {
@@ -190,6 +220,7 @@ async function validateAddress(address, Cleapi) {
   async function updateartisan(req, res) {
     const id = req.userId;
 
+<<<<<<< HEAD
     // Valider l'adresse
     const Cleapi = 'AIzaSyDRCkJohH9RkmMIgpoNB2KBlLF6YMOOmmk';
     const isAddressValid = await validateAddress(req.body.AdresseArtisan, Cleapi);
@@ -209,6 +240,18 @@ async function validateAddress(address, Cleapi) {
         NumeroTelArtisan: req.body.NumeroTelArtisan,
         Disponnibilite: req.body.Disponnibilite,
         RayonKm: req.body.RayonKm,
+=======
+    // Hash the new password if provided
+
+
+    const updatedArtisan = {
+
+        AdresseArtisan: req.body.AdresseArtisan,
+        NumeroTelArtisan: req.body.NumeroTelArtisan,
+        Disponibilite: req.body.Disponibilite,
+        RayonKm:req.body.RayonKm,
+
+>>>>>>> a8634aa5779eaed75aaa6bce0292f5c815846888
     };
 
     // Mettre à jour le modèle Artisan avec les données mises à jour
@@ -231,7 +274,6 @@ async function validateAddress(address, Cleapi) {
         });
 }
 
-
 function updateArtisanImage(req, res) {
     const id = req.userId;
 
@@ -241,7 +283,7 @@ function updateArtisanImage(req, res) {
     }
 
     // Construct the image URL for the artisan
-    const imageURL = `http://localhost:3000/imageArtisan/${req.file.filename}`;
+    const imageURL = `http://${AppConfig.serverAddress}:${AppConfig.serverPort}/imageArtisan/${req.file.filename}`;
 
     // Update the artisan's photo URL in the database
     models.Artisan.findByPk(id)
@@ -483,7 +525,7 @@ async function Activiteterminee(req, res) {
                 },
                 {
                     model: models.RDV, 
-                    attributes: ['DateFin', 'HeureFin'],
+                    attributes: ['id','DateFin', 'HeureFin'],
                     where: { 
                         annule: false
                     }
@@ -588,7 +630,13 @@ async function DetailsDemandeConfirmee(req, res) {
     try {
         const rdv = await models.RDV.findByPk(rdvId, {
             include: [
-                { model: models.Demande, include: [models.Prestation],
+                { model: models.Demande, 
+                    include: [
+                        {
+                          model: models.Prestation,
+                          include: [models.Tarif] 
+                        }
+                      ],
                     attributes: ['Description','Localisation','Urgente']
                  }
             ]
@@ -613,10 +661,6 @@ async function DetailsDemandeConfirmee(req, res) {
             return res.status(404).json({ message: `Aucune demande n'est associée à cet artisan pour le RDV avec l'ID ${rdvId}.` });
         }
 
-        if (!artisanDemande.confirme) {
-            return res.status(404).json({ message: `Le RDV avec l'ID ${rdvId} n'a pas été confirmé.` });
-        }
-
         const clientDemande = await models.Demande.findOne({
             where: { Id: rdv.DemandeId }
         });
@@ -638,16 +682,61 @@ async function DetailsDemandeConfirmee(req, res) {
             Localisation: rdv.Demande.Localisation,
             Urgente: rdv.Demande.Urgente
         }
-        const prestation={
-            Nom: rdv.Demande.Prestation.NomPrestation,
-            Image: rdv.Demande.Prestation.imagePrestation,
-            Materiel: rdv.Demande.Prestation.Maéeriel,
-            DureeMax: rdv.Demande.Prestation.DuréeMax,
-            DurreMin: rdv.Demande.Prestation.DuréeMin,
-            Ecologique: rdv.Demande.Prestation.Ecologique,
-            TarifJourMin: rdv.Demande.Prestation.Tarif.TarifJourMin,
-            TarifJourMax: rdv.Demande.Prestation.Tarif.TarifJourMax
-        }
+        let tarifJourMin = rdv.Demande.Prestation.Tarif.TarifJourMin;
+    let tarifJourMax = rdv.Demande.Prestation.Tarif.TarifJourMax;
+
+    const rdvHeureDebut = new Date(rdv.HeureDebut);
+    const isNight = rdvHeureDebut.getHours() >= 21;
+
+    const rdvDateDebut = new Date(rdv.DateDebut);
+    const isWeekend = rdvDateDebut.getDay() === 5 || rdvDateDebut.getDay() === 6;
+    
+    const isJourFerie = joursFeries.some(jourFerie => {
+        return (
+          jourFerie.getDate() === rdvDateDebut.getDate() &&
+          jourFerie.getMonth() === rdvDateDebut.getMonth() &&
+          jourFerie.getFullYear() === rdvDateDebut.getFullYear()
+        );
+      });
+  
+    if (isNight) {
+        tarifJourMin *= (1 + (rdv.Demande.Prestation.Tarif.PourcentageNuit / 100));
+        tarifJourMax *= (1 + (rdv.Demande.Prestation.Tarif.PourcentageNuit / 100));
+    }
+    
+    if (isWeekend) {
+        tarifJourMin *= (1 + (rdv.Demande.Prestation.Tarif.PourcentageWeekend / 100));
+        tarifJourMax *= (1 + (rdv.Demande.Prestation.Tarif.PourcentageJourWeekend / 100));
+    }
+    
+    if (isJourFerie) {
+        tarifJourMin *= (1 + (rdv.Demande.Prestation.Tarif.PourcentageJourFérié / 100));
+        tarifJourMax *= (1 + (rdv.Demande.Prestation.Tarif.PourcentageJourFérié / 100));
+      }
+    const clientScore = await models.Client.findByPk(clientDemande.ClientId);
+    const reductionPercentage = clientScore.Points > 10 ? 0.1 : 0;
+
+    
+    
+    // Remise à zéro des points du client
+    if (client.Points > 10) {
+        
+    tarifJourMin *= (1 + (reductionPercentage / 100));
+    tarifJourMax *= (1 + (reductionPercentage / 100));
+      client.Points = 0;
+      await client.save();
+    }
+
+    const prestation = {
+      Nom: rdv.Demande.Prestation.NomPrestation,
+      Materiel: rdv.Demande.Prestation.Matériel,
+      Image: rdv.Demande.Prestation.imagePrestation,
+      DureeMax: rdv.Demande.Prestation.DuréeMax,
+      DureeMin: rdv.Demande.Prestation.DuréeMin,
+      Ecologique: rdv.Demande.Prestation.Ecologique,
+      TarifJourMin: tarifJourMin,
+      TarifJourMax: tarifJourMax,
+    };
         return res.status(200).json({ client,rdvAffich, prestation, demandeAffich });
     } catch (error) {
         console.error("Erreur lors de la récupération des détails de la demande confirmée :", error);
@@ -758,7 +847,7 @@ async function DetailsDemande(req, res) {
             Image: rdv.Demande.Prestation.imagePrestation,
             Materiel: rdv.Demande.Prestation.Maéeriel,
             DureeMax: rdv.Demande.Prestation.DuréeMax,
-            DurreMin: rdv.Demande.Prestation.DuréeMin,
+            DureeMin: rdv.Demande.Prestation.DuréeMin,
             Ecologique: rdv.Demande.Prestation.Ecologique,
             TarifJourMin: tarifJourMin,
             TarifJourMax: tarifJourMax
@@ -781,7 +870,13 @@ async function DetailsRDVTermine(req, res) {
     try {
         const rdv = await models.RDV.findByPk(rdvId, {
             include: [
-                { model: models.Demande, include: [models.Prestation],
+                { model: models.Demande, 
+                    include: [
+                        {
+                          model: models.Prestation,
+                          include: [models.Tarif] 
+                        }
+                      ],
                     attributes: ['Description','Localisation','Urgente']
                 }
             ]
@@ -841,16 +936,61 @@ async function DetailsRDVTermine(req, res) {
             Localisation: rdv.Demande.Localisation,
             Urgente: rdv.Demande.Urgente
         }
-        const prestation = {
-            Nom: rdv.Demande.Prestation.NomPrestation,
-            Materiel: rdv.Demande.Prestation.Matériel,
-            Image: rdv.Demande.Prestation.imagePrestation,
-            DureeMax: rdv.Demande.Prestation.DuréeMax,
-            DureeMin: rdv.Demande.Prestation.DuréeMin,
-            Ecologique: rdv.Demande.Prestation.Ecologique,
-            TarifJourMin: rdv.Demande.Prestation.Tarif.TarifJourMin,
-            TarifJourMax: rdv.Demande.Prestation.Tarif.TarifJourMax
-        };
+        let tarifJourMin = rdv.Demande.Prestation.Tarif.TarifJourMin;
+    let tarifJourMax = rdv.Demande.Prestation.Tarif.TarifJourMax;
+
+    const rdvHeureDebut = new Date(rdv.HeureDebut);
+    const isNight = rdvHeureDebut.getHours() >= 21;
+
+    const rdvDateDebut = new Date(rdv.DateDebut);
+    const isWeekend = rdvDateDebut.getDay() === 5 || rdvDateDebut.getDay() === 6;
+
+    const isJourFerie = joursFeries.some(jourFerie => {
+        return (
+          jourFerie.getDate() === rdvDateDebut.getDate() &&
+          jourFerie.getMonth() === rdvDateDebut.getMonth() &&
+          jourFerie.getFullYear() === rdvDateDebut.getFullYear()
+        );
+      });
+  
+    if (isNight) {
+      tarifJourMin += tarifJourMin * rdv.Demande.Prestation.Tarif.PourcentageNuit;
+      tarifJourMax += tarifJourMax * rdv.Demande.Prestation.Tarif.PourcentageNuit;
+    }
+    
+    if (isWeekend) {
+      tarifJourMin += tarifJourMin * rdv.Demande.Prestation.Tarif.PourcentageWeekend;
+      tarifJourMax += tarifJourMax * rdv.Demande.Prestation.Tarif.PourcentageWeekend;
+    }
+
+    if (isJourFerie) {
+        tarifJourMin *= (1 + (rdv.Demande.Prestation.Tarif.PourcentageJourFérié / 100));
+        tarifJourMax *= (1 + (rdv.Demande.Prestation.Tarif.PourcentageJourFérié / 100));
+      }
+    const clientScore = await models.Client.findByPk(clientDemande.ClientId);
+    const reductionPercentage = clientScore.Points > 10 ? 0.1 : 0;
+
+   
+    
+    // Remise à zéro des points du client
+    if (client.Points > 10) {
+        
+    tarifJourMin *= (1 + (reductionPercentage / 100));
+    tarifJourMax *= (1 + (reductionPercentage / 100));
+      client.Points = 0;
+      await client.save();
+    }
+
+    const prestation = {
+      Nom: rdv.Demande.Prestation.NomPrestation,
+      Materiel: rdv.Demande.Prestation.Matériel,
+      Image: rdv.Demande.Prestation.imagePrestation,
+      DureeMax: rdv.Demande.Prestation.DuréeMax,
+      DureeMin: rdv.Demande.Prestation.DuréeMin,
+      Ecologique: rdv.Demande.Prestation.Ecologique,
+      TarifJourMin: tarifJourMin,
+      TarifJourMax: tarifJourMax,
+    };
 
         return res.status(200).json({ client,rdvAffich, prestation, demandeAffich });
     } catch (error) {

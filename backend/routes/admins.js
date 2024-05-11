@@ -20,6 +20,11 @@ router.post("/CreerPrestation",imageUploader.upload.single('imagePrestation'),ad
 router.patch("/modifierPrestation",imageUploader.upload.single('imagePrestation'),adminControllers.ModifierPrestation);
 router.post("/AjouterPrestation/:id",auth(), adminControllers.AjouterPrestation);
 router.get("/Obtenir/Statistiques",adminControllers.obtenirStatistiques);
+<<<<<<< HEAD
+=======
+router.get("/ActiviteTerminespourtous",adminControllers.ActiviteTermineeAndExecuteForAllClients) ;
+router.get("/ActiviteEncourspourtout",adminControllers.ActiviteEncoursForAllClients);
+>>>>>>> a8634aa5779eaed75aaa6bce0292f5c815846888
 router.get("/AfficherPrestationsByDomaine/:domaineId",adminControllers.AfficherPrestationsByDomaine);
 
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
+import 'package:flutter_application_proj2cp/pages/admin_pages/drawer_orders.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/drawer_services.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/drawer_users.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/page_acc_admin.dart';
@@ -22,7 +23,7 @@ class DrawerDash extends StatefulWidget {
 }
 
 class _DrawerDashState extends State<DrawerDash> {
- late int _selectedIndex = widget.initialSelectedIndex;
+  late int _selectedIndex = widget.initialSelectedIndex;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -54,12 +55,6 @@ class _DrawerDashState extends State<DrawerDash> {
                       icon: 'assets/icons/users.png',
                       title: 'Utilisateurs',
                       index: 2,
-                    ),
-                    SizedBox(height: 26),
-                    _buildListTile(
-                      icon: 'assets/icons/orders.png',
-                      title: 'Orders',
-                      index: 3,
                     ),
                   ])
             ],
@@ -123,27 +118,6 @@ class _DrawerDashState extends State<DrawerDash> {
           MaterialPageRoute(builder: (context) => DrawerUsers()),
         );
         break;
-      case 3:
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => OrdersScreen()),
-        );
-        break;
     }
-  }
-}
-
-
-class OrdersScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Orders'),
-      ),
-      body: Center(
-        child: Text('Orders Screen'),
-      ),
-    );
   }
 }

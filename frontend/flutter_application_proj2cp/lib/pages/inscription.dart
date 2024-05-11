@@ -6,7 +6,8 @@ import 'dart:convert';
 import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_application_proj2cp/config.dart';
-
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
 
@@ -20,102 +21,133 @@ class _SignUpPageState extends State<SignUpPage> {
   final _locationController = TextEditingController();
   final _telephoneController = TextEditingController();
   final _emailController = TextEditingController();
+  List<dynamic> _predictions = [];
+  bool _showSuggestions = true;
 
+  @override
+  void _searchPlaces(String input) async {
+    const apiKey = 'AIzaSyD_d366EANPIHugZe9YF5QVxHHa_Bzef_4';
+    final url =
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=(cities)&key=$apiKey&language=fr';
+
+    final response = await http.get(Uri.parse(url));
+    final data = json.decode(response.body);
+
+    setState(() {
+      _predictions = data['predictions'];
+    });
+  }
   Future<void> _signUpUser() async {
-  final username = _usernameController.text;
-  final password = _passwordController.text;
-  final email = _emailController.text;
-  final telephone = _telephoneController.text;
-  final location = _locationController.text;
+    final username = _usernameController.text;
+    final password = _passwordController.text;
+    final email = _emailController.text;
+    final telephone = _telephoneController.text;
+    final location = _locationController.text;
 
-  final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/sign-up');
+    final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/sign-up');
 
-  try {
-    final response = await http.post(
-      url,
-      body: json.encode({
-        'Username': username,
-        'MotdepasseClient': password,
-        'EmailClient': email,
-        'AdresseClient': location,
-        'NumeroTelClient': telephone,
-      }),
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    if (response.statusCode == 201) {
-      var responseData = json.decode(response.body);
-      var token = responseData['token'];
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('token', token);
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const BottomNavBar(),
-        ),
+    try {
+      final response = await http.post(
+        url,
+        body: json.encode({
+          'Username': username,
+          'MotdepasseClient': password,
+          'EmailClient': email,
+          'AdresseClient': location,
+          'NumeroTelClient': telephone,
+        }),
+        headers: {'Content-Type': 'application/json'},
       );
-    } else if (response.statusCode == 400) {
-      var responseData = json.decode(response.body);
-      var errorMessage = responseData['message'];
 
-      if (errorMessage.contains("n'est pas rempli")) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Inscription échouée'),
-            content: Text(errorMessage),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-            ],
+      if (response.statusCode == 201) {
+        var responseData = json.decode(response.body);
+        var token = responseData['token'];
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', token);
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const BottomNavBar(),
           ),
         );
-      } else if (errorMessage.contains("numéro de téléphone n'a pas le bon format")) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Inscription échouée'),
-            content: Text(errorMessage),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
-      } else if (errorMessage == "L'adresse saisie est invalide") {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Inscription échouée'),
-            content: Text(errorMessage),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
-      } else if (errorMessage == 'Compte email déjà existant' || errorMessage == 'Compte email existant') {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Inscription échouée'),
-            content: Text(errorMessage),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
+      } else if (response.statusCode == 400) {
+        var responseData = json.decode(response.body);
+        var errorMessage = responseData['message'];
+
+        if (errorMessage.contains("n'est pas rempli")) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Inscription échouée'),
+              content: Text(errorMessage),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        } else if (errorMessage.contains("numéro de téléphone n'a pas le bon format")) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Inscription échouée'),
+              content: Text(errorMessage),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        } else if (errorMessage == "L'adresse saisie est invalide") {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Inscription échouée'),
+              content: Text(errorMessage),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        } else if (errorMessage == 'Compte email déjà existant' || errorMessage == 'Compte email existant') {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Inscription échouée'),
+              content: Text(errorMessage),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        } else {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Inscription échouée'),
+              content: const Text('Impossible de s\'inscrire. Veuillez réessayer.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
       } else {
+        print('L\'inscription a échoué');
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -130,26 +162,10 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
         );
       }
-    } else {
-      print('L\'inscription a échoué');
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Inscription échouée'),
-          content: const Text('Impossible de s\'inscrire. Veuillez réessayer.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
+    } catch (error) {
+      print('Error: $error');
     }
-  } catch (error) {
-    print('Error: $error');
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +175,7 @@ class _SignUpPageState extends State<SignUpPage> {
         child: Center(
           child: Column(
             children: <Widget>[
-              const SizedBox(height: 70),
+              const SizedBox(height: 110),
               SizedBox(
                 height: 100,
                 width: 300,
@@ -177,7 +193,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 50),
+              const SizedBox(height: 60),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -282,19 +298,64 @@ class _SignUpPageState extends State<SignUpPage> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: TextFormField(
-                  controller: _locationController,
-                  keyboardType: TextInputType.text,
-                  decoration: const InputDecoration(
-                    hintText: "Adresse",
-                    hintStyle: TextStyle(
-                      fontFamily: "Poppins",
-                      color: Color(0xFF777777),
+                    controller: _locationController,
+                    keyboardType: TextInputType.text,
+                    decoration: const InputDecoration(
+                      hintText: "Adresse",
+                      hintStyle: TextStyle(
+                        fontFamily: "Poppins",
+                        color: Color(0xFF777777),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 10.0,
+                        horizontal: 10.0,
+                      ),
+                      border: InputBorder.none,
                     ),
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 10.0,
-                      horizontal: 10.0,
-                    ),
-                    border: InputBorder.none,
+                    onChanged: (value) {
+                      if (value.isNotEmpty) {
+                        _searchPlaces(value);
+                        setState(() {
+                          _showSuggestions =
+                          true; // Show suggestions when typing
+                        });
+                      } else {
+                        setState(() {
+                          _showSuggestions = false; //
+                        });
+                      }
+                    }
+                ),
+              ),
+              Visibility(
+                visible: _showSuggestions,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                  child: ListView.separated(
+                    separatorBuilder: (BuildContext context, int index) {
+                      return Divider(
+                        color: Color(0xFFDCC8C5),
+                        thickness: 2.0,
+                      );
+                    },
+                    shrinkWrap: true,
+                    itemCount: _predictions.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(
+                          _predictions[index]["description"],
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                          ),
+                        ),
+                        onTap: () {
+                          _locationController.text = _predictions[index]["description"];
+                          setState(() {
+                            _showSuggestions = false;
+                          });
+                        },
+                      );
+                    },
                   ),
                 ),
               ),
@@ -328,19 +389,19 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 40),
               ElevatedButton(
                 onPressed: _signUpUser,
                 style: ButtonStyle(
                   minimumSize:
-                      MaterialStateProperty.all<Size>(const Size(100, 37)),
+                  MaterialStateProperty.all<Size>(const Size(100, 37)),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(const Color(0xFFFF8787)),
+                  MaterialStateProperty.all<Color>(const Color(0xFFFF8787)),
                 ),
                 child: const Text(
                   "S'inscrire",
@@ -351,100 +412,8 @@ class _SignUpPageState extends State<SignUpPage> {
                       fontFamily: "Poppins"),
                 ),
               ),
-              const SizedBox(height: 20),
-              const Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 150,
-                      child: Divider(
-                        color: Color(0xFFDDDDDD),
-                        thickness: 1.0,
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Text(
-                      "or",
-                      style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                          fontFamily: "Poppins"),
-                    ),
-                    SizedBox(width: 10),
-                    SizedBox(
-                      width: 150,
-                      child: Divider(
-                        color: Color(0xFFDDDDDD),
-                        thickness: 1.0,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        "assets/apple.svg",
-                        width: 30,
-                        height: 30,
-                      ),
-                      const SizedBox(height: 5), // Adjust the height as needed
-                    ],
-                  ),
-                  const SizedBox(width: 10),
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Connexion avec Apple",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontFamily: "Poppins",
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        "assets/google.svg",
-                        width: 25,
-                        height: 25,
-                      ),
-                      const SizedBox(height: 5),
-                    ],
-                  ),
-                  const SizedBox(width: 10),
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Connexion avec Google",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontFamily: "Poppins",
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 60),
+
+              const SizedBox(height: 120),
               const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

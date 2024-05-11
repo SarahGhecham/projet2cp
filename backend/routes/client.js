@@ -21,7 +21,7 @@ router.get('/AfficherActiviteTerminee',auth(),clientController.ActiviteTerminee)
 router.get('/AfficherActiviteTermineeNonEvaluee',auth(),clientController.ActiviteTermineeNonEvaluee);
 router.get('/AfficherActiviteEncours/:id',clientController.ActiviteEncours);
 router.get('/AfficherPrestations/:id',clientController.AfficherPrestations);
-router.get('/DetailsDemandeConfirmee/:rdvId',clientController.DetailsDemandeConfirmee);
+router.get('/DetailsDemandeConfirmee/:rdvId',auth(),clientController.DetailsDemandeConfirmee);
 router.get('/DetailsRDVTermine/:rdvId',auth(),clientController.DetailsRDVTermine);
 //router.get('/demandes/:demandeId/artisans', clientController.getArtisansForDemand);
 router.get('/demandes/:demandeId/artisans', clientController.rechercherDemandeParId);
