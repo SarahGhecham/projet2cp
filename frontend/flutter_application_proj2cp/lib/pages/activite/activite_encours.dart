@@ -14,12 +14,17 @@ class Demande {
   final String orderTime;
   final String demandeImage;
   final bool status;
+  final int demandeId;
+  final int rdvId;
 
   Demande({
     required this.name,
     required this.orderTime,
     required this.demandeImage,
     required this.status,
+    required this.demandeId,
+    required this.rdvId
+
   });
 }
 
@@ -27,11 +32,12 @@ class ActiviteEncours {
   final dynamic rdv;
   final dynamic demande;
   final bool status;
-
+  
   ActiviteEncours({
     required this.rdv,
     required this.demande,
     required this.status,
+    
   });
 }
 
@@ -78,12 +84,11 @@ class _DemandesEnCoursState extends State<DemandesEnCours> {
 
         for (var item in data) {
           final rdv = item['rdv'];
-          ['DemandeId'];
           final demande = item['demande'];
           final confirme = item['confirme'];
           if (rdv != null && demande != null) {
-            //final rdvId = item['rdv']['id'];
-            //final demandeId = item['rdv']['DemandeId'];
+            final int rdvId = rdv['id'];
+            final int demandeId = rdv['DemandeId'];
             final String name = demande['Prestation']['nomPrestation'] ?? '';
             final String dateFin = demande['date'] ?? '';
             final String heureFin = demande['heure'] ?? '';
@@ -96,6 +101,8 @@ class _DemandesEnCoursState extends State<DemandesEnCours> {
               orderTime: '$dateFin, $heureFin',
               demandeImage: imagePrestation,
               status: status,
+              demandeId: demandeId,
+              rdvId: rdvId,
             ));
           }
         }
