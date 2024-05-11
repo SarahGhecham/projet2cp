@@ -14,10 +14,14 @@ class Demande {
   final String name;
   final String orderTime;
   final String demandeImage;
+  final int demandeId;
+  final int rdvId;
   Demande({
     required this.name,
     required this.orderTime,
     required this.demandeImage,
+    required this.demandeId,
+    required this.rdvId,
   });
 }
 
@@ -76,11 +80,14 @@ class _DemandesTerminesArtisanState extends State<DemandesTerminesArtisan> {
               demande['RDV']['DateFin'] + ', ' + demande['RDV']['HeureFin'] ?? '';
           final String demandeImage =
               demande['Prestation']['imagePrestation'] ?? '';
-
+          final int demandeId = demande['id'];
+          final int rdvId = demande['RDV']['id'];
           demandes.add(Demande(
             name: name,
             orderTime: orderTime,
             demandeImage: demandeImage,
+            demandeId: demandeId,
+            rdvId: rdvId,
           ));
         }
       }

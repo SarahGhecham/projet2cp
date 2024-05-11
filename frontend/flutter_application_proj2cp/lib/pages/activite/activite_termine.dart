@@ -15,11 +15,15 @@ class Demande {
   final String orderTime;
   final String demandeImage;
   final Artisan artisan;
+  final int demandeId;
+  final int rdvId;
   Demande(
       {required this.name,
       required this.orderTime,
       required this.demandeImage,
-      required this.artisan});
+      required this.artisan,
+      required this.demandeId,
+      required this.rdvId});
 }
 
 class Artisan {
@@ -37,7 +41,6 @@ class Artisan {
 class ActiviteTerminee {
   final dynamic demande;
   final dynamic rdv;
-
   ActiviteTerminee({
     required this.demande,
     required this.rdv,
@@ -100,7 +103,8 @@ class _DemandesTerminesState extends State<DemandesTermines> {
                 demande['Artisans'][0]['PrenomArtisan'] ?? '';
             final String noteAsString = rdv['NoteEvaluation'] ?? '';
             final int points = int.tryParse(noteAsString) ?? 0;
-
+            final int demandeId = demande['id'];
+            final int rdvId = rdv['rdvId'];
             demandes.add(Demande(
               name: name,
               orderTime: orderTime,
@@ -110,6 +114,8 @@ class _DemandesTerminesState extends State<DemandesTermines> {
                 prenomArtisan: prenomArtisan,
                 points: points,
               ),
+               demandeId: demandeId,
+               rdvId: rdvId,
             ));
           }
         }

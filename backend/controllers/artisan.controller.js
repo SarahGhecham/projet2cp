@@ -474,7 +474,7 @@ async function Activiteterminee(req, res) {
                 },
                 {
                     model: models.RDV, 
-                    attributes: ['DateFin', 'HeureFin'],
+                    attributes: ['id','DateFin', 'HeureFin'],
                     where: { 
                         annule: false
                     }
