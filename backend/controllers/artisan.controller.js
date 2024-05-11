@@ -2,9 +2,12 @@ const Validator=require('fastest-validator');
 const models=require('../models');
 const { Op } = require('sequelize');
 const bcrypt = require('bcrypt');
+const imageUploader = require('../helpers/image_uploader');
+const axios = require('axios');
+const jwt = require('jsonwebtoken');
 
 async function getArtisanRdvs(req, res) {
-    const artisanId = req.params.id;
+    const artisanId = req.userId;
 
     try {
         // Find the records in ArtisanDemandes where ArtisanId is the provided ID and accepte and confirme are true
@@ -126,7 +129,7 @@ async function consulterdemandes(req, res) {
 }
 async function AfficherProfil(req, res) {
     try {
-        const id = req.params.id;
+        const id = req.userId;
         const result = await models.Artisan.findByPk(id, {
             include: [{
                 model: models.Prestation,
@@ -167,44 +170,62 @@ async function AfficherProfil(req, res) {
     }
 }
 
+async function validateAddress(address, Cleapi) {
+    try {
+      const encodedAddress = encodeURIComponent(address);
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${Cleapi}`
+      );
+  
+      return response.data.results.length > 0;
+    } catch (error) {
+      console.error(
+        "Une erreur s'est produite lors de la validation de l'adresse :",
+        error
+      );
+      throw error;
+    }
+  }
 
-
-
-async function updateartisan(req, res) {
+  async function updateartisan(req, res) {
     const id = req.userId;
 
-    // Hash the new password if provided
-    let hashedPassword = null;
-    if (req.body.MotdepasseArtisan) {
-        hashedPassword = await bcrypt.hash(req.body.MotdepasseArtisan, 10);
+    // Valider l'adresse
+    const Cleapi = 'AIzaSyDRCkJohH9RkmMIgpoNB2KBlLF6YMOOmmk';
+    const isAddressValid = await validateAddress(req.body.AdresseArtisan, Cleapi);
+
+    if (!isAddressValid) {
+        return res.status(400).json({ message: "L'adresse fournie est invalide" });
+    }
+
+    // Valider le format du numéro de téléphone
+    const phonePattern = /^[0-9]{10}$/;
+    if (!phonePattern.test(req.body.NumeroTelArtisan)) {
+        return res.status(400).json({ message: "Le numéro de téléphone n'a pas le bon format" });
     }
 
     const updatedArtisan = {
-       
-        MotdepasseArtisan: hashedPassword, // Hashed password
-        
         AdresseArtisan: req.body.AdresseArtisan,
         NumeroTelArtisan: req.body.NumeroTelArtisan,
-        Disponnibilite: req.body.Disponnibilite ,
-        RayonKm:body.RayonKm ,
-
+        Disponnibilite: req.body.Disponnibilite,
+        RayonKm: req.body.RayonKm,
     };
 
-    // Update the Artisan model with the updated data
+    // Mettre à jour le modèle Artisan avec les données mises à jour
     models.Artisan.update(updatedArtisan, { where: { id: id } })
         .then(result => {
             if (result[0] === 1) {
                 res.status(201).json({
-                    message: "Artisan updated successfully",
+                    message: "Artisan mis à jour avec succès",
                     artisan: updatedArtisan
                 });
             } else {
-                res.status(404).json({ message: "Artisan not found" });
+                res.status(404).json({ message: "Artisan non trouvé" });
             }
         })
         .catch(error => {
             res.status(500).json({
-                message: "Something went wrong",
+                message: "Une erreur s'est produite",
                 error: error
             });
         });
@@ -212,7 +233,7 @@ async function updateartisan(req, res) {
 
 
 function updateArtisanImage(req, res) {
-    const id = req.params.id;
+    const id = req.userId;
 
     // Check if a file is uploaded
     if (!req.file) {
