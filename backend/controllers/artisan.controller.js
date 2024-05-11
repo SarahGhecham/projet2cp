@@ -600,10 +600,6 @@ async function DetailsDemandeConfirmee(req, res) {
             return res.status(404).json({ message: `Aucune demande n'est associée à cet artisan pour le RDV avec l'ID ${rdvId}.` });
         }
 
-        if (!artisanDemande.confirme) {
-            return res.status(404).json({ message: `Le RDV avec l'ID ${rdvId} n'a pas été confirmé.` });
-        }
-
         const clientDemande = await models.Demande.findOne({
             where: { Id: rdv.DemandeId }
         });

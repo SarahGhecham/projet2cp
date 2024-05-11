@@ -106,7 +106,9 @@ class parametrePageState extends State<parametrePage> {
             ),
           ),
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              logout(context);
+            },
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Row(
