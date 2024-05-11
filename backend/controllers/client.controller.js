@@ -732,32 +732,43 @@ async function lancerdemande(req, res) {
 
 function AfficherArtisan(req,res){
     const id=req.params.id;
-    models.Artisan.findByPk(id).then(result=>{
-        if(result){
-            const artisanInfo = {
-                NomArtisan: result.NomArtisan,
-                PrenomArtisan: result.PrenomArtisan,
-                NumeroTelArtisan: result.NumeroTelArtisan,
-                AdresseArtisan: result.AdresseArtisan,
-                Disponnibilite: result.Disponnibilite,
-                Note: result.Note,
-                Service_account: result.Service_account,
-                photo: result.photo
-            };
-            res.status(201).json(artisanInfo);
-        }
-           
-        else
-            res.status(404).json({
-          message:"artisan not found"
+    models.Artisan.findByPk(id, {
+            include: [{
+                model: models.Prestation,
+                include: models.Domaine
+            }]
         })
-    }).catch(error=>{
-        res.status(500).json({
-            message:"something went wrong",
-            error : error
-        })
-    })
+            .then(result => {
+                if (result) {
+                    let domaine = null; // Domaine par défaut
+                    if (result.Prestations.length > 0 && result.Prestations[0].Domaine) {
+                        domaine = result.Prestations[0].Domaine.NomDomaine; // Premier domaine rencontré
+                    }
+                    const artisanInfo = {
+                        NomArtisan: result.NomArtisan,
+                        PrenomArtisan: result.PrenomArtisan,
+                        EmailArtisan: result.EmailArtisan,
+                        AdresseArtisan: result.AdresseArtisan,
+                        NumeroTelArtisan: result.NumeroTelArtisan,
+                        Disponibilite: result.Disponibilite,
+                        photo: result.photo,
+                        Note: result.Note,
+                        RayonKm:result.RayonKm ,
+                        id:result.id,
+                        Domaine: domaine, // Afficher le domaine
+                        Prestations: result.Prestations.map(prestation => prestation.NomPrestation) // Afficher seulement les noms des prestations
+                    };
+                    res.status(200).json(artisanInfo);
+                } else {
+                    res.status(404).json({ message: "Artisan not found" });
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching artisan profile:", error);
+                res.status(500).json({ message: "Something went wrong", error: error });
+            });
 }
+
 
 function AfficherProfil(req,res){
     const id=req.userId;

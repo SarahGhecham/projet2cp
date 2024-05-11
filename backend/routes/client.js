@@ -14,7 +14,7 @@ router.post('/creerRDV',auth(),clientController.creerRDV);
 router.post('/confirmerRDV',auth(),clientController.confirmerRDV);
 router.post('/annulerRDV',auth(),clientController.annulerRDV);
 router.post('/annulerDemande',auth(),clientController.annulerDemande);
-router.get('/AffcherArtisan',auth(),clientController.AfficherArtisan);
+router.get('/AfficherArtisan/:id',auth(),clientController.AfficherArtisan);
 router.get('/Affichermonprofil',auth(),clientController.AfficherProfil)
 //router.get('/test',clientController.test);
 router.get('/AfficherActiviteTerminee',auth(),clientController.ActiviteTerminee);

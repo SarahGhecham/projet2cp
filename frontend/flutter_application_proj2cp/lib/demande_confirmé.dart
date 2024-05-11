@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_application_proj2cp/pages/connexion.dart';
+import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
 import 'package:flutter_application_proj2cp/profilartisan_client.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -342,11 +344,7 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
                               ],
                             ),
                             const SizedBox(height: 10),
-                            Text(
-                              "Confirmé le 23 Jan à 12:00",
-                              softWrap: true,
-                              style: GoogleFonts.poppins(fontSize: 12),
-                            ),
+
                           ],
                         ),
                       ),
@@ -384,10 +382,10 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
                     SizedBox(width: 15),
                     GestureDetector(
                       onTap: (){
-                        /*Navigator.push(
+                        Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => ProfileartisanclientPage(artisanID: 5)),
-                        );*/
+                          MaterialPageRoute(builder: (context) => ProfileartisanclientPage(artisanID: data['artisan']['Id'])),
+                        );
                       },
                       child: Container(
                         height: 50,
@@ -627,6 +625,10 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
                 child: ElevatedButton(
                   onPressed: () {
                     annulerDemande(_token, widget.demandeID);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomeScreen()),
+                    );
                   },
                   style: ButtonStyle(
                     minimumSize:

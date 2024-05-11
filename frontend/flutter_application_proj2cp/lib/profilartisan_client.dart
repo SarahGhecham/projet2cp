@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_application_proj2cp/config.dart';
+import 'package:flutter_application_proj2cp/pages/commentaire_client.dart';
 import 'package:flutter_application_proj2cp/parametre.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,7 +16,6 @@ import 'dart:convert';
 
 class ProfileartisanclientPage extends StatefulWidget {
   final int artisanID;
-
   @override
   const ProfileartisanclientPage({
     Key? key,
@@ -51,7 +51,7 @@ class _ProfileartisanclientPageState extends State<ProfileartisanclientPage> {
   }
   Future<void> _fetchUserData() async {
     final url = Uri.parse(
-        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/artisan/Affichermonprofil'); // Replace with your endpoint
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/AfficherArtisan/${widget.artisanID}'); // Replace with your endpoint
     try {
       final response = await http.get(
         url,
@@ -590,6 +590,10 @@ class _ProfileartisanclientPageState extends State<ProfileartisanclientPage> {
                 children: [
                   ElevatedButton(
                       onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => CommentPage2(ArtisanId: widget.artisanID,)),
+                        );
 
                       },
                       style: ButtonStyle(
