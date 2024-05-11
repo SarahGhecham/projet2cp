@@ -2,11 +2,6 @@ const Validator=require('fastest-validator');
 const models=require('../models');
 const { Op } = require('sequelize');
 const bcrypt = require('bcrypt');
-<<<<<<< HEAD
-const imageUploader = require('../helpers/image_uploader');
-const axios = require('axios');
-const jwt = require('jsonwebtoken');
-=======
 const joursFeries = [
     new Date('2024-01-01'), // Jour de l'an
     new Date('2024-05-01'), // Fête du Travail
@@ -16,7 +11,6 @@ const joursFeries = [
     new Date('2024-07-07'), //Moharam
     new Date('2024-07-17'), //Achoura
     new Date('2024-09-15'), //Mouloud
->>>>>>> a8634aa5779eaed75aaa6bce0292f5c815846888
 
 
   ];
@@ -142,24 +136,6 @@ async function consulterdemandes(req, res) {
         return res.status(500).json({ message: 'Internal server error' });
     }
 }
-<<<<<<< HEAD
-async function AfficherProfil(req, res) {
-    try {
-        const id = req.userId;
-        const result = await models.Artisan.findByPk(id, {
-            include: [{
-                model: models.Prestation,
-                include: models.Domaine
-            }]
-        });
-
-        if (result) {
-            let uniqueDomaine = null; // Initialiser à null
-            for (const prestation of result.Prestations) {
-                if (prestation.Domaine) {
-                    uniqueDomaine = prestation.Domaine;
-                    break; // Sortir de la boucle une fois que le premier domaine est trouvé
-=======
 function AfficherProfil(req, res) {
     const id = req.userId;
     models.Artisan.findByPk(id, {
@@ -173,7 +149,6 @@ function AfficherProfil(req, res) {
                 let domaine = null; // Domaine par défaut
                 if (result.Prestations.length > 0 && result.Prestations[0].Domaine) {
                     domaine = result.Prestations[0].Domaine.NomDomaine; // Premier domaine rencontré
->>>>>>> a8634aa5779eaed75aaa6bce0292f5c815846888
                 }
                 const artisanInfo = {
                     NomArtisan: result.NomArtisan,
@@ -220,7 +195,6 @@ async function validateAddress(address, Cleapi) {
   async function updateartisan(req, res) {
     const id = req.userId;
 
-<<<<<<< HEAD
     // Valider l'adresse
     const Cleapi = 'AIzaSyDRCkJohH9RkmMIgpoNB2KBlLF6YMOOmmk';
     const isAddressValid = await validateAddress(req.body.AdresseArtisan, Cleapi);
@@ -240,18 +214,6 @@ async function validateAddress(address, Cleapi) {
         NumeroTelArtisan: req.body.NumeroTelArtisan,
         Disponnibilite: req.body.Disponnibilite,
         RayonKm: req.body.RayonKm,
-=======
-    // Hash the new password if provided
-
-
-    const updatedArtisan = {
-
-        AdresseArtisan: req.body.AdresseArtisan,
-        NumeroTelArtisan: req.body.NumeroTelArtisan,
-        Disponibilite: req.body.Disponibilite,
-        RayonKm:req.body.RayonKm,
-
->>>>>>> a8634aa5779eaed75aaa6bce0292f5c815846888
     };
 
     // Mettre à jour le modèle Artisan avec les données mises à jour
