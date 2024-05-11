@@ -46,25 +46,18 @@ class _ProfileAdminState extends State<ProfileAdmin> {
 
   Future<void> _fetchUserData() async {
     final url = Uri.parse(
-        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/Affichermonprofil'); // Replace with your endpoint
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/1'); // Replace with your endpoint
     try {
-      final response = await http.get(
-        url,
-        headers: {'Authorization': 'Bearer $_token'},
-      );
+      final response = await http.get(url);
 
       if (response.statusCode == 200) {
         final userDataJson = json.decode(response.body);
 
         setState(() {
           _userData = {
-            'Username': userDataJson['Username'] as String,
-            'EmailClient': userDataJson['EmailClient'] as String,
-            'AdresseClient': userDataJson['AdresseClient'] as String,
-            'NumeroTelClient': userDataJson['NumeroTelClient'] as String,
-            'Points': userDataJson['Points'],
-            'Service_account': userDataJson['Service_account'],
-            'photo': userDataJson['photo']
+            'NomAdmin': userDataJson['NomAdmin'] as String,
+            'PrenomAdmin': userDataJson['PrenomAdmin'] as String,
+            'EmailAdmin': userDataJson['EmailAdmin'] as String?,
           };
         });
         print('_userData: $_userData'); // Debugging print
@@ -96,50 +89,6 @@ class _ProfileAdminState extends State<ProfileAdmin> {
     });
   }
 
-  Future<void> updateClientImage(File image, String token) async {
-    // Replace "http://localhost:3000" with your server URL
-    String baseUrl = "http://${AppConfig.serverAddress}:${AppConfig.serverPort}";
-
-    // Construct the endpoint URL
-    String endpoint = "$baseUrl/client/updateClientImage";
-
-    try {
-      // Create a multipart request
-      var request = http.MultipartRequest('POST', Uri.parse(endpoint));
-      print(image.path);
-
-      // Attach the image file to the request
-      request.files.add(await http.MultipartFile.fromPath('image', image.path));
-
-      // Add Authorization header with token
-      request.headers['Authorization'] = 'Bearer $token';
-
-      // Send the request
-      var streamedResponse = await request.send();
-
-      // Check the response status
-      if (streamedResponse.statusCode == 200) {
-        // Image uploaded successfully, parse the response
-        var response = await streamedResponse.stream.bytesToString();
-        var data = jsonDecode(response);
-
-        if (data['success'] == true) {
-          // Client image updated successfully
-          print('Client image updated successfully');
-        } else {
-          // Image upload failed
-          print('Failed to update client image: ${data['message']}');
-        }
-      } else {
-        // Request failed
-        print('Request failed with status: ${streamedResponse.statusCode}');
-      }
-    } catch (e) {
-      // Handle errors
-      print('Error: $e');
-    }
-  }
-
   Future<void> updateClient(Map<String, dynamic> updatedData) async {
     final url = Uri.parse(
         'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/updateClient'); // Replace with your endpoint
@@ -166,13 +115,9 @@ class _ProfileAdminState extends State<ProfileAdmin> {
     }
   }
 
-  final ImagePicker _imagePicker = ImagePicker();
-
-  var _pickedImagePath = null; // var jsp si c ccorrect hna
-  TextEditingController _UsernameController = TextEditingController();
-  TextEditingController _numeroController = TextEditingController();
+  TextEditingController _nomController = TextEditingController();
+  TextEditingController _prenomController = TextEditingController();
   TextEditingController _gmailController = TextEditingController();
-  TextEditingController _addressController = TextEditingController();
 
   void _toggleEditing(bool value) {
     setState(() {
@@ -181,22 +126,16 @@ class _ProfileAdminState extends State<ProfileAdmin> {
   }
 
   void _saveChanges() {
-    _userData['Username'] = _UsernameController.text.isNotEmpty
-        ? _UsernameController.text
-        : _userData['Username'];
-    _userData['NumeroTelClient'] = _numeroController.text.isNotEmpty
-        ? _numeroController.text
-        : _userData['NumeroTelClient'];
+    _userData['NomAdmin'] = _nomController.text.isNotEmpty
+        ? _nomController.text
+        : _userData['NomAdmin'];
+    _userData['PrenomAdmin'] = _prenomController.text.isNotEmpty
+        ? _prenomController.text
+        : _userData['PrenomAdmin'];
 
-    _userData['EmailClient'] = _gmailController.text.isNotEmpty
+    _userData['EmailAdlin'] = _gmailController.text.isNotEmpty
         ? _gmailController.text
-        : _userData['EmailClient'];
-
-    _userData['AdresseClient'] = _addressController.text.isNotEmpty
-        ? _addressController.text
-        : _userData['AdresseClient'];
-
-    _userData['photo'] = _pickedImagePath;
+        : _userData['EmailAdmin'];
   }
 
   @override
@@ -205,7 +144,7 @@ class _ProfileAdminState extends State<ProfileAdmin> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(
-          'ProfileAdmin',
+          'Profile',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w600, // Semibold
@@ -256,55 +195,11 @@ class _ProfileAdminState extends State<ProfileAdmin> {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(14),
-                            child: _userData['photo'] != null
-                                ? Image.network(
-                                    _userData[
-                                        'photo'], // Utilisez l'URL de la photo de profil
-                                    width: 168,
-                                    height: 174,
-                                    fit: BoxFit.cover,
-                                  )
-                                : Image.asset(
-                                    'assets/images/l.png',
-                                    width: 168,
-                                    height: 174,
-                                    fit: BoxFit.cover,
-                                  ),
-                          ),
-                          Visibility(
-                            visible: _isEditing,
-                            child: Positioned(
-                              top: 6,
-                              right: 6,
-                              child: GestureDetector(
-                                onTap: () {
-                                  // Action to perform when the edit icon is tapped
-                                },
-                                child: Icon(
-                                  Icons.edit,
-                                  color: Colors.black,
-                                  size: 28,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned.fill(
-                            child: GestureDetector(
-                              onTap: () async {
-                                if (_isEditing) {
-                                  final picker = ImagePicker();
-                                  final pickedFile = await picker.getImage(
-                                    source: ImageSource.gallery,
-                                  );
-
-                                  if (pickedFile != null) {
-                                    setState(() {
-                                      File imageFile = File(pickedFile.path);
-                                      updateClientImage(imageFile, _token);
-                                    });
-                                  }
-                                }
-                              },
+                            child: Image.asset(
+                              'assets/images/l.png',
+                              width: 168,
+                              height: 174,
+                              fit: BoxFit.cover,
                             ),
                           ),
                         ],
@@ -380,15 +275,15 @@ class _ProfileAdminState extends State<ProfileAdmin> {
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 8),
                                 child: TextFormField(
-                                  controller: _UsernameController,
+                                  controller: _nomController,
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
-                                    hintText: 'Entrer Username',
+                                    hintText: 'Entrer name',
                                     hintStyle: TextStyle(color: Colors.grey),
                                   ),
                                   style: TextStyle(
-                                    color: _userData['Username'] != null &&
-                                            _userData['Username'].isNotEmpty
+                                    color: _userData['NomAdmin'] != null &&
+                                            _userData['NomAdmin'].isNotEmpty
                                         ? Colors.black
                                         : Colors.grey,
                                     fontSize: 12,
@@ -397,13 +292,13 @@ class _ProfileAdminState extends State<ProfileAdmin> {
                                 ),
                               )
                             : Text(
-                                _userData['Username'] != null &&
-                                        _userData['Username'].isNotEmpty
-                                    ? _userData['Username']
-                                    : ' Username',
+                                _userData['NomAdmin'] != null &&
+                                        _userData['NomAdmin'].isNotEmpty
+                                    ? _userData['NomAdmin']
+                                    : ' Nom',
                                 style: TextStyle(
-                                  color: _userData['Username'] != null &&
-                                          _userData['Username'].isNotEmpty
+                                  color: _userData['NomAdmin'] != null &&
+                                          _userData['NomAdmin'].isNotEmpty
                                       ? Colors.black
                                       : Colors.grey,
                                   fontSize: 12,
@@ -430,10 +325,10 @@ class _ProfileAdminState extends State<ProfileAdmin> {
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 8),
                                 child: TextFormField(
-                                  controller: _numeroController,
+                                  controller: _prenomController,
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
-                                    hintText: 'Entrer num Tel',
+                                    hintText: 'Entrer prenom',
                                     hintStyle: TextStyle(color: Colors.grey),
                                   ),
                                   style: TextStyle(
@@ -444,17 +339,15 @@ class _ProfileAdminState extends State<ProfileAdmin> {
                                 ),
                               )
                             : Text(
-                                _userData['NumeroTelClient'] != null &&
-                                        _userData['NumeroTelClient'].isNotEmpty
-                                    ? _userData['NumeroTelClient']
-                                    : 'NumeroTel',
+                                _userData['PrenomAdmin'] != null &&
+                                        _userData['PrenomAdmin'].isNotEmpty
+                                    ? _userData['PrenomAdmin']
+                                    : 'Prenom',
                                 style: TextStyle(
-                                    color:
-                                        _userData['NumeroTelClient'] != null &&
-                                                _userData['NumeroTelClient']
-                                                    .isNotEmpty
-                                            ? Colors.black
-                                            : Colors.grey,
+                                    color: _userData['PrenomAdmin'] != null &&
+                                            _userData['PrenomAdmin'].isNotEmpty
+                                        ? Colors.black
+                                        : Colors.grey,
                                     fontSize: 15,
                                     fontWeight: FontWeight.normal,
                                     fontFamily: "poppins"),
@@ -484,13 +377,13 @@ class _ProfileAdminState extends State<ProfileAdmin> {
                       ),
                       child: Center(
                         child: Text(
-                          _userData['EmailClient'] != null &&
-                                  _userData['EmailClient'].isNotEmpty
-                              ? _userData['EmailClient']
+                          _userData['EmailAdmin'] != null &&
+                                  _userData['EmailAdmin'].isNotEmpty
+                              ? _userData['EmailAdmin']
                               : 'Gmail',
                           style: TextStyle(
-                              color: _userData['EmailClient'] != null &&
-                                      _userData['EmailClient'].isNotEmpty
+                              color: _userData['EmailAdmin'] != null &&
+                                      _userData['EmailAdmin'].isNotEmpty
                                   ? Colors.black
                                   : Colors.grey,
                               fontSize: 15,
@@ -502,166 +395,6 @@ class _ProfileAdminState extends State<ProfileAdmin> {
                   ],
                 ),
                 SizedBox(height: 30),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 277,
-                            height: 51,
-                            decoration: BoxDecoration(
-                              color: Color(0xFFDCC8C5).withOpacity(0.22),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: Color(0xFFDCC8C5),
-                                width: 1,
-                              ),
-                            ),
-                            child: Center(
-                              child: _isEditing
-                                  ? Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8),
-                                      child: TextFormField(
-                                        controller: _addressController,
-                                        keyboardType: TextInputType.text,
-                                        decoration: InputDecoration(
-                                          border: InputBorder.none,
-                                          hintText: 'Entrer Adresse',
-                                          hintStyle:
-                                              TextStyle(color: Colors.grey),
-                                        ),
-                                        style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: "poppins"),
-                                        onChanged: (value) {
-                                          if (value.isNotEmpty) {
-                                            _searchPlaces(value);
-                                            setState(() {
-                                              _showSuggestions = true;
-                                              _suggestionSelected = false;
-                                            });
-                                            _scrollController?.animateTo(
-                                              _scrollController?.position
-                                                      .maxScrollExtent ??
-                                                  00,
-                                              duration:
-                                                  Duration(milliseconds: 500),
-                                              curve: Curves.easeInOut,
-                                            );
-                                          } else {
-                                            setState(() {
-                                              _showSuggestions = false;
-                                              _suggestionSelected = false;
-                                            });
-                                          }
-                                        },
-                                      ),
-                                    )
-                                  : Text(
-                                      _userData['AdresseClient'] != null &&
-                                              _userData['AdresseClient']
-                                                  .isNotEmpty
-                                          ? _userData['AdresseClient']
-                                          : 'Adresse',
-                                      style: TextStyle(
-                                          color: _userData['AdresseClient'] !=
-                                                      null &&
-                                                  _userData['AdresseClient']
-                                                      .isNotEmpty
-                                              ? Colors.black
-                                              : Colors.grey,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.normal,
-                                          fontFamily: "poppins"),
-                                    ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 4,
-                          ), // Add some space between TextFormField and Text
-                          _isEditing && _addressErrorText.isNotEmpty
-                              ? Text(
-                                  _addressErrorText,
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                    fontSize: 12,
-                                  ),
-                                )
-                              : SizedBox(),
-                          /*Stack(
-                            alignment: Alignment.topCenter,
-                            children: [
-                              Visibility(
-                                visible: _showSuggestions,
-                                child: Container(
-                                  width:
-                                      277, // Match the width of the address field
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: Colors.grey,
-                                      width: 1,
-                                    ),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: ListView.separated(
-                                    padding: EdgeInsets.zero,
-                                    controller: _scrollController,
-                                    separatorBuilder:
-                                        (BuildContext context, int index) {
-                                      return Divider(
-                                        color: Color(0xFFDCC8C5),
-                                        thickness: 2.0,
-                                      );
-                                    },
-                                    shrinkWrap: true,
-                                    itemCount: _predictions.length,
-                                    itemBuilder: (context, index) {
-                                      return ListTile(
-                                        contentPadding: EdgeInsets.symmetric(
-                                            vertical:
-                                                10), // Adjust vertical padding
-                                        title: Text(
-                                          _predictions[index]["description"],
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        onTap: () {
-                                          _addressController.text =
-                                              _predictions[index]
-                                                  ["description"];
-                                          setState(() {
-                                            _showSuggestions = false;
-                                            _suggestionSelected = true;
-                                            _addressErrorText = '';
-                                          });
-                                        },
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                top: 0,
-                                child: Visibility(
-                                  visible: _showSuggestions,
-                                  child: Icon(
-                                    Icons.arrow_downward,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),*/
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
               ],
             ),
           ],
