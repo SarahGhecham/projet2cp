@@ -25,7 +25,7 @@ class _BottomNavBarartisanState extends State<BottomNavBarartisan> {
   // Define your page views
   final List<Widget> _pages = [
     Acc_artisan(),
-    CommentPage(),
+    ActiviteArtisan(),
     ProfileartisanPage(),
     //Activite(),
     //PrestationPage(),
@@ -54,7 +54,7 @@ class _BottomNavBarartisanState extends State<BottomNavBarartisan> {
                 height: 56,
                 padding: const EdgeInsets.all(12),
                 margin:
-                    const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
+                const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
                 decoration: BoxDecoration(
                   color: vertFonce,
                   borderRadius: BorderRadius.all(Radius.circular(27)),
@@ -84,16 +84,6 @@ class _BottomNavBarartisanState extends State<BottomNavBarartisan> {
                     ),
                     GestureDetector(
                       onTap: () => _onItemTapped(2),
-                      child: Image.asset(
-                        _selectedIndex == 2
-                            ? 'assets/images/chatfilled.png'
-                            : 'assets/images/chat_outline.png',
-                        width: 25,
-                        height: 25,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => _onItemTapped(3),
                       child: Image.asset(
                         _selectedIndex == 3
                             ? 'assets/images/profile_filled.png'
