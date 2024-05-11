@@ -36,7 +36,7 @@ class _VoirProfilClientState extends State<VoirProfilClient> {
 
   void initState() {
     super.initState();
-    _client = widget.client; // Initialize _client with the provided client
+    _client = widget.client; 
     fetchData(); // Start fetching user data
   }
 
@@ -61,13 +61,7 @@ class _VoirProfilClientState extends State<VoirProfilClient> {
             'Service_account': userDataJson['Service_account'],
             'photo': userDataJson['photo']
           };
-          /* _client.name = _client.name;
-          _client.numTel = _client.numTel;
-          _client.email = _client.email;
-          _client.adress = _client.adress;
-          _client.photoDeProfil = _userData['photo'];
-          _client.points = _userData['Points'];
-          _client.servicecount = _userData['Service_account'];*/
+         
           _client = Client(
             name: _userData['Username'],
             email: _userData['EmailClient'],
