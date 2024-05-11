@@ -24,10 +24,10 @@ class Demande {
 
   Demande(
       {required this.id,
-        required this.rdvId,
-        required this.client,
-        required this.prestation,
-        required this.urgente});
+      required this.rdvId,
+      required this.client,
+      required this.prestation,
+      required this.urgente});
 
   factory Demande.fromJson(Map<String, dynamic> json) {
     return Demande(
@@ -57,7 +57,7 @@ Future<List<Demande>> consulterDemandes(String token) async {
       List<dynamic> responseData = jsonDecode(response.body);
 
       List<Demande> demands =
-      responseData.map((data) => Demande.fromJson(data)).toList();
+          responseData.map((data) => Demande.fromJson(data)).toList();
 
       return demands;
     } else {
@@ -67,6 +67,31 @@ Future<List<Demande>> consulterDemandes(String token) async {
   } catch (error) {
     print('Error retrieving demands: $error');
     throw Exception('Failed to load demands');
+  }
+}
+
+Future<String> fetchArtisanphoto(String token) async {
+  final url =
+      'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/artisan/Affichermonprofil'; // Replace with your backend URL
+  final headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer $token',
+  };
+
+  try {
+    final response = await http.get(Uri.parse(url), headers: headers);
+
+    if (response.statusCode == 200) {
+      // If the request is successful, parse the JSON response
+      final jsonData = json.decode(response.body);
+      return jsonData['photo'];
+    } else {
+      // If the request is unsuccessful, throw an exception with the error message
+      throw Exception('Failed to load artisan photo');
+    }
+  } catch (error) {
+    // Handle any errors that occur during the process
+    throw Exception('Failed to load artisan photo : $error');
   }
 }
 
@@ -85,7 +110,7 @@ Future<String> fetchArtisanName(String token) async {
       // If the request is successful, parse the JSON response
       final jsonData = json.decode(response.body);
       return jsonData[
-      'NomArtisan']; // Assuming 'NomArtisan' is the key for the artisan's name
+          'NomArtisan']; // Assuming 'NomArtisan' is the key for the artisan's name
     } else {
       // If the request is unsuccessful, throw an exception with the error message
       throw Exception('Failed to load artisan name');
@@ -187,14 +212,16 @@ class _Acc_artisanState extends State<Acc_artisan> {
   List<Demande> clients = [];
   String greeting = '';
   String name = '';
+  String photos = '';
   late int id;
   late String token;
   final Key listViewKey = UniqueKey();
   void _updateClientsList(
-      List<Demande> newClients, String nom, int idd, String tok) {
+      List<Demande> newClients, String nom, String photo, int idd, String tok) {
     setState(() {
       clients = newClients;
       name = nom;
+      photos = photo;
       id = idd;
       token = tok;
     });
@@ -211,8 +238,9 @@ class _Acc_artisanState extends State<Acc_artisan> {
       List<Demande> demands = await consulterDemandes(token);
 
       String nom = await fetchArtisanName(token);
+      String photo = await fetchArtisanphoto(token);
       int id = await fetchArtisanId(token);
-      _updateClientsList(demands, nom, id, token);
+      _updateClientsList(demands, nom, photo, id, token);
       // Assigner les demandes à la variable clients
     } catch (error) {
       print('Error fetching data: $error');
@@ -245,10 +273,10 @@ class _Acc_artisanState extends State<Acc_artisan> {
               Row(
                 children: [
                   SizedBox(width: 5),
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.all(30),
                     child: CircleAvatar(
-                      backgroundImage: AssetImage('assets/images/z.jpg'),
+                      backgroundImage: NetworkImage(photos),
                       radius: 30,
                     ),
                   ),
@@ -261,7 +289,6 @@ class _Acc_artisanState extends State<Acc_artisan> {
                     ),
                   ),
                   const Spacer(),
-
                 ],
               ),
             ],
@@ -302,7 +329,8 @@ class _Acc_artisanState extends State<Acc_artisan> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => Demandelancee(demandeID: clients[index].id)),
+                                builder: (context) => Demandelancee(
+                                    demandeID: clients[index].id)),
                           );
                         },
                         child: Container(
@@ -330,32 +358,32 @@ class _Acc_artisanState extends State<Acc_artisan> {
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(45),
                                       child: clients.isNotEmpty &&
-                                          clients[index].client['photo'] !=
-                                              null
+                                              clients[index].client['photo'] !=
+                                                  null
                                           ? Image.network(
-                                        clients[index].client['photo'],
-                                        fit: BoxFit.cover,
-                                      )
+                                              clients[index].client['photo'],
+                                              fit: BoxFit.cover,
+                                            )
                                           : Container(
-                                        color: Colors.grey,
-                                        child: Icon(
-                                          Icons.person,
-                                          size: 40,
-                                          color: Colors.white,
-                                        ),
-                                      ),
+                                              color: Colors.grey,
+                                              child: Icon(
+                                                Icons.person,
+                                                size: 40,
+                                                color: Colors.white,
+                                              ),
+                                            ),
                                     ),
                                   ),
                                   SizedBox(width: 10),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         SizedBox(height: 15),
                                         Row(
                                           crossAxisAlignment:
-                                          CrossAxisAlignment.center,
+                                              CrossAxisAlignment.center,
                                           children: [
                                             Expanded(
                                               child: RichText(
@@ -363,33 +391,33 @@ class _Acc_artisanState extends State<Acc_artisan> {
                                                   children: [
                                                     TextSpan(
                                                       text: clients[index]
-                                                          .prestation[
-                                                      'nomPrestation'],
+                                                              .prestation[
+                                                          'nomPrestation'],
                                                       style:
-                                                      GoogleFonts.poppins(
+                                                          GoogleFonts.poppins(
                                                         color: const Color(
                                                             0xFF05564B),
                                                         fontSize: 14,
                                                         fontWeight:
-                                                        FontWeight.w600,
+                                                            FontWeight.w600,
                                                       ),
                                                     ),
                                                     if (clients[index]
-                                                        .prestation[
-                                                    'Ecologique']) ...[
+                                                            .prestation[
+                                                        'Ecologique']) ...[
                                                       WidgetSpan(
                                                         child: Padding(
                                                           padding:
-                                                          const EdgeInsets
-                                                              .only(
-                                                              left: 2),
+                                                              const EdgeInsets
+                                                                  .only(
+                                                                  left: 2),
                                                           child:
-                                                          SvgPicture.asset(
+                                                              SvgPicture.asset(
                                                             'assets/leaf.svg',
                                                             color: const Color(
-                                                                0xff05564B)
+                                                                    0xff05564B)
                                                                 .withOpacity(
-                                                                0.6),
+                                                                    0.6),
                                                           ),
                                                         ),
                                                       ),
@@ -402,7 +430,7 @@ class _Acc_artisanState extends State<Acc_artisan> {
                                         ),
                                         Text(
                                           (clients[index].client['username'] !=
-                                              null)
+                                                  null)
                                               ? '${clients[index].client['username']} '
                                               : '',
                                           style: TextStyle(
@@ -426,7 +454,7 @@ class _Acc_artisanState extends State<Acc_artisan> {
                                         child: SvgPicture.asset(
                                           'assets/urgent.svg',
                                           color:
-                                          Color(0xffFF8787).withOpacity(1),
+                                              Color(0xffFF8787).withOpacity(1),
                                         ),
                                       ),
                                     ),
@@ -457,12 +485,13 @@ class _Acc_artisanState extends State<Acc_artisan> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                DemandeAcceptee(demandeID: dm,rdvID: rdv)),
+                                                DemandeAcceptee(
+                                                    demandeID: dm, rdvID: rdv)),
                                       );
                                     },
                                     style: ButtonStyle(
                                       padding:
-                                      MaterialStateProperty.all<EdgeInsets>(
+                                          MaterialStateProperty.all<EdgeInsets>(
                                         EdgeInsets.zero,
                                       ),
                                     ),
@@ -498,7 +527,7 @@ class _Acc_artisanState extends State<Acc_artisan> {
                                     },
                                     style: ButtonStyle(
                                       padding:
-                                      MaterialStateProperty.all<EdgeInsets>(
+                                          MaterialStateProperty.all<EdgeInsets>(
                                         EdgeInsets.zero,
                                       ),
                                     ),
