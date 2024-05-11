@@ -221,7 +221,7 @@ class CommentCard extends StatelessWidget {
                                 child: SvgPicture.asset(
                                   'assets/leaf.svg',
                                   color:
-                                      const Color(0xff05564B).withOpacity(0.6),
+                                  const Color(0xff05564B).withOpacity(0.6),
                                 ),
                               ),
                             ),

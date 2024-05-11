@@ -136,47 +136,43 @@ async function consulterdemandes(req, res) {
         return res.status(500).json({ message: 'Internal server error' });
     }
 }
-async function AfficherProfil(req, res) {
-    try {
-        const id = req.params.id;
-        const result = await models.Artisan.findByPk(id, {
-            include: [{
-                model: models.Prestation,
-                include: models.Domaine
-            }]
-        });
-
-        if (result) {
-            let uniqueDomaine = null; // Initialiser à null
-            for (const prestation of result.Prestations) {
-                if (prestation.Domaine) {
-                    uniqueDomaine = prestation.Domaine;
-                    break; // Sortir de la boucle une fois que le premier domaine est trouvé
+function AfficherProfil(req, res) {
+    const id = req.userId;
+    models.Artisan.findByPk(id, {
+        include: [{
+            model: models.Prestation,
+            include: models.Domaine
+        }]
+    })
+        .then(result => {
+            if (result) {
+                let domaine = null; // Domaine par défaut
+                if (result.Prestations.length > 0 && result.Prestations[0].Domaine) {
+                    domaine = result.Prestations[0].Domaine.NomDomaine; // Premier domaine rencontré
                 }
+                const artisanInfo = {
+                    NomArtisan: result.NomArtisan,
+                    PrenomArtisan: result.PrenomArtisan,
+                    EmailArtisan: result.EmailArtisan,
+                    AdresseArtisan: result.AdresseArtisan,
+                    NumeroTelArtisan: result.NumeroTelArtisan,
+                    Disponibilite: result.Disponibilite,
+                    photo: result.photo,
+                    Note: result.Note,
+                    RayonKm:result.RayonKm ,
+                    id:result.id,
+                    Domaine: domaine, // Afficher le domaine
+                    Prestations: result.Prestations.map(prestation => prestation.NomPrestation) // Afficher seulement les noms des prestations
+                };
+                res.status(200).json(artisanInfo);
+            } else {
+                res.status(404).json({ message: "Artisan not found" });
             }
-
-            const artisanInfo = {
-                NomArtisan: result.NomArtisan,
-                PrenomArtisan: result.PrenomArtisan,
-                EmailArtisan: result.EmailArtisan,
-                AdresseArtisan: result.AdresseArtisan,
-                NumeroTelArtisan: result.NumeroTelArtisan,
-                Disponibilite: result.Disponibilite,
-                photo: result.photo,
-                Note: result.Note,
-                RayonKm: result.RayonKm,
-                id: result.id,
-                Domaine: uniqueDomaine, // Utiliser le domaine unique trouvé
-                Prestations: result.Prestations.map(prestation => prestation.NomPrestation)
-            };
-            res.status(200).json(artisanInfo);
-        } else {
-            res.status(404).json({ message: "Artisan not found" });
-        }
-    } catch (error) {
-        console.error("Error fetching artisan profile:", error);
-        res.status(500).json({ message: "Something went wrong", error: error.message });
-    }
+        })
+        .catch(error => {
+            console.error("Error fetching artisan profile:", error);
+            res.status(500).json({ message: "Something went wrong", error: error });
+        });
 }
 
 
@@ -186,19 +182,14 @@ async function updateartisan(req, res) {
     const id = req.userId;
 
     // Hash the new password if provided
-    let hashedPassword = null;
-    if (req.body.MotdepasseArtisan) {
-        hashedPassword = await bcrypt.hash(req.body.MotdepasseArtisan, 10);
-    }
+
 
     const updatedArtisan = {
-       
-        MotdepasseArtisan: hashedPassword, // Hashed password
-        
+
         AdresseArtisan: req.body.AdresseArtisan,
         NumeroTelArtisan: req.body.NumeroTelArtisan,
-        Disponnibilite: req.body.Disponnibilite ,
-        RayonKm:body.RayonKm ,
+        Disponibilite: req.body.Disponibilite,
+        RayonKm:req.body.RayonKm,
 
     };
 
@@ -222,9 +213,8 @@ async function updateartisan(req, res) {
         });
 }
 
-
 function updateArtisanImage(req, res) {
-    const id = req.params.id;
+    const id = req.userId;
 
     // Check if a file is uploaded
     if (!req.file) {
@@ -232,7 +222,7 @@ function updateArtisanImage(req, res) {
     }
 
     // Construct the image URL for the artisan
-    const imageURL = `http://localhost:3000/imageArtisan/${req.file.filename}`;
+    const imageURL = `http://${AppConfig.serverAddress}:${AppConfig.serverPort}/imageArtisan/${req.file.filename}`;
 
     // Update the artisan's photo URL in the database
     models.Artisan.findByPk(id)
@@ -800,7 +790,7 @@ async function DetailsDemande(req, res) {
             Image: rdv.Demande.Prestation.imagePrestation,
             Materiel: rdv.Demande.Prestation.Maéeriel,
             DureeMax: rdv.Demande.Prestation.DuréeMax,
-            DurreMin: rdv.Demande.Prestation.DuréeMin,
+            DureeMin: rdv.Demande.Prestation.DuréeMin,
             Ecologique: rdv.Demande.Prestation.Ecologique,
             TarifJourMin: tarifJourMin,
             TarifJourMax: tarifJourMax
