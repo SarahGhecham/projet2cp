@@ -19,12 +19,15 @@ class conditionPageState extends State<conditionPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Center(
-          child: Text(
-            "Conditions générales",
-            style:
-            GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
-          ),
+        title: Row(
+          children: [
+            SizedBox(width: 30),
+            Text(
+              "Conditions générales",
+              style:
+              GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
+            ),
+          ],
         ),
       ),
       body: SingleChildScrollView(

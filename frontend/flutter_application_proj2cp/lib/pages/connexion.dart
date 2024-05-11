@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/pages/activite/activite_client.dart';
 import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
+import 'package:flutter_application_proj2cp/profilartisan_client.dart';
 import 'package:flutter_application_proj2cp/widgets/bottom_nav_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_application_proj2cp/pages/inscription.dart';
@@ -80,7 +81,7 @@ class _LogInPageState extends State<LogInPage> {
               builder: (context) => AlertDialog(
                 title: const Text('Authentification échouée'),
                 content:
-                    const Text("Adresse e-mail invalide. Veuillez réessayer."),
+                const Text("Adresse e-mail invalide. Veuillez réessayer."),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
@@ -95,7 +96,7 @@ class _LogInPageState extends State<LogInPage> {
               builder: (context) => AlertDialog(
                 title: const Text('Authentification échouée'),
                 content:
-                    const Text('Mot de passe incorrect. Veuillez réessayer.'),
+                const Text('Mot de passe incorrect. Veuillez réessayer.'),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
@@ -151,13 +152,13 @@ class _LogInPageState extends State<LogInPage> {
         child: Center(
           child: Column(
             children: <Widget>[
-              const SizedBox(height: 100),
+              const SizedBox(height: 150),
               SizedBox(
                 height: 100,
                 width: 300,
                 child: Image.asset("assets/logo1.png"),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 40),
               Center(
                 child: Text(
                   "Connexion",
@@ -168,7 +169,7 @@ class _LogInPageState extends State<LogInPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 50),
+              const SizedBox(height: 60),
               Container(
                 width: 277,
                 height: 41,
@@ -230,14 +231,14 @@ class _LogInPageState extends State<LogInPage> {
                 onPressed: _authenticateUser,
                 style: ButtonStyle(
                   minimumSize:
-                      MaterialStateProperty.all<Size>(const Size(100, 37)),
+                  MaterialStateProperty.all<Size>(const Size(100, 37)),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(const Color(0xFFFF8787)),
+                  MaterialStateProperty.all<Color>(const Color(0xFFFF8787)),
                 ),
                 child: Text(
                   "Connexion",
@@ -247,98 +248,8 @@ class _LogInPageState extends State<LogInPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 30),
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(
-                      width: 150,
-                      child: Divider(
-                        color: Color(0xFFDDDDDD),
-                        thickness: 1.0,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      "or",
-                      style: GoogleFonts.poppins(
-                        color: Colors.grey,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    const SizedBox(
-                      width: 150,
-                      child: Divider(
-                        color: Color(0xFFDDDDDD),
-                        thickness: 1.0,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        "assets/apple.svg",
-                        width: 30,
-                        height: 30,
-                      ),
-                      const SizedBox(height: 5), // Adjust the height as needed
-                    ],
-                  ),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Connexion avec Apple",
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        "assets/google.svg",
-                        width: 25,
-                        height: 25,
-                      ),
-                      const SizedBox(height: 5), // Adjust the height as needed
-                    ],
-                  ),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Connexion avec Google",
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 70),
+
+              const SizedBox(height: 100),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

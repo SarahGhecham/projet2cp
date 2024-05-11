@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_proj2cp/parametre.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -274,7 +275,12 @@ class _ProfileState extends State<Profile> {
               height: 32,
               child: Image.asset('assets/images/settings.png'),
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => parametrePage()),
+              );
+            },
           ),
         ],
       ),

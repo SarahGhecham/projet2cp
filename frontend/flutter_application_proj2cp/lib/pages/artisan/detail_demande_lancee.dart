@@ -1,9 +1,20 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:flutter_application_proj2cp/config.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Demandelancee extends StatefulWidget {
-  const Demandelancee({Key? key}) : super(key: key);
+  final int demandeID;
+
+  @override
+  const Demandelancee({
+    Key? key,
+    required this.demandeID,
+  }) : super(key: key);
 
   @override
   State<Demandelancee> createState() => _DemandelanceeState();
@@ -22,6 +33,135 @@ class _DemandelanceeState extends State<Demandelancee> {
   bool urgente = true;
   bool ecologique = true;
 
+  late String _token;
+  Map<String, dynamic> data = {};
+  Future<void> fetchData() async {
+    final prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('token') ?? '';
+    print('Token: $_token');
+    await Future.wait([_fetchUserData()]);
+  }
+
+
+  Future<void> _fetchUserData() async {
+    final url = Uri.parse(
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/artisan/DetailsDemande/${widget.demandeID}');
+    try {
+      final response = await http.get(
+        url,
+        headers: {'Authorization': 'Bearer $_token'},
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          final responseData = json.decode(response.body);
+
+          // Artisan data
+          final clientData =
+          responseData != null ? responseData['client'] ?? {} : {};
+          final client = {
+            'Username': clientData != null ? clientData['Username'] ?? '' : '',
+            'Photo': clientData != null ? clientData['photo'] ?? '' : '',
+            'Numero': clientData != null ? clientData['NumeroTelClient'] ?? '' : '',
+          };
+
+// RDV affich data
+          final rdvAffichData =
+          responseData != null ? responseData['rdvAffich'] ?? {} : {};
+          String dateDebutString =
+          rdvAffichData != null ? rdvAffichData['DateDebut'] ?? '' : '';
+          String heureDebutString =
+          rdvAffichData != null ? rdvAffichData['HeureDebut'] ?? '' : '';
+
+          String formattedDateDebut = '';
+          String formattedHeureDebut = '';
+
+          if (dateDebutString.isNotEmpty) {
+            // Parse date string to DateTime object
+            DateTime dateDebut = DateTime.parse(dateDebutString);
+
+            // Format the date into 'dd/MM/yyyy' format
+            formattedDateDebut = DateFormat('dd/MM/yyyy').format(dateDebut);
+          }
+
+          if (heureDebutString.isNotEmpty) {
+            // Convert time string to TimeOfDay object
+            TimeOfDay heureDebut = TimeOfDay.fromDateTime(
+                DateFormat('HH:mm:ss').parse(heureDebutString));
+
+            // Format the TimeOfDay object into 'HH:mm' format
+            formattedHeureDebut =
+                heureDebut.format(context); // context is your BuildContext
+          }
+
+          final rdvAffich = {
+            'date': formattedDateDebut,
+            'heure': formattedHeureDebut,
+          };
+
+// Prestation data
+          final prestationData =
+          responseData != null ? responseData['prestation'] ?? {} : {};
+          final prestation = {
+            'Nom': prestationData != null ? prestationData['Nom'] ?? '' : '',
+            'Materiel':
+            prestationData != null ? prestationData['Materiel'] ?? '' : '',
+            'DureeMax':
+            prestationData != null ? prestationData['DureeMax'] ?? '' : '',
+            'DureeMin':
+            prestationData != null ? prestationData['DureeMin'] ?? '' : '',
+            'Ecologique': prestationData != null
+                ? prestationData['Ecologique'] ?? ''
+                : '',
+            'Image':
+            prestationData != null ? prestationData['Image'] ?? '' : '',
+            'TarifJourMin': prestationData != null
+                ? prestationData['TarifJourMin'] ?? ''
+                : '',
+            'TarifJourMax': prestationData != null
+                ? prestationData['TarifJourMax'] ?? ''
+                : '',
+          };
+
+// Demande affich data
+          final demandeAffichData =
+          responseData != null ? responseData['demandeAffich'] ?? {} : {};
+          final demandeAffich = {
+            'Description': demandeAffichData != null
+                ? demandeAffichData['Description'] ?? ''
+                : '',
+            'Localisation': demandeAffichData != null
+                ? demandeAffichData['Localisation'] ?? ''
+                : '',
+            'Urgent': demandeAffichData != null
+                ? demandeAffichData['Urgente'] ?? ''
+                : '',
+          };
+
+// Combine all data
+          data = {
+            'client': client,
+            'rdvAffich': rdvAffich,
+            'prestation': prestation,
+            'demandeAffich': demandeAffich,
+          };
+        });
+        print('_userData: $data'); // Debugging print
+      } else {
+        print('Failed to fetch user data');
+        print('Response Status Code: ${response.statusCode}');
+        print('Response Body: ${response.body}');
+      }
+    } catch (error) {
+      print('Error fetching user data: $error');
+    }
+  }
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +170,7 @@ class _DemandelanceeState extends State<Demandelancee> {
         backgroundColor: Colors.white,
         title: Row(
           children: [
-            const SizedBox(width: 90),
+            const SizedBox(width: 100),
             Text(
               "Details",
               style: GoogleFonts.poppins(
@@ -88,10 +228,10 @@ class _DemandelanceeState extends State<Demandelancee> {
                         Container(
                           height: 50,
                           width: 50,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             image: DecorationImage(
-                              image: AssetImage("assets/pdp_user.jpg"),
+                              image: NetworkImage(data['client']['Photo'].toString()), // Move this line
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -104,7 +244,7 @@ class _DemandelanceeState extends State<Demandelancee> {
                             Row(
                               children: [
                                 Text(
-                                  nomArtisan,
+                                  data['client']['Username'].toString(),
                                   style: GoogleFonts.poppins(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w600,
@@ -118,7 +258,7 @@ class _DemandelanceeState extends State<Demandelancee> {
                                 SvgPicture.asset("assets/telephone.svg"),
                                 SizedBox(width: 10),
                                 Text(
-                                  telephone,
+                                  data['client']['Numero'].toString(),
                                   style: GoogleFonts.poppins(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
@@ -129,22 +269,6 @@ class _DemandelanceeState extends State<Demandelancee> {
                           ],
                         ),
                       ],
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 10,
-                    right: 10,
-                    child: Container(
-                      width: 63,
-                      height: 19,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: const Color(0xFFF7F3F2),
-                        border: Border.all(
-                          color: const Color(0xFFDCC8C5),
-                          width: 1,
-                        ),
-                      ),
                     ),
                   ),
                 ],
@@ -187,14 +311,14 @@ class _DemandelanceeState extends State<Demandelancee> {
                               text: TextSpan(
                                 children: [
                                   TextSpan(
-                                    text: "Peinture de Murs et Plafonds",
+                                    text: data['prestation']['Nom'].toString(),
                                     style: GoogleFonts.lato(
                                       color: const Color(0xFF05564B),
                                       fontSize: 18,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
-                                  if (ecologique) ...[
+                                  if (data['prestation']['Ecologique']) ...[
                                     WidgetSpan(
                                       child: Padding(
                                         padding: const EdgeInsets.only(left: 6),
@@ -220,8 +344,8 @@ class _DemandelanceeState extends State<Demandelancee> {
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(8.0),
-                              child: Image.asset(
-                                'assets/prestation_peinture.jpg',
+                              child: Image.network(
+                                data['prestation']['Image'].toString(),
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -235,12 +359,12 @@ class _DemandelanceeState extends State<Demandelancee> {
                               color: Color(0xff05564B).withOpacity(1)),
                           SizedBox(width: 15),
                           Text(
-                            date,
+                            data['rdvAffich']['date'].toString(),
                             style: GoogleFonts.poppins(fontSize: 15),
                           ),
                           SizedBox(width: 10),
                           Text(
-                            heure,
+                            data['rdvAffich']['heure'].toString(),
                             style: GoogleFonts.poppins(
                               color: Color(0xFF777777),
                               fontSize: 15,
@@ -255,7 +379,7 @@ class _DemandelanceeState extends State<Demandelancee> {
                           SvgPicture.asset("assets/clock.svg"),
                           SizedBox(width: 15),
                           Text(
-                            duree,
+                            "${data['prestation']['DureeMin']} - ${data['prestation']['DureeMax']}",
                             style: GoogleFonts.poppins(fontSize: 15),
                           ),
                         ],
@@ -267,7 +391,7 @@ class _DemandelanceeState extends State<Demandelancee> {
                           SvgPicture.asset("assets/pin_light.svg"),
                           SizedBox(width: 10),
                           Text(
-                            adresse,
+                            data['demandeAffich']['Localisation'].toString(),
                             style: GoogleFonts.poppins(fontSize: 15),
                           ),
                         ],
@@ -279,7 +403,7 @@ class _DemandelanceeState extends State<Demandelancee> {
                           SvgPicture.asset("assets/money.svg"),
                           SizedBox(width: 15),
                           Text(
-                            prix,
+                            "${data['prestation']['TarifJourMin']}da - ${data['prestation']['TarifJourMax']}da",
                             style: GoogleFonts.poppins(fontSize: 15),
                           ),
                         ],
@@ -292,7 +416,7 @@ class _DemandelanceeState extends State<Demandelancee> {
                               color: Color(0xff05564B).withOpacity(1)),
                           SizedBox(width: 15),
                           Text(
-                            urgente ? "Urgente" : "Pas urgente",
+                            data['demandeAffich']['Urgent'] ? "Urgente" : "Pas urgente",
                             style: GoogleFonts.poppins(fontSize: 15),
                           ),
                         ],
@@ -306,7 +430,7 @@ class _DemandelanceeState extends State<Demandelancee> {
                               width: 270,
                               decoration: BoxDecoration(
                                 color:
-                                    const Color(0xFFDCC8C5).withOpacity(0.22),
+                                const Color(0xFFDCC8C5).withOpacity(0.22),
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
                                   color: const Color(0xFFDCC8C5),
@@ -317,7 +441,7 @@ class _DemandelanceeState extends State<Demandelancee> {
                                 child: Padding(
                                   padding: const EdgeInsets.all(20.0),
                                   child: Text(
-                                    "Nettoyage complet et professionnel des sols avec des produits efficaces et non nocifs ",
+                                    data['demandeAffich']['Description'].toString(),
                                     style: GoogleFonts.poppins(fontSize: 12),
                                   ),
                                 ),
