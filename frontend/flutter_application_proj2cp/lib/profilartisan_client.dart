@@ -14,7 +14,13 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ProfileartisanclientPage extends StatefulWidget {
-  const ProfileartisanclientPage({super.key});
+  final int artisanID;
+
+  @override
+  const ProfileartisanclientPage({
+    Key? key,
+    required this.artisanID,
+  }) : super(key: key);
 
   @override
   _ProfileartisanclientPageState createState() => _ProfileartisanclientPageState();

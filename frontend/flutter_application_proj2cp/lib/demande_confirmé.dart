@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_application_proj2cp/profilartisan_client.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -86,6 +87,7 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
           final artisanData =
           responseData != null ? responseData['artisan'] ?? {} : {};
           final artisan = {
+            'Id': artisanData != null ? artisanData['id'] ?? '' : '',
             'Nom': artisanData != null ? artisanData['NomArtisan'] ?? '' : '',
             'Prenom':
             artisanData != null ? artisanData['PrenomArtisan'] ?? '' : '',
@@ -380,16 +382,24 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
                 child: Row(
                   children: [
                     SizedBox(width: 15),
-                    Container(
-                      height: 50,
-                      width: 50,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: NetworkImage(
-                            data['artisan']['Photo'].toString(),
+                    GestureDetector(
+                      onTap: (){
+                        /*Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ProfileartisanclientPage(artisanID: 5)),
+                        );*/
+                      },
+                      child: Container(
+                        height: 50,
+                        width: 50,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                            image: NetworkImage(
+                              data['artisan']['Photo'].toString(),
+                            ),
+                            fit: BoxFit.cover,
                           ),
-                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
