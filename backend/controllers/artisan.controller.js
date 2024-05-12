@@ -14,8 +14,7 @@ const joursFeries = [
 
 
   ];
-  
-async function getArtisanRdvs(req, res) {
+  async function getArtisanRdvs(req, res) {
     const artisanId = req.userId;
 
     try {
@@ -29,8 +28,8 @@ async function getArtisanRdvs(req, res) {
             return res.status(200).json([]);
         }
 
-        // Array to store rdvs
-        const rdvs = [];
+        // Array to store DateDebut of rdvs
+        const rdvDates = [];
 
         // Iterate over each ArtisanDemande
         for (const artisanDemande of artisanDemandes) {
@@ -47,19 +46,20 @@ async function getArtisanRdvs(req, res) {
                 where: { DemandeId: demande.id }
             });
 
-            // If the rdv is found, push it to the rdvs array
-            if (rdv) {
-                rdvs.push(rdv);
+            // If the rdv is found, push its DateDebut to the rdvDates array
+            if (rdv && rdv.DateDebut) {
+                rdvDates.push(rdv.DateDebut);
             }
         }
 
-        // Return the rdvs
-        return res.status(200).json(rdvs);
+        // Return the rdvDates array containing only the DateDebut of each rdv
+        return res.status(200).json(rdvDates);
     } catch (error) {
         console.error('Error retrieving rdvs for artisan:', error);
         return res.status(500).json({ message: 'Internal server error' });
     }
 }
+
 
 async function consulterdemandes(req, res) {
     const artisanId = req.userId;
