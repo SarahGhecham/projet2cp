@@ -7,7 +7,7 @@ const router=express.Router();
 
 router.post("/creeradmin",adminControllers.Creeradmin);
 router.post("/creerartisan",adminControllers.CreerArtisan);
-router.get("/:id",adminControllers.show);
+router.get("/",auth(),adminControllers.show);
 router.get("/Afficher/Artisans",adminControllers.AfficherArtisans);
 router.get("/Afficher/Clients",adminControllers.AfficherClients);
 router.get("/Afficher/Tous",adminControllers.AfficherArtisansEtClients);

@@ -239,7 +239,8 @@ function destroy(req, res) {
     });
 }
 function show(req, res) {
-  const id = req.params.id;
+  const id = req.userId;
+  console.log(id);
   models.Admin.findByPk(id)
     .then((result) => {
       if (result) res.status(200).json(result);
@@ -251,6 +252,7 @@ function show(req, res) {
     .catch((error) => {
       res.status(500).json({
         message: 'something went wrong',
+        error
       });
     });
 }
