@@ -3,7 +3,7 @@ const { Op } = require('sequelize');
 
 async function getArtisanHorairesByJour(req, res) {
     try {
-        const artisanId = req.body.id;
+        const artisanId = req.userId;
         let jourToFind = req.body.jour;
 
         // Convert jourToFind to lowercase for case-insensitive comparison
@@ -34,10 +34,10 @@ async function getArtisanHorairesByJour(req, res) {
     }
 }
 
-
 async function getArtisanHorairesByJour2(req, res) {
+
     try {
-        const artisanId = req.body.id;
+        const artisanId = req.userId;
         let jourToFind = req.body.jour.toLowerCase();
 
         // Find the artisan by ID
@@ -72,10 +72,11 @@ async function getArtisanHorairesByJour2(req, res) {
         return res.status(500).json({ message: 'Failed to retrieve horaires by jour for artisan.' });
     }
 }
+
 async function addHorrairesToArtisan(req, res) {
     try {
         // Extract the artisan ID and jour data from the request body
-        const artisanId = req.params.artisanId;
+        const artisanId = req.userId;
         const jourData = {
             jour: req.body.jour, 
             HeureDebut: req.body.HeureDebut,
@@ -116,8 +117,9 @@ async function addHorrairesToArtisan(req, res) {
         return res.status(500).json({ message: 'Failed to add jour to artisan. Please try again later.' });
     }
 }
+
 async function deleteHorraires(req, res) {
-    const artisanId = req.params.artisanId;
+    const artisanId = req.userId;
     const { jour, HeureDebut, HeureFin } = req.body;
 
     try {
@@ -159,98 +161,9 @@ async function deleteHorraires(req, res) {
 
 
 
-
-/*async function modifyJour(req, res) {
-    try {
-        // Extract the jour ID from the request parameters
-        const jourId = req.params.jourId;
-
-        // Find the jour by ID
-        const jour = await models.Jour.findByPk(jourId);
-
-        // Check if the jour exists
-        if (!jour) {
-            return res.status(404).json({ message: `Jour with ID ${jourId} not found.` });
-        }
-
-        // Extract the updated jour data from the request body
-        const updatedJourData = {
-            jour: req.body.jour, 
-            HeureDebut: req.body.HeureDebut,
-            HeureFin: req.body.HeureFin
-        };
-
-        // Update the jour with the new data
-        await jour.update(updatedJourData);
-
-        // Respond with success message and the updated jour
-        return res.status(200).json({ message: `Jour with ID ${jourId} updated successfully.`, jour });
-    } catch (error) {
-        // Handle any errors that occur during the process
-        console.error('Error modifying jour:', error);
-        return res.status(500).json({ message: 'Failed to modify jour. Please try again later.' });
-    }
-}
-*/
-/*async function modifyJourHorraires(req, res) {
-    try {
-        const artisanId = req.params.artisanId;
-        const { jour,HeureDebutC, HeureFinC ,HeureDebutM,HeureFinM} = req.body;
-
-        // Find the artisan by ID
-        const artisan = await models.Artisan.findByPk(artisanId);
-
-        if (!artisan) {
-            return res.status(404).json({ message: `Artisan with ID ${artisanId} not found.` });
-        }
-
-        // Check if the jour exists with the given jourData
-        const jourData = {
-            jour: jour,
-            HeureDebut: HeureDebutC,
-            HeureFin: HeureFinC
-        };
-
-        const existingJour = await models.Jour.findOne({
-            where: jourData
-        });
-
-        if (!existingJour) {
-            return res.status(404).json({ message: `Jour with ${jour} and current horaires ${JSON.stringify(currentHoraires)} not found.` });
-        }
-
-        // Check if the jour is associated with the artisan
-        const association = await models.ArtisanJour.findOne({
-            where: {
-                artisanId: artisanId,
-                jourId: existingJour.id
-            }
-        });
-
-        if (!association) {
-            return res.status(404).json({ message: `Jour with ${jour} and current horaires ${JSON.stringify(currentHoraires)} does not belong to artisan with ID ${artisanId}.` });
-        }
-
-        // Update the horaires of the jour
-        const jourUpdate = {
-            jour: jour,
-            HeureDebut: HeureDebutM,
-            HeureFin: HeureFinM
-        };
-
-        // Update the jour with the new data
-        await existingJour.update(jourUpdate);
-
-        return res.status(200).json({ message: `Horaires of jour ${jour} updated successfully.` });
-    } catch (error) {
-        console.error('Error modifying jour horaires:', error);
-        return res.status(500).json({ message: 'Failed to modify jour horaires. Please try again later.' });
-    }
-}
-*/
 async function displayplanningofArtisan(req, res) {
     try {
-        const artisanId = req.params.id;
+        const artisanId = req.userId;
 
         // Find the artisan by ID
         const artisan = await models.Artisan.findByPk(artisanId);
@@ -260,7 +173,6 @@ async function displayplanningofArtisan(req, res) {
             return res.status(404).json({ message: `Artisan with ID ${artisanId} not found.` });
         }
 
-        // Retrieve all jourethorraires associated with the artisan
         const jourethorraires = await artisan.getJours();
 
         // Format the data as needed before sending the response
@@ -296,10 +208,9 @@ async function displayplanningofArtisan(req, res) {
 
 
 module.exports = {
-    //modifyJourHorraires ,
-  /*  deleteJourFromArtisan,
-    */displayplanningofArtisan,
-  //  modifyJour, //
+    
+   displayplanningofArtisan,
+ 
   addHorrairesToArtisan ,
     getArtisanHorairesByJour,
     getArtisanHorairesByJour2,

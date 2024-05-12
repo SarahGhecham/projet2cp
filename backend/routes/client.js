@@ -14,14 +14,14 @@ router.post('/creerRDV',auth(),clientController.creerRDV);
 router.post('/confirmerRDV',auth(),clientController.confirmerRDV);
 router.post('/annulerRDV',auth(),clientController.annulerRDV);
 router.post('/annulerDemande',auth(),clientController.annulerDemande);
-router.get('/AffcherArtisan',auth(),clientController.AfficherArtisan);
+router.get('/AfficherArtisan/:id',auth(),clientController.AfficherArtisan);
 router.get('/Affichermonprofil',auth(),clientController.AfficherProfil)
 //router.get('/test',clientController.test);
 router.get('/AfficherActiviteTerminee',auth(),clientController.ActiviteTerminee);
 router.get('/AfficherActiviteTermineeNonEvaluee',auth(),clientController.ActiviteTermineeNonEvaluee);
 router.get('/AfficherActiviteEncours',auth(),clientController.ActiviteEncours);
 router.get('/AfficherPrestations/:id',clientController.AfficherPrestations);
-router.get('/DetailsDemandeConfirmee/:rdvId',clientController.DetailsDemandeConfirmee);
+router.get('/DetailsDemandeConfirmee/:rdvId',auth(),clientController.DetailsDemandeConfirmee);
 router.get('/DetailsRDVTermine/:rdvId',auth(),clientController.DetailsRDVTermine);
 //router.get('/demandes/:demandeId/artisans', clientController.getArtisansForDemand);
 router.get('/demandes/:demandeId/artisans', clientController.rechercherDemandeParId);

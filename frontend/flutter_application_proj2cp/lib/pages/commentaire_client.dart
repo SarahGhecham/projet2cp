@@ -9,27 +9,39 @@ import 'package:flutter_application_proj2cp/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CommentPage2 extends StatefulWidget {
+  final int ArtisanId;
   @override
-  _CommentPage2State createState() => _CommentPage2State();
+  const CommentPage2({
+    Key? key,
+    required this.ArtisanId,
+  }) : super(key: key);
+  @override
+  State<CommentPage2> createState() => _CommentPage2State();
 }
 
 class _CommentPage2State extends State<CommentPage2> {
   int visibleComments = 5; // Number of comments initially visible
   List<Comment> comments = [];
-
+  late String _token;
+  Future<void> fetchData() async {
+    final prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('token') ?? '';
+    print('Token: $_token');
+    await Future.wait([_fetchComments()]);
+  }
   @override
   void initState() {
     super.initState();
-    fetchComments();
+    fetchData();
   }
 
-  Future<void> fetchComments() async {
+  Future<void> _fetchComments() async {
     try {
       final response = await http.get(
         Uri.parse(
-            'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/artisan/ConsulterCommentaires'),
+            'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/ConsulterCommentaires/${widget.ArtisanId}'),
         headers: {
-          'Authorization': 'Bearer your_token_here',
+          'Authorization': 'Bearer $_token',
         },
       );
 
@@ -173,7 +185,7 @@ class CommentCard extends StatelessWidget {
                                 child: SvgPicture.asset(
                                   'assets/leaf.svg',
                                   color:
-                                      const Color(0xff05564B).withOpacity(0.6),
+                                  const Color(0xff05564B).withOpacity(0.6),
                                 ),
                               ),
                             ),

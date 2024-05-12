@@ -12,12 +12,17 @@ class Demande {
   final String orderTime;
   final String demandeImage;
   final bool status;
+  final int demandeId;
+  final int rdvId;
+
 
   Demande({
     required this.name,
     required this.orderTime,
     required this.demandeImage,
     required this.status,
+    required this.demandeId,
+    required this.rdvId,
   });
 }
 
@@ -69,13 +74,17 @@ Future<void> fetchDemandesArtisanEnCours() async {
             final String imagePrestation =
                 demande['Prestation']['imagePrestation'] ?? '';
             final bool status = confirme;
-            print('image $imagePrestation');
+            final int demandeId = demande['id'];
+            final int rdvId = rdv['id'];
+            //print('image $imagePrestation');
             demandes.add(Demande(
             
               name: name,
               orderTime: '$dateFin, $heureFin',
               demandeImage: imagePrestation,
               status: status,
+              demandeId: demandeId,
+              rdvId: rdvId,
             ));
           }
         }

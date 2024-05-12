@@ -2,7 +2,7 @@
   "development": {
     "username": "root",
     "database": "app",
-    "password": "password",
+    "password": "root",
     "localhost": "127.0.0.1",
     "dialect": "mysql"
   },

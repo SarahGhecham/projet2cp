@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_application_proj2cp/config.dart';
+import 'package:flutter_application_proj2cp/pages/artisan/commentaire_artisan.dart';
 import 'package:flutter_application_proj2cp/parametre.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,7 +13,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 class ProfileartisanPage extends StatefulWidget {
   const ProfileartisanPage({super.key});
 
@@ -33,7 +34,22 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
   final _RayonController = TextEditingController();
   final _AdresseController = TextEditingController();
   final jourController = TextEditingController();
+  List<dynamic> _predictions = [];
+  bool _showSuggestions = true;
 
+  @override
+  void _searchPlaces(String input) async {
+    const apiKey = 'AIzaSyD_d366EANPIHugZe9YF5QVxHHa_Bzef_4';
+    final url =
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=(cities)&key=$apiKey&language=fr';
+
+    final response = await http.get(Uri.parse(url));
+    final data = json.decode(response.body);
+
+    setState(() {
+      _predictions = data['predictions'];
+    });
+  }
   int day = 0;
   late String _token;
   Map<String, dynamic> _userData = {};
@@ -482,6 +498,8 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                       if (pickedFile != null) {
                         setState(() {
                           File imageFile = File(pickedFile.path);
+                          _pickedImagePath= imageFile.path;
+                          _saveChanges();
                           updateArtisanImage(imageFile);
                         });
                       }
@@ -556,8 +574,12 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                     onTap: (){
                       if(dispo){
                         _dispo(false);
+                        _saveChanges();
+                        updateArtisan(_userData);
                       }else{
                         _dispo(true);
+                        _saveChanges();
+                        updateArtisan(_userData);
                       }
                     },
                     child: Container(
@@ -949,19 +971,32 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                   ),
                   child: _isEditing
                       ? TextFormField(
-                    controller: _AdresseController,
-                    keyboardType: TextInputType.text,
-                    decoration: InputDecoration(
-                      hintText: "Adresse",
-                      hintStyle: GoogleFonts.poppins(
-                        color: const Color(0xFF777777),
+                      controller: _AdresseController,
+                      keyboardType: TextInputType.text,
+                      decoration: InputDecoration(
+                        hintText: "Adresse",
+                        hintStyle: GoogleFonts.poppins(
+                          color: const Color(0xFF777777),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 10.0,
+                          horizontal: 16.0,
+                        ),
+                        border: InputBorder.none,
                       ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        vertical: 10.0,
-                        horizontal: 16.0,
-                      ),
-                      border: InputBorder.none,
-                    ),
+                      onChanged: (value) {
+                        if (value.isNotEmpty) {
+                          _searchPlaces(value);
+                          setState(() {
+                            _showSuggestions =
+                            true; // Show suggestions when typing
+                          });
+                        } else {
+                          setState(() {
+                            _showSuggestions = false; //
+                          });
+                        }
+                      }
                   )
                       : Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
@@ -973,6 +1008,38 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                       ),
                     ),
                   ),
+                ),
+              ),
+            ),
+            Visibility(
+              visible: _showSuggestions,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                child: ListView.separated(
+                  separatorBuilder: (BuildContext context, int index) {
+                    return Divider(
+                      color: Color(0xFFDCC8C5),
+                      thickness: 2.0,
+                    );
+                  },
+                  shrinkWrap: true,
+                  itemCount: _predictions.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(
+                        _predictions[index]["description"],
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                        ),
+                      ),
+                      onTap: () {
+                        _AdresseController.text = _predictions[index]["description"];
+                        setState(() {
+                          _showSuggestions = false;
+                        });
+                      },
+                    );
+                  },
                 ),
               ),
             ),
@@ -1080,7 +1147,10 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                 children: [
                   ElevatedButton(
                       onPressed: () {
-
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => CommentPage()),
+                        );
                       },
                       style: ButtonStyle(
                         minimumSize: MaterialStateProperty.all<Size>(

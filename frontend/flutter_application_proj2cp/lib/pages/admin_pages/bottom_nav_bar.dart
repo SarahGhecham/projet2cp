@@ -23,11 +23,9 @@ class _BottomNavBarAdminState extends State<BottomNavBarAdmin> {
   // Define your page views
   final List<Widget> _pages = [
     HomePageAdmin(),
-    DrawerServices(),
+    
     ProfileAdmin(),
-    //Activite(),
-    //PrestationPage(),
-    //Profile(),
+    
   ];
 
   void _onItemTapped(int index) {
@@ -70,20 +68,11 @@ class _BottomNavBarAdminState extends State<BottomNavBarAdmin> {
                         height: 25,
                       ),
                     ),
+                   
                     GestureDetector(
                       onTap: () => _onItemTapped(1),
                       child: Image.asset(
                         _selectedIndex == 1
-                            ? 'assets/images/chatfilled.png'
-                            : 'assets/images/chat_outline.png',
-                        width: 27,
-                        height: 27,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => _onItemTapped(2),
-                      child: Image.asset(
-                        _selectedIndex == 2
                             ? 'assets/images/profile_filled.png'
                             : 'assets/images/profile_notfilled.png',
                         width: 30,

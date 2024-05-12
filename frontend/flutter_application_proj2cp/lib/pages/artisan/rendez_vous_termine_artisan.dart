@@ -9,21 +9,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_application_proj2cp/config.dart';
 import 'package:intl/intl.dart';
 
-class RDV_confirmeartisanPage extends StatefulWidget {
+class DemandeAcceptee extends StatefulWidget {
   final int demandeID;
   final int rdvID;
   @override
-  const RDV_confirmeartisanPage({
+  const DemandeAcceptee({
     Key? key,
     required this.demandeID,
     required this.rdvID,
   }) : super(key: key);
 
   @override
-  State<RDV_confirmeartisanPage> createState() => _RDV_confirmeartisanPageState();
+  State<DemandeAcceptee> createState() => _DemandeAccepteeState();
 }
 
-class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
+class _DemandeAccepteeState extends State<DemandeAcceptee> {
   late String _token;
   Map<String, dynamic> data = {};
   Future<void> fetchData() async {
@@ -32,6 +32,7 @@ class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
     print('Token: $_token');
     await Future.wait([_fetchUserData()]);
   }
+
 
 
   Future<void> _fetchUserData() async {
@@ -52,7 +53,8 @@ class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
           responseData != null ? responseData['client'] ?? {} : {};
           final client = {
             'Username': artisanData != null ? artisanData['Username'] ?? '' : '',
-
+            'Photo': artisanData != null ? artisanData['photo'] ?? '' : '',
+            'Numero': artisanData != null ? artisanData['NumeroTelClient'] ?? '' : '',
           };
 
 // RDV affich data
@@ -271,7 +273,7 @@ class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
                                     text: TextSpan(
                                       children: [
                                         TextSpan(
-                                          text: data['prestation']['Nom'],
+                                          text: data['prestation']['Nom'].toString(),
                                           style: GoogleFonts.poppins(
                                             color: const Color(0xFF05564B),
                                             fontSize: 16,
@@ -299,11 +301,6 @@ class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
                               ],
                             ),
                             const SizedBox(height: 10),
-                            Text(
-                              "Confirmé le 23 Jan à 12:00",
-                              softWrap: true,
-                              style: GoogleFonts.poppins(fontSize: 12),
-                            ),
                           ],
                         ),
                       ),
@@ -316,7 +313,7 @@ class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 50.0),
               child: Text(
-                "Préstataire",
+                "Client",
                 style: GoogleFonts.poppins(
                     fontSize: 16, fontWeight: FontWeight.w600),
               ),
@@ -345,8 +342,8 @@ class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(
-                          image: AssetImage(
-                            "assets/artisan.jpg",
+                          image: NetworkImage(
+                            data['client']['Photo'].toString(),
                           ),
                           fit: BoxFit.cover,
                         ),
@@ -360,7 +357,7 @@ class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            data['client']['Username'],
+                            data['client']['Username'].toString(),
                             style: GoogleFonts.poppins(
                                 fontSize: 15, fontWeight: FontWeight.w600),
                           ),
@@ -372,7 +369,7 @@ class _RDV_confirmeartisanPageState extends State<RDV_confirmeartisanPage> {
                                   5), // Adjust spacing between phone icon and number
                               Expanded(
                                 child: Text(
-                                  "0550765320",
+                                  data['client']['Numero'],
                                   style: GoogleFonts.poppins(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600),

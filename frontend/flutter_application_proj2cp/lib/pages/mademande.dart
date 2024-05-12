@@ -7,6 +7,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_application_proj2cp/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/cupertino.dart';
+
+import 'package:flutter/widgets.dart';
+
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'dart:convert';
+import 'package:flutter_application_proj2cp/demande_confirmé.dart';
 
 class Mademande extends StatefulWidget {
   final int demandeId;
@@ -17,6 +24,17 @@ class Mademande extends StatefulWidget {
 }
 
 class _MademandePageState extends State<Mademande> {
+  void _navigateToNextPage(int rdvid, int demandeId) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => demande_confirmePage(
+            rdvID: rdvId,
+            demandeID: demandeId,
+          )),
+    );
+  }
+
   late String _token;
   List<dynamic> artisans = [];
   bool ecologique = true;
@@ -56,7 +74,7 @@ class _MademandePageState extends State<Mademande> {
     // Envoyez la requête POST avec les en-têtes
     try {
       var response =
-          await http.post(Uri.parse(url), headers: headers, body: jsonData);
+      await http.post(Uri.parse(url), headers: headers, body: jsonData);
 
       // Vérifiez le code de statut de la réponse
       if (response.statusCode == 200) {
@@ -93,7 +111,7 @@ class _MademandePageState extends State<Mademande> {
     // Envoyez la requête POST avec les en-têtes et le corps de la requête
     try {
       var response =
-          await http.post(Uri.parse(url), headers: headers, body: jsonData);
+      await http.post(Uri.parse(url), headers: headers, body: jsonData);
 
       // Vérifiez le code de statut de la réponse
       if (response.statusCode == 200) {
@@ -127,8 +145,12 @@ class _MademandePageState extends State<Mademande> {
     fetchArtisansData();
   }
 
+  late int idrdv;
+  late int iddemande;
+
   Future<void> fetchArtisansData() async {
     int demandeId = widget.demandeId;
+    iddemande = demandeId;
     print(demandeId);
     print('Avant la requête HTTP');
     final String apiUrl =
@@ -158,13 +180,15 @@ class _MademandePageState extends State<Mademande> {
               responseData['prestation']?['imagePrestation'] ?? 'null';
           nomPrestation = responseData['prestation']?['nomPrestation'];
           rdvId = responseData['rdv']?['id'];
+          idrdv = rdvId;
+          print('idrdv: $idrdv');
           dateDebut = responseData['rdv']?['dateDebut'];
           dateDebut1 = DateTime.parse(dateDebut);
           Date =
-              '${dateDebut1.year}-${dateDebut1.month.toString().padLeft(2, '0')}-${dateDebut1.day.toString().padLeft(2, '0')}';
+          '${dateDebut1.year}-${dateDebut1.month.toString().padLeft(2, '0')}-${dateDebut1.day.toString().padLeft(2, '0')}';
 
           Heure =
-              '${dateDebut1.hour.toString().padLeft(2, '0')}:${dateDebut1.minute.toString().padLeft(2, '0')}';
+          '${dateDebut1.hour.toString().padLeft(2, '0')}:${dateDebut1.minute.toString().padLeft(2, '0')}';
           dureeMax = responseData['prestation']?['DureeMax'] as String;
           dureeMin = responseData['prestation']?['DureeMin'] as String;
           duree = '${dureeMin}-${dureeMax}';
@@ -277,17 +301,17 @@ class _MademandePageState extends State<Mademande> {
                                     borderRadius: BorderRadius.circular(8.0),
                                     child: imagePrestation != null
                                         ? Image.network(
-                                            imagePrestation, // Utilisez l'URL de la photo de profil
-                                            width: 168,
-                                            height: 174,
-                                            fit: BoxFit.cover,
-                                          )
+                                      imagePrestation, // Utilisez l'URL de la photo de profil
+                                      width: 168,
+                                      height: 174,
+                                      fit: BoxFit.cover,
+                                    )
                                         : Image.asset(
-                                            'assets/images/l.png',
-                                            width: 168,
-                                            height: 174,
-                                            fit: BoxFit.cover,
-                                          ),
+                                      'assets/images/l.png',
+                                      width: 168,
+                                      height: 174,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -489,7 +513,7 @@ class _MademandePageState extends State<Mademande> {
                             height: 16,
                             width: 107,
                             decoration: BoxDecoration(
-                              color: Color.fromARGB(255, 171, 54, 44)
+                              color: Color.fromARGB(255, 224, 70, 56)
                                   .withOpacity(0.83), // Couleur de fond rouge
                               borderRadius: BorderRadius.circular(
                                   8), // Bordure arrondie pour le conteneur
@@ -550,7 +574,7 @@ class _MademandePageState extends State<Mademande> {
                                   children: [
                                     Container(
                                       margin:
-                                          EdgeInsets.only(left: 10, top: 14),
+                                      EdgeInsets.only(left: 10, top: 14),
                                       width: 50,
                                       height: 50,
                                       decoration: BoxDecoration(
@@ -559,19 +583,19 @@ class _MademandePageState extends State<Mademande> {
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(45),
                                         child: artisans.isNotEmpty &&
-                                                artisans[index]['photo'] != null
+                                            artisans[index]['photo'] != null
                                             ? Image.network(
-                                                artisans[index]['photo'],
-                                                fit: BoxFit.cover,
-                                              )
+                                          artisans[index]['photo'],
+                                          fit: BoxFit.cover,
+                                        )
                                             : Container(
-                                                color: Colors.grey,
-                                                child: Icon(
-                                                  Icons.person,
-                                                  size: 40,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
+                                          color: Colors.grey,
+                                          child: Icon(
+                                            Icons.person,
+                                            size: 40,
+                                            color: Colors.white,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                     SizedBox(width: 10),
@@ -585,16 +609,16 @@ class _MademandePageState extends State<Mademande> {
                                                 children: [
                                                   Text(
                                                     (artisans[index]['nom'] !=
-                                                                null &&
-                                                            artisans[index][
-                                                                    'prenom'] !=
-                                                                null)
+                                                        null &&
+                                                        artisans[index][
+                                                        'prenom'] !=
+                                                            null)
                                                         ? '${artisans[index]['nom']}   ${artisans[index]['prenom']}'
                                                         : '',
                                                     style: TextStyle(
                                                       fontSize: 12,
                                                       fontWeight:
-                                                          FontWeight.w600,
+                                                      FontWeight.w600,
                                                       fontFamily: 'Lato',
                                                     ),
                                                   ),
@@ -604,13 +628,13 @@ class _MademandePageState extends State<Mademande> {
                                                   SizedBox(width: 0.5),
                                                   Padding(
                                                     padding:
-                                                        EdgeInsets.only(top: 8),
+                                                    EdgeInsets.only(top: 8),
                                                     child: Text(
                                                       '${artisans.isNotEmpty ? artisans[index]['note'] : ''}  ', // Change this to your points field
                                                       style: TextStyle(
                                                         fontSize: 8,
                                                         fontWeight:
-                                                            FontWeight.w600,
+                                                        FontWeight.w600,
                                                         fontFamily: 'Lato',
                                                       ),
                                                     ),
@@ -632,7 +656,7 @@ class _MademandePageState extends State<Mademande> {
                                     width: 60,
                                     padding: EdgeInsets.symmetric(
                                         horizontal:
-                                            10), // Ajoute un espace supplémentaire autour du bouton
+                                        10), // Ajoute un espace supplémentaire autour du bouton
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(3),
                                       color: Colors.green,
@@ -640,16 +664,17 @@ class _MademandePageState extends State<Mademande> {
                                     child: TextButton(
                                       onPressed: () {
                                         var selectedArtisanId =
-                                            artisans[index]['id'];
+                                        artisans[index]['id'];
                                         // Ajoutez votre logique onTap ico
                                         sendPostRequest(
                                             rdvId, selectedArtisanId, _token);
                                         _removeClient(index);
+                                        _navigateToNextPage(idrdv, widget.demandeId);
                                       },
                                       style: ButtonStyle(
                                         padding: MaterialStateProperty
                                             .all<EdgeInsets>(EdgeInsets
-                                                .zero), // Supprime le remplissage du bouton
+                                            .zero), // Supprime le remplissage du bouton
                                       ),
                                       child: Text(
                                         'Confirmer',
@@ -657,7 +682,7 @@ class _MademandePageState extends State<Mademande> {
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontSize:
-                                              8, // Ajustez la taille de la police selon vos besoins
+                                          8, // Ajustez la taille de la police selon vos besoins
                                           fontWeight: FontWeight.w600,
                                           fontFamily: 'Lato',
                                         ),

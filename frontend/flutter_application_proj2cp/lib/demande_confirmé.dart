@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_application_proj2cp/pages/connexion.dart';
+import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
+import 'package:flutter_application_proj2cp/profilartisan_client.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -86,6 +89,7 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
           final artisanData =
           responseData != null ? responseData['artisan'] ?? {} : {};
           final artisan = {
+            'Id': artisanData != null ? artisanData['id'] ?? '' : '',
             'Nom': artisanData != null ? artisanData['NomArtisan'] ?? '' : '',
             'Prenom':
             artisanData != null ? artisanData['PrenomArtisan'] ?? '' : '',
@@ -340,11 +344,7 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
                               ],
                             ),
                             const SizedBox(height: 10),
-                            Text(
-                              "Confirmé le 23 Jan à 12:00",
-                              softWrap: true,
-                              style: GoogleFonts.poppins(fontSize: 12),
-                            ),
+
                           ],
                         ),
                       ),
@@ -380,16 +380,24 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
                 child: Row(
                   children: [
                     SizedBox(width: 15),
-                    Container(
-                      height: 50,
-                      width: 50,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: NetworkImage(
-                            data['artisan']['Photo'].toString(),
+                    GestureDetector(
+                      onTap: (){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ProfileartisanclientPage(artisanID: data['artisan']['Id'])),
+                        );
+                      },
+                      child: Container(
+                        height: 50,
+                        width: 50,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                            image: NetworkImage(
+                              data['artisan']['Photo'].toString(),
+                            ),
+                            fit: BoxFit.cover,
                           ),
-                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
@@ -617,6 +625,10 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
                 child: ElevatedButton(
                   onPressed: () {
                     annulerDemande(_token, widget.demandeID);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomeScreen()),
+                    );
                   },
                   style: ButtonStyle(
                     minimumSize:

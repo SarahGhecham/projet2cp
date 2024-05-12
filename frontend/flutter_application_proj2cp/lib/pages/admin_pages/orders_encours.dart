@@ -1,4 +1,4 @@
-import 'dart:convert';
+/*import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
@@ -7,7 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-class ActiviteEnCoursAdmin extends StatefulWidget {
+/*class ActiviteEnCoursAdmin extends StatefulWidget {
   const ActiviteEnCoursAdmin({super.key});
 
   @override
@@ -162,4 +162,4 @@ class _ActiviteEnCoursAdminState extends State<ActiviteEnCoursAdmin> {
       ),
     );
   }
-}
+}*/*/

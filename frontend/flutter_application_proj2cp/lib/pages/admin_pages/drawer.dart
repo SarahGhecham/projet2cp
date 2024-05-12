@@ -23,7 +23,7 @@ class DrawerDash extends StatefulWidget {
 }
 
 class _DrawerDashState extends State<DrawerDash> {
- late int _selectedIndex = widget.initialSelectedIndex;
+  late int _selectedIndex = widget.initialSelectedIndex;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -55,12 +55,6 @@ class _DrawerDashState extends State<DrawerDash> {
                       icon: 'assets/icons/users.png',
                       title: 'Utilisateurs',
                       index: 2,
-                    ),
-                    SizedBox(height: 26),
-                    _buildListTile(
-                      icon: 'assets/icons/orders.png',
-                      title: 'Orders',
-                      index: 3,
                     ),
                   ])
             ],
@@ -124,14 +118,6 @@ class _DrawerDashState extends State<DrawerDash> {
           MaterialPageRoute(builder: (context) => DrawerUsers()),
         );
         break;
-      case 3:
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => DrawerOrders()),
-        );
-        break;
     }
   }
 }
-
-
