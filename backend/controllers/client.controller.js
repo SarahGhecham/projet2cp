@@ -1314,7 +1314,7 @@ async function DetailsDemandeConfirmee(req, res) {
     }
 
     const artisan = await models.Artisan.findByPk(artisanDemande.ArtisanId, {
-      attributes: ['NomArtisan', 'PrenomArtisan','Note','NumeroTelArtisan','photo'],
+      attributes: ['id','NomArtisan', 'PrenomArtisan','Note','NumeroTelArtisan','photo'],
     });
 
     const rdvAffich = {
