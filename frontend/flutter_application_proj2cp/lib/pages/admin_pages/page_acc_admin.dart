@@ -39,9 +39,9 @@ class HomePageAdmin extends StatefulWidget {
 class _HomePageAdminState extends State<HomePageAdmin> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late HeaderAdmin _headerAdmin = HeaderAdmin(
-    nomAdmin: 'admin',
-    prenomAdmin: 'admin',
-    profilePictureUrl: 'https://picsum.photos/250?image=9',
+    nomAdmin: '',
+    prenomAdmin: '',
+    profilePictureUrl: '',
   );
   int _currentPageIndex = 0;
   int _nombreClients = 0;
@@ -68,7 +68,8 @@ class _HomePageAdminState extends State<HomePageAdmin> {
   }
 
   Future<void> _loadStatistics() async {
-    final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/Obtenir/Statistiques');
+    final url = Uri.parse(
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/Obtenir/Statistiques');
     try {
       final response = await http.get(
         url,
@@ -90,7 +91,8 @@ class _HomePageAdminState extends State<HomePageAdmin> {
   }
 
   Future<void> _fetchUserData() async {
-    final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins');
+    final url = Uri.parse(
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins');
     try {
       final response = await http.get(
         url,
@@ -144,7 +146,7 @@ class _HomePageAdminState extends State<HomePageAdmin> {
                   ),
                 ),
                 Text(
-                  'Salut Admin',
+                  'Salut' + ' ' + _headerAdmin.nomAdmin,
                   style: GoogleFonts.poppins(
                     fontSize: 20,
                     fontWeight: FontWeight.w400,
@@ -152,19 +154,6 @@ class _HomePageAdminState extends State<HomePageAdmin> {
                   ),
                 ),
                 const Spacer(),
-                GestureDetector(
-                  onTap: () {
-                    // Handle notifications button tap
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 20.0),
-                    child: Image.asset(
-                      'assets/icons/notifs.png',
-                      height: 30,
-                      width: 30,
-                    ),
-                  ),
-                ),
               ],
             ),
             SizedBox(height: 10), // Spacer between the two rows

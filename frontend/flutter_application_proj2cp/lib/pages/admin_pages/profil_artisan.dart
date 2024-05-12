@@ -716,14 +716,7 @@ class _VoirProfilArtisanState extends State<VoirProfilArtisan> {
   @override
   var note = "";
   var domaine = "";
-  final _debutController = TextEditingController();
-  final _finController = TextEditingController();
-  final _NomController = TextEditingController();
-  final _PrenomController = TextEditingController();
-  final _EmailController = TextEditingController();
-  final _PhoneController = TextEditingController();
-  final _RayonController = TextEditingController();
-  final _AdresseController = TextEditingController();
+  late int artisanID;
   final jourController = TextEditingController();
 
   late String _token;
@@ -732,58 +725,17 @@ class _VoirProfilArtisanState extends State<VoirProfilArtisan> {
   bool dispo = true;
   Future<void> fetchData() async {
     final prefs = await SharedPreferences.getInstance();
+    prefs.remove('isSuspended${_userData['EmailArtisan']}');
     _token = prefs.getString('token') ?? '';
     print('Token: $_token');
     await Future.wait([_fetchUserData()]);
+  }
+
+  void initState() {
+    super.initState();
     _loadSuspensionStatus();
-  }
 
-  Future<void> suspendAccount() async {
-    print(_userData['EmailArtisan']);
-
-    final url = Uri.parse(
-        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/Desactiver/Artisan');
-    try {
-      final response = await http.patch(
-        url,
-        headers: {
-          'Authorization': 'Bearer $_token',
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({'EmailArtisan': _userData['EmailArtisan']}),
-      );
-
-      if (response.statusCode == 200) {
-        print('Artisan deactivated successfully');
-        setState(() {
-          _isSuspended = true;
-        });
-        _saveSuspensionStatus();
-
-        //Navigator.pop(context);
-      } else {
-        print('Failed to deactivate client');
-        print('Response Status Code: ${response.statusCode}');
-        print('Response Body: ${response.body}');
-        // Handle error scenario appropriately
-      }
-    } catch (error) {
-      print('Error deactivating client: $error');
-      // Handle error scenario appropriately
-    }
-  }
-
-  void _loadSuspensionStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _isSuspended =
-          prefs.getBool('isSuspended${_userData['EmailArtisan']}') ?? false;
-    });
-  }
-
-  void _saveSuspensionStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setBool('isSuspended${_userData['EmailArtisan']}', true);
+    fetchData();
   }
 
   Future<void> _fetchUserData() async {
@@ -837,6 +789,54 @@ class _VoirProfilArtisanState extends State<VoirProfilArtisan> {
     }
   }
 
+  Future<void> suspendAccount() async {
+    print(_userData['EmailArtisan']);
+
+    final url = Uri.parse(
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/Desactiver/Artisan');
+    try {
+      final response = await http.patch(
+        url,
+        headers: {
+          'Authorization': 'Bearer $_token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({'EmailArtisan': _userData['EmailArtisan']}),
+      );
+
+      if (response.statusCode == 200) {
+        print('Artisan deactivated successfully');
+        setState(() {
+          _isSuspended = true;
+        });
+        _saveSuspensionStatus();
+
+        //Navigator.pop(context);
+      } else {
+        print('Failed to deactivate client');
+        print('Response Status Code: ${response.statusCode}');
+        print('Response Body: ${response.body}');
+        // Handle error scenario appropriately
+      }
+    } catch (error) {
+      print('Error deactivating client: $error');
+      // Handle error scenario appropriately
+    }
+  }
+
+  void _loadSuspensionStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isSuspended =
+          prefs.getBool('isSuspended${_userData['EmailArtisan']}') ?? false;
+    });
+  }
+
+  void _saveSuspensionStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isSuspended${_userData['EmailArtisan']}', true);
+  }
+
   void _dispo(bool value) {
     setState(() {
       dispo = value;
@@ -844,11 +844,6 @@ class _VoirProfilArtisanState extends State<VoirProfilArtisan> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    fetchData();
-  }
-
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
