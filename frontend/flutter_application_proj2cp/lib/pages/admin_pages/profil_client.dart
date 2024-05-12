@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_proj2cp/config.dart';
 import 'package:flutter_application_proj2cp/pages/admin_pages/users_clients.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -36,12 +37,15 @@ class _VoirProfilClientState extends State<VoirProfilClient> {
 
   void initState() {
     super.initState();
-    _client = widget.client; 
-    fetchData(); // Start fetching user data
+    if (widget.client != null) {
+      _client = widget.client;
+      fetchData(); // Start fetching user data
+    }
   }
 
   Future<void> _fetchUserData() async {
-    final url = Uri.parse('http://10.0.2.2:3000/client/Affichermonprofil');
+    final url = Uri.parse(
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/Affichermonprofil');
     try {
       final response = await http.get(
         url,
@@ -59,9 +63,9 @@ class _VoirProfilClientState extends State<VoirProfilClient> {
             'NumeroTelClient': userDataJson['NumeroTelClient'] as String,
             'Points': userDataJson['Points'],
             'Service_account': userDataJson['Service_account'],
-            'photo': userDataJson['photo']
+            'photo': userDataJson['photo'] as String?,
           };
-         
+
           _client = Client(
             name: _userData['Username'],
             email: _userData['EmailClient'],
@@ -86,7 +90,8 @@ class _VoirProfilClientState extends State<VoirProfilClient> {
   Future<void> suspendAccount() async {
     print(_client.email);
 
-    final url = Uri.parse('http://10.0.2.2:3000/admins/Desactiver/Client');
+    final url = Uri.parse(
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/Desactiver/Client');
     try {
       final response = await http.patch(
         // Use http.patch for a PATCH request
@@ -176,16 +181,16 @@ class _VoirProfilClientState extends State<VoirProfilClient> {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(14),
-                            child: _userData['photo'] != null
+                            child: _client.photoDeProfil != null
                                 ? Image.network(
-                                    _userData[
-                                        'photo'], // Utilisez l'URL de la photo de profil
+                                    _client
+                                        .photoDeProfil!, // Use '!' to assert non-nullability
                                     width: 168,
                                     height: 174,
                                     fit: BoxFit.cover,
                                   )
                                 : Image.asset(
-                                    'assets/images/l.png',
+                                    'assets/images/l.png', // Placeholder image for null 'photoDeProfil'
                                     width: 168,
                                     height: 174,
                                     fit: BoxFit.cover,

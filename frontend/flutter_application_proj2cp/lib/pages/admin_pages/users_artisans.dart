@@ -22,17 +22,15 @@ class Artisan {
   String? rayon;
   String? image;
   bool disponibilite;
-  int domaine;
   String? note;
   Artisan(
       {required this.artisanID,
-        required this.nom,
+      required this.nom,
       required this.prenom,
       required this.email,
       required this.numTel,
       required this.adresse,
       this.rayon,
-      required this.domaine,
       required this.disponibilite,
       this.note,
       this.image});
@@ -91,7 +89,6 @@ class _ArtisansListState extends State<ArtisansList> {
               numTel: item['NumeroTelArtisan'] as String,
               adresse: item['AdresseArtisan'] as String,
               disponibilite: item['Disponibilite'],
-              domaine: item['DomaineId'],
               note: item['Note'],
               rayon: item['RayonKm'],
               image: photoDeProfil,

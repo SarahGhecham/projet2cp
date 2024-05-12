@@ -77,7 +77,8 @@ class _ClientsListState extends State<ClientsList> {
   }
 
   Future<void> fetchAllClients() async {
-    final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/Afficher/Clients');
+    final url = Uri.parse(
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/Afficher/Clients');
     try {
       final response = await http.get(
         url,
@@ -161,7 +162,7 @@ class _ClientsListState extends State<ClientsList> {
                           textStyle: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.w500,
-                            fontSize: 12,
+                            fontSize: 14,
                           ),
                         ),
                       )

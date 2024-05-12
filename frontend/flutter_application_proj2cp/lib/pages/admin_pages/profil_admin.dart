@@ -71,72 +71,9 @@ class _ProfileAdminState extends State<ProfileAdmin> {
     }
   }
 
-  List<dynamic> _predictions = [];
-  bool _showSuggestions = true;
-  bool _suggestionSelected = false;
-  String _addressErrorText = '';
-  @override
-  void _searchPlaces(String input) async {
-    const apiKey = 'AIzaSyD_d366EANPIHugZe9YF5QVxHHa_Bzef_4';
-    final url =
-        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=(cities)&key=$apiKey&language=fr';
-
-    final response = await http.get(Uri.parse(url));
-    final data = json.decode(response.body);
-
-    setState(() {
-      _predictions = data['predictions'];
-    });
-  }
-
-  Future<void> updateClient(Map<String, dynamic> updatedData) async {
-    final url = Uri.parse(
-        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/updateClient'); // Replace with your endpoint
-    try {
-      final response = await http.patch(
-        url,
-        body: json.encode(updatedData),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $_token'
-        },
-      );
-
-      if (response.statusCode == 200) {
-        print('User data updated successfully');
-        _fetchUserData();
-      } else {
-        print('Failed to update user data');
-        print('Response Status Code: ${response.statusCode}');
-        print('Response Body: ${response.body}');
-      }
-    } catch (error) {
-      print('Error updating user data: $error');
-    }
-  }
-
   TextEditingController _nomController = TextEditingController();
   TextEditingController _prenomController = TextEditingController();
   TextEditingController _gmailController = TextEditingController();
-
-  void _toggleEditing(bool value) {
-    setState(() {
-      _isEditing = value;
-    });
-  }
-
-  void _saveChanges() {
-    _userData['NomAdmin'] = _nomController.text.isNotEmpty
-        ? _nomController.text
-        : _userData['NomAdmin'];
-    _userData['PrenomAdmin'] = _prenomController.text.isNotEmpty
-        ? _prenomController.text
-        : _userData['PrenomAdmin'];
-
-    _userData['EmailAdlin'] = _gmailController.text.isNotEmpty
-        ? _gmailController.text
-        : _userData['EmailAdmin'];
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -154,7 +91,7 @@ class _ProfileAdminState extends State<ProfileAdmin> {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        actions: [
+        /*actions: [
           IconButton(
             icon: SizedBox(
               width: 32,
@@ -163,7 +100,7 @@ class _ProfileAdminState extends State<ProfileAdmin> {
             ),
             onPressed: () {},
           ),
-        ],
+        ],*/
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -314,44 +251,6 @@ class _ProfileAdminState extends State<ProfileAdmin> {
                     ],
                   ),
                 ],
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 60),
-                child: SizedBox(
-                  width: 98,
-                  height: 33,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (_isEditing && _suggestionSelected) {
-                        _saveChanges();
-                        updateClient(_userData);
-                        _toggleEditing(false);
-                      } else if (_isEditing && !_suggestionSelected) {
-                        setState(() {
-                          _addressErrorText =
-                              'Veuillez choisir un emplacement de la liste ';
-                        });
-                      } else {
-                        _toggleEditing(true);
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      backgroundColor: const Color(0xFFFF8787),
-                    ),
-                    child: Text(
-                      _isEditing ? 'Valider' : 'Editer',
-                      style: const TextStyle(
-                        color: Color.fromARGB(255, 255, 255, 255),
-                        fontSize: 14,
-                        fontFamily: 'Lato',
-                      ),
-                    ),
-                  ),
-                ),
               ),
             ],
           ),

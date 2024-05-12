@@ -37,6 +37,7 @@ class CreerArtisan extends StatefulWidget {
 }
 
 class _CreerArtisanState extends State<CreerArtisan> {
+  ScrollController? _scrollController;
   final _nomArtisanController = TextEditingController();
   final _prenomArtisanController = TextEditingController();
   final _passwordArtisanController = TextEditingController();
@@ -47,14 +48,20 @@ class _CreerArtisanState extends State<CreerArtisan> {
   List<Map<String, dynamic>> _domainesOptions = [];
   List<Prestation> _prestationsOptions = [];
   List<Prestation> _prestationsChoisis = []; //cc
-
   String? _selectedDomaine;
   int? _selectedDomaineId;
   Prestation? _selectedPrestation;
   late String _token;
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
     fetchData();
+  }
+
+  @override
+  void dispose() {
+    _scrollController?.dispose();
+    super.dispose();
   }
 
   Future<void> fetchData() async {
@@ -64,6 +71,50 @@ class _CreerArtisanState extends State<CreerArtisan> {
     await Future.wait([
       fetchDomaines(),
     ]);
+  }
+
+  bool _isAddressMatchingSuggestion(String address) {
+    String cleanedAddress = _cleanAddress(address.trim());
+
+    for (var suggestion in _predictions) {
+      String cleanedSuggestion =
+          _cleanAddress(suggestion["description"].trim());
+      if (cleanedSuggestion == cleanedAddress) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  String _cleanAddress(String address) {
+    // Remove spaces and special characters from the address
+    return address.replaceAll(RegExp(r'[^\w\s]+'), '');
+  }
+
+  List<dynamic> _predictions = [];
+  bool _showSuggestions = true;
+  bool _suggestionSelected = false;
+  String _addressErrorText = '';
+  @override
+  void _searchPlaces(String input) async {
+    const apiKey = 'AIzaSyD_d366EANPIHugZe9YF5QVxHHa_Bzef_4';
+    String url;
+
+    if (input.isEmpty) {
+      // Fetch predictions without a specific query
+      url =
+          'https://maps.googleapis.com/maps/api/place/autocomplete/json?types=establishment&key=$apiKey&language=fr';
+    } else {
+      url =
+          'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=establishment&key=$apiKey&language=fr';
+    }
+
+    final response = await http.get(Uri.parse(url));
+    final data = json.decode(response.body);
+
+    setState(() {
+      _predictions = data['predictions'];
+    });
   }
 
   Future<void> _createArtisan() async {
@@ -82,7 +133,8 @@ class _CreerArtisanState extends State<CreerArtisan> {
       return;
     }
 
-    final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/creerartisan');
+    final url = Uri.parse(
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/creerartisan');
 
     try {
       final response = await http.post(
@@ -211,7 +263,8 @@ class _CreerArtisanState extends State<CreerArtisan> {
   }
 
   Future<void> fetchDomaines() async {
-    final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/pageaccueil/AfficherDomaines');
+    final url = Uri.parse(
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/pageaccueil/AfficherDomaines');
     try {
       final response = await http.get(
         url,
@@ -470,8 +523,87 @@ class _CreerArtisanState extends State<CreerArtisan> {
                     ),
                     border: InputBorder.none,
                   ),
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      _searchPlaces(value);
+                      setState(() {
+                        _showSuggestions = true;
+                        _suggestionSelected = false;
+                        _addressErrorText = '';
+                      });
+                      _scrollController?.animateTo(
+                        _scrollController?.position.maxScrollExtent ?? 00,
+                        duration: Duration(milliseconds: 500),
+                        curve: Curves.easeInOut,
+                      );
+                    } else {
+                      setState(() {
+                        _showSuggestions = false;
+                        _suggestionSelected = false;
+                      });
+                    }
+                  },
                 ),
               ),
+            ),
+            Stack(
+              alignment: Alignment.topCenter,
+              children: [
+                Visibility(
+                  visible: _showSuggestions,
+                  child: Container(
+                    width: 277, // Match the width of the address field
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.grey,
+                        width: 1,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: ListView.separated(
+                      padding: EdgeInsets.zero,
+                      controller: _scrollController,
+                      separatorBuilder: (BuildContext context, int index) {
+                        return Divider(
+                          color: Color(0xFFDCC8C5),
+                          thickness: 1.0,
+                        );
+                      },
+                      shrinkWrap: true,
+                      itemCount: _predictions.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: 10), // Adjust vertical padding
+                          title: Text(
+                            _predictions[index]["description"],
+                            textAlign: TextAlign.center,
+                          ),
+                          onTap: () {
+                            _localisationController.text =
+                                _predictions[index]["description"];
+                            setState(() {
+                              _showSuggestions = false;
+                              _suggestionSelected = true;
+                              _addressErrorText = '';
+                            });
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  child: Visibility(
+                    visible: _showSuggestions,
+                    child: Icon(
+                      Icons.arrow_downward,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              ],
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20.0),
