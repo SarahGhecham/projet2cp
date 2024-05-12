@@ -4,7 +4,7 @@ const axios = require('axios');
 async function geocode(address) {
     try {
         // Construire l'URL pour la requête de géocodage avec l'API Google Maps
-        const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=AIzaSyD_d366EANPIHugZe9YF5QVxHHa_Bzef_4`;
+        const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=AIzaSyBUoTHDCzxA7lix93aS8D5EuPa-VCuoAq0`;
         
         // Effectuer la requête HTTP pour géocoder l'adresse
         const response = await axios.get(url);

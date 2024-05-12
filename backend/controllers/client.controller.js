@@ -977,6 +977,7 @@ try {
           if (rdv.annule) {
               return null;
           }
+          console.log(rdvDateFin > maintenant);
       
           if (rdvDateFin > maintenant || (rdvDateFin.getTime() === maintenant.getTime() && rdvHeureFin > maintenant)) {
               const artisandemande = await models.ArtisanDemande.findOne({ where: { DemandeId: rdv.DemandeId } });
@@ -1523,7 +1524,7 @@ async function DetailsRDVTermine(req, res) {
 
 
 async function getCommentaires(req, res) {
-  const artisanId = req.params.artisanId;
+  const artisanId = req.params.ArtisanId;
   try {
       
       const demandesIds = await models.ArtisanDemande.findAll({ where: { ArtisanId: artisanId }, attributes: ['DemandeId'] });
