@@ -745,7 +745,6 @@ class _VoirProfilArtisanState extends State<VoirProfilArtisan> {
         'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/Desactiver/Artisan');
     try {
       final response = await http.patch(
-        // Use http.patch for a PATCH request
         url,
         headers: {
           'Authorization': 'Bearer $_token',
@@ -811,8 +810,7 @@ class _VoirProfilArtisanState extends State<VoirProfilArtisan> {
               'Prenom': userDataJson['PrenomArtisan'] as String ?? '',
               'Email': userDataJson['EmailArtisan'] as String ?? '',
               'Numero': userDataJson['NumeroTelArtisan'] as String ?? '',
-              'Rayon': userDataJson['RayonKm'] ??
-                  '', // Assuming 'RayonKm' is a string
+              'Rayon': userDataJson['RayonKm'] ?? '',
               'Adresse': userDataJson['AdresseArtisan'] ?? '',
               'photo': userDataJson['photo'] ?? '',
               'Disponibilite': userDataJson['Disponibilite']
