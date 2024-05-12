@@ -727,6 +727,7 @@ class _VoirProfilArtisanState extends State<VoirProfilArtisan> {
   final jourController = TextEditingController();
 
   late String _token;
+  bool _isSuspended = false;
   Map<String, dynamic> _userData = {};
   bool dispo = true;
   Future<void> fetchData() async {
@@ -734,7 +735,58 @@ class _VoirProfilArtisanState extends State<VoirProfilArtisan> {
     _token = prefs.getString('token') ?? '';
     print('Token: $_token');
     await Future.wait([_fetchUserData()]);
+    _loadSuspensionStatus();
   }
+
+  Future<void> suspendAccount() async {
+    print(_userData['EmailArtisan']);
+
+    final url = Uri.parse(
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/Desactiver/Artisan');
+    try {
+      final response = await http.patch(
+        // Use http.patch for a PATCH request
+        url,
+        headers: {
+          'Authorization': 'Bearer $_token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({'EmailArtisan': _userData['EmailArtisan']}),
+      );
+
+      if (response.statusCode == 200) {
+        print('Artisan deactivated successfully');
+        setState(() {
+          _isSuspended = true;
+        });
+        _saveSuspensionStatus();
+
+        //Navigator.pop(context);
+      } else {
+        print('Failed to deactivate client');
+        print('Response Status Code: ${response.statusCode}');
+        print('Response Body: ${response.body}');
+        // Handle error scenario appropriately
+      }
+    } catch (error) {
+      print('Error deactivating client: $error');
+      // Handle error scenario appropriately
+    }
+  }
+
+  void _loadSuspensionStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isSuspended =
+          prefs.getBool('isSuspended${_userData['EmailArtisan']}') ?? false;
+    });
+  }
+
+  void _saveSuspensionStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isSuspended${_userData['EmailArtisan']}', true);
+  }
+
   Future<void> _fetchUserData() async {
     final url = Uri.parse(
         'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/client/AfficherArtisan/${widget.artisanID}'); // Replace with your endpoint
@@ -759,17 +811,19 @@ class _VoirProfilArtisanState extends State<VoirProfilArtisan> {
               'Prenom': userDataJson['PrenomArtisan'] as String ?? '',
               'Email': userDataJson['EmailArtisan'] as String ?? '',
               'Numero': userDataJson['NumeroTelArtisan'] as String ?? '',
-              'Rayon': userDataJson['RayonKm']  ?? '', // Assuming 'RayonKm' is a string
-              'Adresse': userDataJson['AdresseArtisan']  ?? '',
+              'Rayon': userDataJson['RayonKm'] ??
+                  '', // Assuming 'RayonKm' is a string
+              'Adresse': userDataJson['AdresseArtisan'] ?? '',
               'photo': userDataJson['photo'] ?? '',
-              'Disponibilite': userDataJson['Disponibilite'] as bool, // Assuming 'Disponibilite' is not a string
+              'Disponibilite': userDataJson['Disponibilite']
+                  as bool, // Assuming 'Disponibilite' is not a string
               'Note': userDataJson['Note'] ?? '',
-              'Domaine': userDataJson['Domaine'] as String ?? '', // Assuming 'Domaine' is a string
+              'Domaine': userDataJson['Domaine'] as String ??
+                  '', // Assuming 'Domaine' is a string
               'Prestations': userDataJson['Prestations'] as List<dynamic> ?? [],
             };
             print("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
             _dispo(_userData['Disponibilite']);
-
           });
           print('_userData: $_userData'); // Debugging print
         } else {
@@ -787,22 +841,15 @@ class _VoirProfilArtisanState extends State<VoirProfilArtisan> {
 
   void _dispo(bool value) {
     setState(() {
-      dispo= value;
+      dispo = value;
     });
   }
-
-
-
 
   @override
   void initState() {
     super.initState();
     fetchData();
   }
-
-
-
-
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -837,14 +884,14 @@ class _VoirProfilArtisanState extends State<VoirProfilArtisan> {
                     borderRadius: BorderRadius.circular(30.0),
                     child: _userData['photo'] != null
                         ? Image.network(
-                      _userData[
-                      'photo'].toString(), // Utilisez l'URL de la photo de profil
-                      fit: BoxFit.cover,
-                    )
+                            _userData['photo']
+                                .toString(), // Utilisez l'URL de la photo de profil
+                            fit: BoxFit.cover,
+                          )
                         : Image.asset(
-                      'assets/artisan.jpg',
-                      fit: BoxFit.cover,
-                    ),
+                            'assets/artisan.jpg',
+                            fit: BoxFit.cover,
+                          ),
                   ),
                 ),
               ],
@@ -866,8 +913,7 @@ class _VoirProfilArtisanState extends State<VoirProfilArtisan> {
                     children: [
                       SvgPicture.asset("assets/star.svg"),
                       Text(
-                        _userData[
-                        'Note'].toString(),
+                        _userData['Note'].toString(),
                         style: GoogleFonts.poppins(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
@@ -944,8 +990,7 @@ class _VoirProfilArtisanState extends State<VoirProfilArtisan> {
                     ),
                     child: Center(
                       child: Text(
-                        _userData[
-                        'Domaine'].toString(),
+                        _userData['Domaine'].toString(),
                         style: GoogleFonts.poppins(
                             fontSize: 15, fontWeight: FontWeight.w600),
                       ),
@@ -966,16 +1011,19 @@ class _VoirProfilArtisanState extends State<VoirProfilArtisan> {
                           borderRadius: BorderRadius.circular(10.0),
                         ),
                         content: Container(
-                          width:
-                          200.0, // Adjust the width as needed
-                          height:
-                          150.0, // Adjust the height as needed
+                          width: 200.0, // Adjust the width as needed
+                          height: 150.0, // Adjust the height as needed
                           child: Center(
                             child: ListView.builder(
                               itemCount: _userData['Prestations'].length,
                               itemBuilder: (context, index) {
                                 return ListTile(
-                                  title: Text(_userData['Prestations'][index], style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w700),),
+                                  title: Text(
+                                    _userData['Prestations'][index],
+                                    style: GoogleFonts.poppins(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700),
+                                  ),
                                   // You can add more customization here if needed
                                 );
                               },
@@ -984,18 +1032,17 @@ class _VoirProfilArtisanState extends State<VoirProfilArtisan> {
                         ),
                       );
                     });
-
               },
               style: ButtonStyle(
                 minimumSize:
-                MaterialStateProperty.all<Size>(const Size(315, 30)),
+                    MaterialStateProperty.all<Size>(const Size(315, 30)),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
                 backgroundColor:
-                MaterialStateProperty.all<Color>(const Color(0xFFFF8787)),
+                    MaterialStateProperty.all<Color>(const Color(0xFFFF8787)),
               ),
               child: Text(
                 "Préstations proposées",
@@ -1091,14 +1138,14 @@ class _VoirProfilArtisanState extends State<VoirProfilArtisan> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10.0, horizontal: 16),
                     child: Text(
                       _userData['Prenom'].toString(),
                       style: GoogleFonts.poppins(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),
-
                     ),
                   ),
                 ),
@@ -1133,7 +1180,8 @@ class _VoirProfilArtisanState extends State<VoirProfilArtisan> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10.0, horizontal: 16),
                     child: Text(
                       _userData['Numero'].toString(),
                       style: GoogleFonts.poppins(
@@ -1174,7 +1222,8 @@ class _VoirProfilArtisanState extends State<VoirProfilArtisan> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10.0, horizontal: 16),
                     child: Text(
                       _userData['Email'].toString(),
                       style: GoogleFonts.poppins(
@@ -1215,7 +1264,8 @@ class _VoirProfilArtisanState extends State<VoirProfilArtisan> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10.0, horizontal: 16),
                     child: Text(
                       _userData['Adresse'].toString(),
                       style: GoogleFonts.poppins(
@@ -1256,7 +1306,8 @@ class _VoirProfilArtisanState extends State<VoirProfilArtisan> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10.0, horizontal: 16),
                     child: Text(
                       _userData['Rayon'].toString(),
                       style: GoogleFonts.poppins(
@@ -1276,17 +1327,19 @@ class _VoirProfilArtisanState extends State<VoirProfilArtisan> {
                 children: [
                   ElevatedButton(
                       onPressed: () {
-                       /* Navigator.push(
+                        Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => CommentPage2(ArtisanId: widget.artisanID,)),
-                        );*/
-
+                          MaterialPageRoute(
+                              builder: (context) => CommentPage2(
+                                    ArtisanId: widget.artisanID,
+                                  )),
+                        );
                       },
                       style: ButtonStyle(
                         minimumSize: MaterialStateProperty.all<Size>(
                             const Size(150, 35)),
                         shape:
-                        MaterialStateProperty.all<RoundedRectangleBorder>(
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),
@@ -1305,7 +1358,74 @@ class _VoirProfilArtisanState extends State<VoirProfilArtisan> {
                 ],
               ),
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _isSuspended
+                      ? Padding(
+                          padding: const EdgeInsets.only(
+                            top: 72.0,
+                          ),
+                          child: SizedBox(
+                            width: 120,
+                            height: 33,
+                            child: Text(
+                              '     Suspendu',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red,
+                                fontFamily: "poppins",
+                              ),
+                            ),
+                          ),
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.only(top: 72.0),
+                          child: SizedBox(
+                            width: 120,
+                            height: 33,
+                            child: ElevatedButton(
+                              onPressed: suspendAccount,
+                              child: Text(
+                                'Suspendre',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontFamily: "poppins",
+                                ),
+                              ),
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.red),
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    side: BorderSide(color: Colors.red),
+                                  ),
+                                ),
+                                elevation: MaterialStateProperty.all<double>(0),
+                                padding: MaterialStateProperty.all<
+                                    EdgeInsetsGeometry>(
+                                  EdgeInsets.symmetric(
+                                      vertical: 1.0, horizontal: 2.0),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 60,
+            )
           ],
         ),
       ),
