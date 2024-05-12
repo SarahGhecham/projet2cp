@@ -13,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_application_proj2cp/config.dart';
 
 class Artisan {
+  int artisanID;
   String nom;
   String prenom;
   String email;
@@ -24,7 +25,8 @@ class Artisan {
   int domaine;
   String? note;
   Artisan(
-      {required this.nom,
+      {required this.artisanID,
+        required this.nom,
       required this.prenom,
       required this.email,
       required this.numTel,
@@ -82,6 +84,7 @@ class _ArtisansListState extends State<ArtisansList> {
 
           if (nom != null && prenom != null) {
             artisans.add(Artisan(
+              artisanID: item['id'],
               nom: nom,
               prenom: prenom,
               email: item['EmailArtisan'] as String,
@@ -107,12 +110,12 @@ class _ArtisansListState extends State<ArtisansList> {
     }
   }
 
-  void _navigateToProfile(Artisan artisan) {
+  void _navigateToProfile(artisanID) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => VoirProfilArtisan(
-          artisan: artisan,
+          artisanID: artisanID,
         ),
       ),
     );
@@ -161,7 +164,7 @@ class _ArtisansListState extends State<ArtisansList> {
           return GestureDetector(
             onTap: () {
               if (artisan != null) {
-                _navigateToProfile(artisan);
+                _navigateToProfile(artisan.artisanID);
               }
             },
             child: Container(
