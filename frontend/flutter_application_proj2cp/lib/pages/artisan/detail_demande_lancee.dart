@@ -170,7 +170,7 @@ class _DemandelanceeState extends State<Demandelancee> {
         backgroundColor: Colors.white,
         title: Row(
           children: [
-            const SizedBox(width: 100),
+            const SizedBox(width: 80),
             Text(
               "Details",
               style: GoogleFonts.poppins(
@@ -403,7 +403,7 @@ class _DemandelanceeState extends State<Demandelancee> {
                           SvgPicture.asset("assets/money.svg"),
                           SizedBox(width: 15),
                           Text(
-                            "${data['prestation']['TarifJourMin']}da - ${data['prestation']['TarifJourMax']}da",
+                            "${data['prestation']['TarifJourMin']}da - ${data['prestation']['TarifJourMax']}da /heure",
                             style: GoogleFonts.poppins(fontSize: 15),
                           ),
                         ],

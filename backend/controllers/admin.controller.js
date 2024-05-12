@@ -544,7 +544,7 @@ async function CreerArtisan(req, res) {
         .json({ message: "Le numéro de téléphone n'a pas le bon format" });
     }
 
-    const Cleapi = 'AIzaSyDRCkJohH9RkmMIgpoNB2KBlLF6YMOOmmk';
+    const Cleapi = 'AIzaSyBUoTHDCzxA7lix93aS8D5EuPa-VCuoAq0';
     const address = req.body.AdresseArtisan;
 
     const isAddressValid = await validateAddress(address, Cleapi);

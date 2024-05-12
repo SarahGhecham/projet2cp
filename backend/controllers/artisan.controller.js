@@ -196,7 +196,7 @@ async function validateAddress(address, Cleapi) {
     const id = req.userId;
 
     // Valider l'adresse
-    const Cleapi = 'AIzaSyDRCkJohH9RkmMIgpoNB2KBlLF6YMOOmmk';
+    const Cleapi = 'AIzaSyBUoTHDCzxA7lix93aS8D5EuPa-VCuoAq0';
     const isAddressValid = await validateAddress(req.body.AdresseArtisan, Cleapi);
 
     if (!isAddressValid) {
