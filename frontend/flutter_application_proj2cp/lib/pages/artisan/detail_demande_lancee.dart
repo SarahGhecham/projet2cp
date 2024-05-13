@@ -170,7 +170,7 @@ class _DemandelanceeState extends State<Demandelancee> {
         backgroundColor: Colors.white,
         title: Row(
           children: [
-            const SizedBox(width: 80),
+            const SizedBox(width: 100),
             Text(
               "Details",
               style: GoogleFonts.poppins(
@@ -178,17 +178,8 @@ class _DemandelanceeState extends State<Demandelancee> {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(width: 110),
-            SizedBox(
-              height: 18,
-              width: 25,
-              child: InkWell(
-                onTap: () {
-                  Navigator.of(context).pop(); // Close the page
-                },
-                child: Icon(Icons.close), // Icon that closes the page
-              ),
-            ),
+
+
           ],
         ),
       ),

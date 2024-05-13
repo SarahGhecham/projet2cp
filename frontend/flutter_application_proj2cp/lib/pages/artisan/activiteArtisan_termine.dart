@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ffi';
 import 'package:flutter_application_proj2cp/config.dart';
+import 'package:flutter_application_proj2cp/pages/artisan/rendez_vous_termine_artisan.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -111,67 +112,77 @@ class _DemandesTerminesArtisanState extends State<DemandesTerminesArtisan> {
         itemCount: demandesTerminees.length,
         itemBuilder: (context, index) {
           final demande = demandesTerminees[index];
+          final r = demande?.rdvId ?? 0;
+          final d = demande?.demandeId ?? 0;
           if (demande != null) {
-            return Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: creme, width: 1),
+            return GestureDetector(
+              onTap: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => rdvterminee(demandeID: d, rdvID: r,)),
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    top: BorderSide(color: creme, width: 1),
+                  ),
                 ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Stack(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 65,
-                            height: 65,
-                            decoration: BoxDecoration(
-                              color: creme,
-                              borderRadius: BorderRadius.circular(10),
-                              image: DecorationImage(
-                                image:
-                                    NetworkImage(demande?.demandeImage ?? ''),
-                                fit: BoxFit.cover,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: Stack(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 65,
+                              height: 65,
+                              decoration: BoxDecoration(
+                                color: creme,
+                                borderRadius: BorderRadius.circular(10),
+                                image: DecorationImage(
+                                  image:
+                                      NetworkImage(demande?.demandeImage ?? ''),
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(width: 15.0),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  demande.name,
-                                  style: GoogleFonts.poppins(
-                                    textStyle: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 12,
+                            SizedBox(width: 15.0),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    demande.name,
+                                    style: GoogleFonts.poppins(
+                                      textStyle: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 12,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                SizedBox(height: 20),
-                                Text(
-                                  '${demande.orderTime}',
-                                  style: GoogleFonts.poppins(
-                                    textStyle: TextStyle(
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 9,
+                                  SizedBox(height: 20),
+                                  Text(
+                                    '${demande.orderTime}',
+                                    style: GoogleFonts.poppins(
+                                      textStyle: TextStyle(
+                                        color: Colors.grey,
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 9,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );

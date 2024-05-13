@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_proj2cp/constants/constants.dart';
+import 'package:flutter_application_proj2cp/pages/artisan/detail_demande_acceptee.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_application_proj2cp/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -110,78 +111,88 @@ Future<void> fetchDemandesArtisanEnCours() async {
         itemCount: demandesEnCours.length,
         itemBuilder: (context, index) {
           final demande = demandesEnCours[index];
+          final r = demande?.rdvId ?? 0;
+          final d = demande?.demandeId ?? 0;
           String iconAsset = demande?.status ?? false
               ? 'assets/icons/confirmee.png'
               : 'assets/icons/acceptee.png';
 
-          return Container(
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(color: creme, width: 1),
+          return GestureDetector(
+            onTap: (){
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => DemandeAcceptee(demandeID: d, rdvID: r,)),
+              );
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(color: creme, width: 1),
+                ),
               ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Stack(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 65,
-                          height: 65,
-                          decoration: BoxDecoration(
-                            color: creme,
-                            borderRadius: BorderRadius.circular(10),
-                            image: DecorationImage(
-                              image: NetworkImage(demande?.demandeImage ?? ''),
-                              fit: BoxFit.cover,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Stack(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 65,
+                            height: 65,
+                            decoration: BoxDecoration(
+                              color: creme,
+                              borderRadius: BorderRadius.circular(10),
+                              image: DecorationImage(
+                                image: NetworkImage(demande?.demandeImage ?? ''),
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
-                        ),
-                        SizedBox(width: 15.0),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                demande?.name ?? '',
-                                style: GoogleFonts.poppins(
-                                  textStyle: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 12,
+                          SizedBox(width: 15.0),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  demande?.name ?? '',
+                                  style: GoogleFonts.poppins(
+                                    textStyle: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              SizedBox(height: 20),
-                              Text(
-                                demande?.orderTime ?? '',
-                                style: GoogleFonts.poppins(
-                                  textStyle: TextStyle(
-                                    color: Colors.grey,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 9,
+                                SizedBox(height: 20),
+                                Text(
+                                  demande?.orderTime ?? '',
+                                  style: GoogleFonts.poppins(
+                                    textStyle: TextStyle(
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 9,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  Positioned(
-                    right: 16.0,
-                    top: 20,
-                    child: Image.asset(
-                      iconAsset,
-                      width: 20,
-                      height: 20,
+                    Positioned(
+                      right: 16.0,
+                      top: 20,
+                      child: Image.asset(
+                        iconAsset,
+                        width: 20,
+                        height: 20,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );

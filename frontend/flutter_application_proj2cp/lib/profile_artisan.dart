@@ -305,7 +305,8 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
             'heurefin': item['heureFin'] ,
           };
         }).toList();
-
+        print("hii2");
+        print("horaires : $horaires");
         return horaires;
       } else {
         // If the request was not successful, throw an error
@@ -316,6 +317,38 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
       throw Exception('Failed to load horaires by jour: $error');
     }
   }
+  Map<TimeOfDay, TimeOfDay> convertListToTimeMap(List<Map<String, dynamic>> inputList) {
+    Map<TimeOfDay, TimeOfDay> resultMap = {};
+
+    // Iterate through the input list
+    inputList.forEach((element) {
+      // Extract heuredebut and heurefin from each element
+      String heureDebutStr = element['heuredebut']!;
+      String heureFinStr = element['heurefin']!;
+
+      // Convert heuredebut and heurefin to TimeOfDay objects
+      TimeOfDay heureDebut = stringToTimeOfDay1(heureDebutStr);
+      TimeOfDay heureFin = stringToTimeOfDay1(heureFinStr);
+
+      // Add to the result map
+      resultMap[heureDebut] = heureFin;
+    });
+    print("hi :$resultMap");
+    return resultMap;
+  }
+  // Function to convert string to TimeOfDay
+  TimeOfDay stringToTimeOfDay1(String timeString) {
+    // Split the time string into hours, minutes, and seconds
+    List<String> parts = timeString.split(':');
+
+    // Parse hours, minutes, and seconds from the parts list
+    int hours = int.parse(parts[0]);
+    int minutes = int.parse(parts[1]);
+
+    // Create and return a TimeOfDay object
+    return TimeOfDay(hour: hours, minute: minutes);
+  }
+
   List<Map<String, dynamic>> dimanche = [];
   List<Map<String, dynamic>> lundi = [];
   List<Map<String, dynamic>> mardi = [];
@@ -341,6 +374,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
       jeudi =  await getArtisanHorairesByJour('jeudi');
       vendredi = await getArtisanHorairesByJour('vendredi');
       samedi = await getArtisanHorairesByJour('samedi');
+      print("here");
       dimanche2 = convertListToTimeMap(dimanche);
       lundi2 = convertListToTimeMap(lundi);
       mardi2 = convertListToTimeMap(mardi);
@@ -348,6 +382,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
       jeudi2 =  convertListToTimeMap(jeudi);
       vendredi2 = convertListToTimeMap(vendredi);
       samedi2 = convertListToTimeMap(samedi);
+      print("here2");
       print("horaire: $dimanche");
       print("horaire: $lundi");
       print("horaire: $mardi");
@@ -377,39 +412,8 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
       print('Error fetching horaires: $error');
     }
   }
-  Map<TimeOfDay, TimeOfDay> convertListToTimeMap(List<Map<String, dynamic>> inputList) {
-    Map<TimeOfDay, TimeOfDay> resultMap = {};
-
-    // Iterate through the input list
-    inputList.forEach((element) {
-      // Extract heuredebut and heurefin from each element
-      String heureDebutStr = element['heuredebut']!;
-      String heureFinStr = element['heurefin']!;
-
-      // Convert heuredebut and heurefin to TimeOfDay objects
-      TimeOfDay heureDebut = stringToTimeOfDay1(heureDebutStr);
-      TimeOfDay heureFin = stringToTimeOfDay1(heureFinStr);
-
-      // Add to the result map
-      resultMap[heureDebut] = heureFin;
-    });
-
-    return resultMap;
-  }
 
 
-// Function to convert string to TimeOfDay
-  TimeOfDay stringToTimeOfDay1(String timeString) {
-    // Split the time string into hours, minutes, and seconds
-    List<String> parts = timeString.split(':');
-
-    // Parse hours, minutes, and seconds from the parts list
-    int hours = int.parse(parts[0]);
-    int minutes = int.parse(parts[1]);
-
-    // Create and return a TimeOfDay object
-    return TimeOfDay(hour: hours, minute: minutes);
-  }
 
 
   int selectedDayIndex = 0;

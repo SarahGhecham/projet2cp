@@ -49,8 +49,7 @@ class DemandesEnCours extends StatefulWidget {
 class _DemandesEnCoursState extends State<DemandesEnCours> {
   List<Demande?> demandesEnCours = [];
   late String _token;
-  late int rdv_id = 0;
-  late int demande_id = 0;
+
 
   @override
   void initState() {
@@ -129,6 +128,8 @@ class _DemandesEnCoursState extends State<DemandesEnCours> {
         itemCount: demandesEnCours.length,
         itemBuilder: (context, index) {
           final demande = demandesEnCours[index];
+          final r = demande?.rdvId ?? 0;
+          final d = demande?.demandeId ?? 0;
           String iconAsset = demande?.status ?? false
               ? 'assets/icons/confirmee.png'
               : 'assets/icons/acceptee.png';
@@ -140,8 +141,8 @@ class _DemandesEnCoursState extends State<DemandesEnCours> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => demande_confirmePage(
-                      rdvID: rdv_id,
-                      demandeID: demande_id,
+                     demandeID: d,
+                      rdvID: r,
                     ),
                   ),
                 );
@@ -151,7 +152,7 @@ class _DemandesEnCoursState extends State<DemandesEnCours> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => Mademande(
-                            demandeId: demande_id,
+                            demandeId: d,
                           )),
                 );
               }

@@ -10,6 +10,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../rendez-vous_terminée.dart';
+
 class Demande {
   final String name;
   final String orderTime;
@@ -139,84 +141,116 @@ class _DemandesTerminesState extends State<DemandesTermines> {
         itemCount: demandesTerminees.length,
         itemBuilder: (context, index) {
           final demande = demandesTerminees[index];
+          final r = demande?.rdvId ?? 0;
+          final d = demande?.demandeId ?? 0;
           if (demande != null) {
-            return Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: creme, width: 1),
+            return GestureDetector(
+              onTap: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => rdvclient(
+                      demandeID: d,
+                      rdvID: r,
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    top: BorderSide(color: creme, width: 1),
+                  ),
                 ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Stack(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 65,
-                            height: 65,
-                            decoration: BoxDecoration(
-                              color: creme,
-                              borderRadius: BorderRadius.circular(10),
-                              image: DecorationImage(
-                                image:
-                                    NetworkImage(demande?.demandeImage ?? ''),
-                                fit: BoxFit.cover,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: Stack(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 65,
+                              height: 65,
+                              decoration: BoxDecoration(
+                                color: creme,
+                                borderRadius: BorderRadius.circular(10),
+                                image: DecorationImage(
+                                  image:
+                                      NetworkImage(demande?.demandeImage ?? ''),
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(width: 15.0),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  demande.name,
-                                  style: GoogleFonts.poppins(
-                                    textStyle: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 12,
+                            SizedBox(width: 15.0),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    demande.name,
+                                    style: GoogleFonts.poppins(
+                                      textStyle: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 12,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                SizedBox(height: 20),
-                                Text(
-                                  '${demande.orderTime}',
-                                  style: GoogleFonts.poppins(
-                                    textStyle: TextStyle(
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 9,
+                                  SizedBox(height: 20),
+                                  Text(
+                                    '${demande.orderTime}',
+                                    style: GoogleFonts.poppins(
+                                      textStyle: TextStyle(
+                                        color: Colors.grey,
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 9,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 15.0,
-                      child: SizedBox(
-                        height: 30,
-                        width: 130,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            print(
-                                'Navigate to artisan profile for ${demande.artisan.nomArtisan}');
-                          },
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  '${demande.artisan.nomArtisan}',
-                                  overflow: TextOverflow.ellipsis,
+                      Positioned(
+                        bottom: 0,
+                        right: 15.0,
+                        child: SizedBox(
+                          height: 30,
+                          width: 130,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              print(
+                                  'Navigate to artisan profile for ${demande.artisan.nomArtisan}');
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    '${demande.artisan.nomArtisan}',
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.poppins(
+                                      textStyle: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                        color: vertFonce,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 4.0),
+                                Icon(
+                                  Icons.star,
+                                  color: Color.fromARGB(255, 240, 200, 0),
+                                  size: 16.0,
+                                ),
+                                SizedBox(width: 3.0),
+                                Text(
+                                  '${demande.artisan.points.toStringAsFixed(1)}',
                                   style: GoogleFonts.poppins(
                                     textStyle: TextStyle(
                                       fontSize: 12,
@@ -225,40 +259,23 @@ class _DemandesTerminesState extends State<DemandesTermines> {
                                     ),
                                   ),
                                 ),
-                              ),
-                              SizedBox(width: 4.0),
-                              Icon(
-                                Icons.star,
-                                color: Color.fromARGB(255, 240, 200, 0),
-                                size: 16.0,
-                              ),
-                              SizedBox(width: 3.0),
-                              Text(
-                                '${demande.artisan.points.toStringAsFixed(1)}',
-                                style: GoogleFonts.poppins(
-                                  textStyle: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                    color: vertFonce,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: vertClair,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
+                              ],
                             ),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 15.0,
-                              vertical: 5.0,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: vertClair,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 15.0,
+                                vertical: 5.0,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );

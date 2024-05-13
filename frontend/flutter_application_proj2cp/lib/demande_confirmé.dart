@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_application_proj2cp/pages/connexion.dart';
 import 'package:flutter_application_proj2cp/pages/home/home_page_client.dart';
 import 'package:flutter_application_proj2cp/profilartisan_client.dart';
+import 'package:flutter_application_proj2cp/widgets/bottom_nav_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -627,7 +628,7 @@ class _demande_confirmePageState extends State<demande_confirmePage> {
                     annulerDemande(_token, widget.demandeID);
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => HomeScreen()),
+                      MaterialPageRoute(builder: (context) => BottomNavBar()),
                     );
                   },
                   style: ButtonStyle(
