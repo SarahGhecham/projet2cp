@@ -195,7 +195,7 @@ async function validateAddress(address, Cleapi) {
 async function updateartisan(req, res) {
     const id = req.userId;
 
-    // Hash the new password if provided
+    
 
 
     const updatedArtisan = {
