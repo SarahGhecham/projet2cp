@@ -46,9 +46,12 @@ class _ProfileAdminState extends State<ProfileAdmin> {
 
   Future<void> _fetchUserData() async {
     final url = Uri.parse(
-        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins/1'); // Replace with your endpoint
+        'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/admins'); // Replace with your endpoint
     try {
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {'Authorization': 'Bearer $_token'},
+      );
 
       if (response.statusCode == 200) {
         final userDataJson = json.decode(response.body);
