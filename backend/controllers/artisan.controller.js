@@ -192,49 +192,41 @@ async function validateAddress(address, Cleapi) {
     }
   }
 
-  async function updateartisan(req, res) {
+async function updateartisan(req, res) {
     const id = req.userId;
 
-    // Valider l'adresse
-    const Cleapi = 'AIzaSyBUoTHDCzxA7lix93aS8D5EuPa-VCuoAq0';
-    const isAddressValid = await validateAddress(req.body.AdresseArtisan, Cleapi);
+    // Hash the new password if provided
 
-    if (!isAddressValid) {
-        return res.status(400).json({ message: "L'adresse fournie est invalide" });
-    }
-
-    // Valider le format du numéro de téléphone
-    const phonePattern = /^[0-9]{10}$/;
-    if (!phonePattern.test(req.body.NumeroTelArtisan)) {
-        return res.status(400).json({ message: "Le numéro de téléphone n'a pas le bon format" });
-    }
 
     const updatedArtisan = {
+
         AdresseArtisan: req.body.AdresseArtisan,
         NumeroTelArtisan: req.body.NumeroTelArtisan,
-        Disponnibilite: req.body.Disponnibilite,
-        RayonKm: req.body.RayonKm,
+        Disponibilite: req.body.Disponibilite,
+        RayonKm:req.body.RayonKm,
+
     };
 
-    // Mettre à jour le modèle Artisan avec les données mises à jour
+    // Update the Artisan model with the updated data
     models.Artisan.update(updatedArtisan, { where: { id: id } })
         .then(result => {
             if (result[0] === 1) {
                 res.status(201).json({
-                    message: "Artisan mis à jour avec succès",
+                    message: "Artisan updated successfully",
                     artisan: updatedArtisan
                 });
             } else {
-                res.status(404).json({ message: "Artisan non trouvé" });
+                res.status(404).json({ message: "Artisan not found" });
             }
         })
         .catch(error => {
             res.status(500).json({
-                message: "Une erreur s'est produite",
+                message: "Something went wrong",
                 error: error
             });
         });
 }
+
 
 function updateArtisanImage(req, res) {
     const id = req.userId;

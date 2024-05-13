@@ -10,7 +10,7 @@ const router = express.Router();
 router.get('/planning',auth(),artisanJourController.displayplanningofArtisan);
 
 router.post('/addHorrairesToArtisan',auth(), artisanJourController.addHorrairesToArtisan),
-router.get('/HorairesJour',auth(),artisanJourController.getArtisanHorairesByJour),
+router.get('/HorairesJour/:jour',auth(),artisanJourController.getArtisanHorairesByJour),
 router.delete('/deletehorairesFromArtisan',auth(),artisanJourController.deleteHorraires);
 router.get('/HorairesJour2',auth(),artisanJourController.getArtisanHorairesByJour2);
 module.exports = router;

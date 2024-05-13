@@ -228,6 +228,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
   @override
   void initState() {
     super.initState();
+    jourController.text='dimanche';
     fetchData();
     day = 0; // Set initial day to 0
   }
@@ -284,9 +285,6 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
       // Endpoint URL for your backend API
       final String apiUrl = 'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/artisanjour/HorairesJour/$jour';
 
-      // Request body
-      final Map<String, dynamic> body = {'jour': jour};
-
       // Make POST request to the backend API
       final response = await http.get(Uri.parse(apiUrl),
         headers: {
@@ -299,12 +297,12 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
       if (response.statusCode == 200) {
         // Parse the response JSON
         List<dynamic> responseData = json.decode(response.body);
-
+        print("hii");
         // Convert response data to List<Map<String, dynamic>>
         List<Map<String, dynamic>> horaires = responseData.map((item) {
           return {
-            'heureDebut': item['heureDebut'],
-            'heureFin': item['heureFin'],
+            'heuredebut': item['heureDebut'] ,
+            'heurefin': item['heureFin'] ,
           };
         }).toList();
 
@@ -318,58 +316,105 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
       throw Exception('Failed to load horaires by jour: $error');
     }
   }
-
+  List<Map<String, dynamic>> dimanche = [];
+  List<Map<String, dynamic>> lundi = [];
+  List<Map<String, dynamic>> mardi = [];
+  List<Map<String, dynamic>> mercredi = [];
+  List<Map<String, dynamic>> jeudi = [];
+  List<Map<String, dynamic>> vendredi = [];
+  List<Map<String, dynamic>> samedi = [];
+  Map<TimeOfDay, TimeOfDay> dimanche2 = {};
+  Map<TimeOfDay, TimeOfDay> lundi2 = {};
+  Map<TimeOfDay, TimeOfDay> mardi2 = {};
+  Map<TimeOfDay, TimeOfDay> mercredi2 = {};
+  Map<TimeOfDay, TimeOfDay> jeudi2 = {};
+  Map<TimeOfDay, TimeOfDay> vendredi2 = {};
+  Map<TimeOfDay, TimeOfDay> samedi2 = {};
+  Map<int, Map<TimeOfDay, TimeOfDay>> allHoraires = {};
   void fetchHoraires() async {
-    String jour = 'mercredi'; // Replace with the desired jour
+    // Replace with the desired jour
     try {
-      List<Map<String, dynamic>> horaires = await getArtisanHorairesByJour(jour);
-      // Do something with the horaires
-      print('Horaires: $horaires');
+      dimanche = await getArtisanHorairesByJour('dimanche');
+      lundi = await getArtisanHorairesByJour('lundi');
+      mardi = await getArtisanHorairesByJour('mardi');
+      mercredi = await getArtisanHorairesByJour('mercredi');
+      jeudi =  await getArtisanHorairesByJour('jeudi');
+      vendredi = await getArtisanHorairesByJour('vendredi');
+      samedi = await getArtisanHorairesByJour('samedi');
+      dimanche2 = convertListToTimeMap(dimanche);
+      lundi2 = convertListToTimeMap(lundi);
+      mardi2 = convertListToTimeMap(mardi);
+      mercredi2 = convertListToTimeMap(mercredi);
+      jeudi2 =  convertListToTimeMap(jeudi);
+      vendredi2 = convertListToTimeMap(vendredi);
+      samedi2 = convertListToTimeMap(samedi);
+      print("horaire: $dimanche");
+      print("horaire: $lundi");
+      print("horaire: $mardi");
+      print("horaire: $mercredi");
+      print("horaire: $jeudi");
+      print("horaire: $vendredi");
+      print("horaire: $samedi");
+      print("horaire2: $dimanche2");
+      print("horaire2: $lundi2");
+      print("horaire2: $mardi2");
+      print("horaire2: $mercredi2");
+      print("horaire2: $jeudi2");
+      print("horaire2: $vendredi2");
+      print("horaire2: $samedi2");
+      allHoraires = {
+        0: dimanche2,
+        1: lundi2,
+        2: mardi2,
+        3: mercredi2,
+        4: jeudi2,
+        5: vendredi2,
+        6: samedi2,
+      };
+      print("map: $allHoraires");
     } catch (error) {
       // Handle errors
       print('Error fetching horaires: $error');
     }
   }
+  Map<TimeOfDay, TimeOfDay> convertListToTimeMap(List<Map<String, dynamic>> inputList) {
+    Map<TimeOfDay, TimeOfDay> resultMap = {};
+
+    // Iterate through the input list
+    inputList.forEach((element) {
+      // Extract heuredebut and heurefin from each element
+      String heureDebutStr = element['heuredebut']!;
+      String heureFinStr = element['heurefin']!;
+
+      // Convert heuredebut and heurefin to TimeOfDay objects
+      TimeOfDay heureDebut = stringToTimeOfDay1(heureDebutStr);
+      TimeOfDay heureFin = stringToTimeOfDay1(heureFinStr);
+
+      // Add to the result map
+      resultMap[heureDebut] = heureFin;
+    });
+
+    return resultMap;
+  }
+
+
+// Function to convert string to TimeOfDay
+  TimeOfDay stringToTimeOfDay1(String timeString) {
+    // Split the time string into hours, minutes, and seconds
+    List<String> parts = timeString.split(':');
+
+    // Parse hours, minutes, and seconds from the parts list
+    int hours = int.parse(parts[0]);
+    int minutes = int.parse(parts[1]);
+
+    // Create and return a TimeOfDay object
+    return TimeOfDay(hour: hours, minute: minutes);
+  }
 
 
   int selectedDayIndex = 0;
-  Map<int, Map<TimeOfDay, TimeOfDay>> allHoraires = {
-    0: {
-      // horaire0
-      TimeOfDay(hour: 10, minute: 30): TimeOfDay(hour: 11, minute: 30),
-      TimeOfDay(hour: 13, minute: 30): TimeOfDay(hour: 16, minute: 00),
-    },
-    1: {
-      // horaire1
-      TimeOfDay(hour: 8, minute: 00): TimeOfDay(hour: 9, minute: 30),
-      TimeOfDay(hour: 14, minute: 00): TimeOfDay(hour: 17, minute: 00),
-    },
-    2: {
-      // horaire2
-      TimeOfDay(hour: 8, minute: 00): TimeOfDay(hour: 9, minute: 30),
-      TimeOfDay(hour: 14, minute: 00): TimeOfDay(hour: 17, minute: 00),
-    },
-    3: {
-      // horaire3
-      TimeOfDay(hour: 8, minute: 00): TimeOfDay(hour: 9, minute: 30),
-      TimeOfDay(hour: 14, minute: 00): TimeOfDay(hour: 17, minute: 00),
-    },
-    4: {
-      // horaire4
-      TimeOfDay(hour: 8, minute: 00): TimeOfDay(hour: 9, minute: 30),
-      TimeOfDay(hour: 14, minute: 00): TimeOfDay(hour: 17, minute: 00),
-    },
-    5: {
-      // horaire5
-      TimeOfDay(hour: 8, minute: 00): TimeOfDay(hour: 9, minute: 30),
-      TimeOfDay(hour: 14, minute: 00): TimeOfDay(hour: 17, minute: 00),
-    },
-    6: {
-      // horaire6
-      TimeOfDay(hour: 9, minute: 00): TimeOfDay(hour: 3, minute: 20),
-      TimeOfDay(hour: 1, minute: 00): TimeOfDay(hour: 18, minute: 00),
-    },
-  };
+
+
   /*Future<void> addJourToArtisan() async {
 
     final url = Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/artisan/${widget.artisanId}')
@@ -405,15 +450,90 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
   String _formatTime(TimeOfDay time) {
     return "${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}";
   }
+  Future<void> deleteHorairesFromArtisan(String jour, String heureDebut, String heureFin) async {
+    try {
 
+
+      // Prepare the request body
+      Map<String, dynamic> requestBody = {
+        "jour": jour,
+        "HeureDebut": heureDebut,
+        "HeureFin": heureFin
+      };
+
+      // Send the HTTP DELETE request
+      final response = await http.delete(
+        Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/artisanjour/deletehorairesFromArtisan'),
+        headers: {
+          "Authorization": "Bearer $_token",
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      // Check the status code of the response
+      if (response.statusCode == 200) {
+        // If the request was successful (status code 200), display a success message
+        print("Jour successfully removed from artisan.");
+      } else {
+        // If the request was not successful, print the error message from the response
+        print("Failed to remove jour from artisan: ${jsonDecode(response.body)['message']}");
+      }
+    } catch (error) {
+      // Handle any errors that occur during the process
+      print("Error deleting jour from artisan: $error");
+    }
+  }
   void removeTimeRange(int day, TimeOfDay startTime, TimeOfDay endTime) {
     setState(() {
       allHoraires[day]?.removeWhere((key, value) =>
       (key.hour == startTime.hour && key.minute == startTime.minute) &&
           (value.hour == endTime.hour && value.minute == endTime.minute));
+      deleteHorairesFromArtisan(jourController.text,timeOfDayToString(startTime),timeOfDayToString(endTime));
     });
   }
+  String timeOfDayToString(TimeOfDay timeOfDay) {
+    // Format the hour and minute components with leading zeros if necessary
+    final String hour = timeOfDay.hour.toString().padLeft(2, '0');
+    final String minute = timeOfDay.minute.toString().padLeft(2, '0');
 
+    // Combine the hour and minute components into a string
+    return '$hour:$minute';
+  }
+  Future<void> addHorairesToArtisan(String jour, String heureDebut, String heureFin) async {
+    try {
+
+
+      // Prepare the request body
+      Map<String, dynamic> requestBody = {
+        "jour": jour,
+        "HeureDebut": heureDebut,
+        "HeureFin": heureFin
+      };
+
+      // Send the HTTP POST request
+      final response = await http.post(
+        Uri.parse('http://${AppConfig.serverAddress}:${AppConfig.serverPort}/artisanjour/addHorrairesToArtisan'),
+        headers: {
+          "Authorization": "Bearer $_token",
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      // Check the status code of the response
+      if (response.statusCode == 201) {
+        // If the request was successful (status code 201), display a success message
+        print("Jour added to artisan successfully.");
+      } else {
+        // If the request was not successful, print the error message from the response
+        print("Failed to add jour to artisan: ${jsonDecode(response.body)['message']}");
+      }
+    } catch (error) {
+      // Handle any errors that occur during the process
+      print("Error adding jour to artisan: $error");
+    }
+  }
   void addTimeRange(int day, TimeOfDay startTime, TimeOfDay endTime) {
     setState(() {
       if (allHoraires[day] == null) {
@@ -422,12 +542,13 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
       }
 
       allHoraires[day]![startTime] = endTime;
+      addHorairesToArtisan(jourController.text,timeOfDayToString(startTime),timeOfDayToString(endTime));
     });
   }
 
   TimeOfDay stringToTimeOfDay(String timeString) {
-    // Split the string at the colon (":")
-    List<String> parts = timeString.split(":");
+    // Split the string at the colon ("h")
+    List<String> parts = timeString.split("h");
 
     // Ensure we have two parts (hour and minute)
     if (parts.length != 2) {
@@ -1300,6 +1421,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                 ),
               ),
             ),
+
             Visibility(
               visible: !_showOngoing,
               child: Column(
@@ -1559,9 +1681,9 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                                             child: TextFormField(
                                               controller: _debutController,
                                               keyboardType:
-                                              TextInputType.datetime,
+                                              TextInputType.text,
                                               decoration: InputDecoration(
-                                                hintText: "10:30",
+                                                hintText: "10h30",
                                                 hintStyle: GoogleFonts.poppins(
                                                   color:
                                                   const Color(0xFF000000),
@@ -1591,9 +1713,9 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                                             child: TextFormField(
                                               controller: _finController,
                                               keyboardType:
-                                              TextInputType.datetime,
+                                              TextInputType.text,
                                               decoration: InputDecoration(
-                                                hintText: "16:00",
+                                                hintText: "16h00",
                                                 hintStyle: GoogleFonts.poppins(
                                                   color:
                                                   const Color(0xFF000000),
@@ -1655,10 +1777,10 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                           child: SvgPicture.asset("assets/add.svg")),
                     ],
                   ),
-                  SizedBox(height: 90),
                 ],
               ),
             ),
+            SizedBox(height: 90),
           ],
         ),
       ),

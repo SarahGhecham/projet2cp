@@ -4,7 +4,7 @@ const { Op } = require('sequelize');
 async function getArtisanHorairesByJour(req, res) {
     try {
         const artisanId = req.userId;
-        let jourToFind = req.body.jour;
+        let jourToFind = req.params.jour;
 
         // Convert jourToFind to lowercase for case-insensitive comparison
         jourToFind = jourToFind.toLowerCase();
