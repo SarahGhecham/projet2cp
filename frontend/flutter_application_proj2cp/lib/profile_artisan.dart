@@ -275,11 +275,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
   bool _showOngoing = true;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
-  List<DateTime> highlightedDates = [
-    DateTime(2024, 4, 27),
-    DateTime(2024, 4, 28),
-    DateTime(2024, 4, 29),
-  ];
+
   Future<List<Map<String, dynamic>>> getArtisanHorairesByJour(String jour) async {
     try {
       // Endpoint URL for your backend API
@@ -364,6 +360,8 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
   Map<TimeOfDay, TimeOfDay> vendredi2 = {};
   Map<TimeOfDay, TimeOfDay> samedi2 = {};
   Map<int, Map<TimeOfDay, TimeOfDay>> allHoraires = {};
+  List<DateTime> rdv = [];
+  List<DateTime> highlightedDates = [];
   void fetchHoraires() async {
     // Replace with the desired jour
     try {
@@ -382,6 +380,8 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
       jeudi2 =  convertListToTimeMap(jeudi);
       vendredi2 = convertListToTimeMap(vendredi);
       samedi2 = convertListToTimeMap(samedi);
+      rdv= await getArtisanRdvs();
+      highlightedDates = rdv;
       print("here2");
       print("horaire: $dimanche");
       print("horaire: $lundi");
@@ -412,8 +412,36 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
       print('Error fetching horaires: $error');
     }
   }
+  Future<List<DateTime>> getArtisanRdvs() async {
+    // Replace 'your_backend_url' with the actual URL of your backend API endpoint
+    String url = 'http://${AppConfig.serverAddress}:${AppConfig.serverPort}/artisan/Rdvpourartisan';
 
 
+    try {
+      final response = await http.get(Uri.parse(url), headers: {
+        'Authorization': 'Bearer $_token', // Include authorization token if required
+      });
+
+      if (response.statusCode == 200) {
+        // If the request is successful, parse the response JSON
+        List<dynamic> jsonResponse = json.decode(response.body);
+
+        // Convert JSON date strings to DateTime objects
+        List<DateTime> rdvDates = jsonResponse
+            .map((dateString) => DateTime.parse(dateString))
+            .toList();
+        print("les rdv : $rdvDates");
+        return rdvDates;
+      } else {
+        // If the request fails, throw an exception
+        throw Exception('Failed to load rdvs: ${response.statusCode}');
+      }
+    } catch (error) {
+      // If an error occurs during the request, handle it here
+      print('Error retrieving rdvs: $error');
+      throw error; // Rethrow the error for handling at the caller level
+    }
+  }
 
 
   int selectedDayIndex = 0;
@@ -1389,10 +1417,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
                 child: TableCalendar(
                   locale: 'en_US',
                   calendarFormat: _calendarFormat,
-                  selectedDayPredicate: (DateTime date) {
-                    // Return true if the date is in the list of highlightedDates, false otherwise
-                    return highlightedDates.contains(date);
-                  },
+                  selectedDayPredicate: (DateTime date) => highlightedDates.any((d) => d.day == date.day && d.month == date.month && d.year == date.year),
                   calendarStyle: CalendarStyle(
                     defaultTextStyle:
                     GoogleFonts.poppins(fontSize: 16, color: Colors.black),
