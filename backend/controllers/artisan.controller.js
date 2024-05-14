@@ -237,7 +237,7 @@ function updateArtisanImage(req, res) {
     }
 
     // Construct the image URL for the artisan
-    const imageURL = `http://${AppConfig.serverAddress}:${AppConfig.serverPort}/imageArtisan/${req.file.filename}`;
+    const imageURL = `http://192.168.100.7:3000/imageArtisan/${req.file.filename}`;
 
     // Update the artisan's photo URL in the database
     models.Artisan.findByPk(id)
@@ -254,7 +254,7 @@ function updateArtisanImage(req, res) {
         })
         .then(updatedArtisan => {
             // Success message and the updated artisan object
-            res.status(201).json({
+            res.status(200).json({
                 success: true,
                 message: 'Artisan image updated successfully',
                 artisan: updatedArtisan,

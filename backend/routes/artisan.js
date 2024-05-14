@@ -20,7 +20,7 @@ router.get('/DetailsDemandeConfirmee/:rdvId',auth(),artisanController.DetailsDem
 router.get('/DetailsDemande/:demandeId',auth(),artisanController.DetailsDemande);
 router.get('/ConsulterDemandes',auth(),artisanController.consulterdemandes);
 router.get('/ConsulterCommentaires',auth(),artisanController.getCommentaires);
-router.post("/updateArtisanImage",auth(), imageUploader.upload.single('photo'), artisanController.updateArtisanImage);
+router.post("/updateArtisanImage",auth(), imageUploader.upload.single('image'), artisanController.updateArtisanImage);
 router.get('/Rdvpourartisan',auth(),artisanController.getArtisanRdvs);
 
 

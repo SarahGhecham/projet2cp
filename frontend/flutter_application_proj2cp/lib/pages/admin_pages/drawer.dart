@@ -41,7 +41,7 @@ class _DrawerDashState extends State<DrawerDash> {
                   children: [
                     _buildListTile(
                       icon: 'assets/icons/Chart.png',
-                      title: 'Statistiques',
+                      title: 'Stats',
                       index: 0,
                     ),
                     SizedBox(height: 26),

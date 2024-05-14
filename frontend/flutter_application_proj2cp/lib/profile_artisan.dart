@@ -72,13 +72,10 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
       print("ufhquwefhuweghwuegwug");
       if (response.statusCode == 200) {
         final userDataJson = json.decode(response.body);
-        print("llllllllllllllllllllllllllllllll");
 
         if (userDataJson != null) {
-          print("ppppppppppppppppppppp");
 
           setState(() {
-            print("kikkkkkkkkkkkkkkkkkkkkkkkkkkk");
 
             _userData = {
               'Nom': userDataJson['NomArtisan'] as String ?? '',
@@ -93,7 +90,7 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
               'Domaine': userDataJson['Domaine'] as String ?? '', // Assuming 'Domaine' is a string
               'Prestations': userDataJson['Prestations'] as List<dynamic> ?? [],
             };
-            print("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
+
 
             _NomController.text = _userData['Nom'] ?? '';
             _PrenomController.text = _userData['Prenom'] ?? '';
@@ -165,26 +162,28 @@ class _ProfileartisanPageState extends State<ProfileartisanPage> {
       var streamedResponse = await request.send();
 
       // Close the response stream after using it
-      streamedResponse.stream.listen((value) {}).cancel();
+      //streamedResponse.stream.listen((value) {}).cancel();
 
       // Get the response from the streamedResponse
-      var response = await http.Response.fromStream(streamedResponse);
+      //var response = await http.Response.fromStream(streamedResponse);
 
       // Check the response status
-      if (response.statusCode == 200) {
+      if (streamedResponse.statusCode == 200) {
         // Image uploaded successfully, parse the response
-        var data = jsonDecode(response.body);
+        var response = await streamedResponse.stream.bytesToString();
+        var data = jsonDecode(response);
 
         if (data['success'] == true) {
           // Client image updated successfully
-          print('Client image updated successfully');
+          await _fetchUserData();
+          print('Artisan image updated successfully');
         } else {
           // Image upload failed
-          print('Failed to update client image: ${data['message']}');
+          print('Failed to update Artisan image: ${data['message']}');
         }
       } else {
         // Request failed
-        print('Request failed with status: ${response.statusCode}');
+        print('Request failed with status: ${streamedResponse.statusCode}');
       }
     } catch (e) {
       // Handle errors
